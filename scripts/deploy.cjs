@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Deployment Script for Fresh Grocery App
+ * Deployment Script for Freshed Grocery App
  * 
  * This script helps with the deployment process to Render.
  * It checks configuration and prepares the application for deployment.
@@ -113,12 +113,12 @@ function displayDeploymentInstructions() {
   console.log('   - Monitor deployment logs in the Render dashboard\n');
   
   console.log(`${colors.magenta}5. Access Your Application${colors.reset}`);
-  console.log('   - Frontend: https://your-frontend-service-name.onrender.com');
-  console.log('   - Backend API: https://your-backend-service-name.onrender.com\n');
+  console.log('   - Frontend: https://freshed-grocery-frontend.onrender.com');
+  console.log('   - Backend API: https://freshed-grocery-backend.onrender.com\n');
 }
 
 async function main() {
-  log.highlight('Fresh Grocery App Deployment Script\n');
+  log.highlight('Freshed Grocery App Deployment Script\n');
   
   const isConfigured = await checkConfiguration();
   

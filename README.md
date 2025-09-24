@@ -1,4 +1,4 @@
-# Fresh Grocery Tanzania 🥦
+# Freshed Grocery Tanzania 🥦
 
 A modern grocery delivery platform for Tanzania with ClickPesa payment integration.
 
@@ -44,8 +44,8 @@ A modern grocery delivery platform for Tanzania with ClickPesa payment integrati
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/fresh-grocery-tz.git
-cd fresh-grocery-tz
+git clone https://github.com/your-username/freshed-grocery-app.git
+cd freshed-grocery-app
 ```
 
 2. Install frontend dependencies:

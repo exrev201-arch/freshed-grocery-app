@@ -1,4 +1,4 @@
-# GitHub and Render Deployment Guide
+# GitHub and Render Deployment Guide for Freshed Grocery
 
 This guide will help you push your Fresh Grocery application to GitHub and deploy it to Render.
 
@@ -33,7 +33,7 @@ git commit -m "Initial commit: Fresh Grocery App ready for deployment"
 ## Step 2: Create GitHub Repository
 
 1. Go to https://github.com/new
-2. Enter repository name (e.g., "fresh-grocery-app")
+2. Enter repository name (e.g., "freshed-grocery-app")
 3. Choose visibility (Public or Private)
 4. Do NOT initialize with README, .gitignore, or license
 5. Click "Create repository"
@@ -44,7 +44,7 @@ git commit -m "Initial commit: Fresh Grocery App ready for deployment"
 
 1. Add the remote origin (replace `your-username` with your GitHub username):
 ```bash
-git remote add origin https://github.com/your-username/fresh-grocery-app.git
+git remote add origin https://github.com/your-username/freshed-grocery-app.git
 ```
 
 2. Rename the branch to main:
@@ -99,7 +99,7 @@ VITE_CLICKPESA_API_KEY=your_actual_clickpesa_api_key
 VITE_CLICKPESA_MERCHANT_ID=your_merchant_id
 VITE_CLICKPESA_PAY_BILL_NUMBER=your_pay_bill_number
 VITE_CLICKPESA_DEMO_MODE=false
-VITE_ADMIN_EMAIL=admin@fresh.co.tz
+VITE_ADMIN_EMAIL=admin@freshed.co.tz
 VITE_ADMIN_PASSWORD=your_secure_admin_password
 ```
 
@@ -111,10 +111,10 @@ JWT_SECRET=your_random_jwt_secret_string
 JWT_REFRESH_SECRET=your_random_jwt_refresh_secret_string
 SMTP_USER=your_smtp_user
 SMTP_PASS=your_smtp_password
-FROM_EMAIL=Fresh Grocery <noreply@fresh.co.tz>
+FROM_EMAIL=Freshed Grocery <noreply@freshed.co.tz>
 PORT=10000
 NODE_ENV=production
-CORS_ORIGIN=https://your-frontend-service-name.onrender.com
+CORS_ORIGIN=https://freshed-grocery-frontend.onrender.com
 ```
 
 ### Deploy Services
@@ -125,7 +125,7 @@ CORS_ORIGIN=https://your-frontend-service-name.onrender.com
 
 ## Step 5: Test Your Deployed Application
 
-1. Visit your frontend URL (e.g., https://fresh-grocery-frontend.onrender.com)
+1. Visit your frontend URL (e.g., https://freshed-grocery-frontend.onrender.com)
 2. Test all functionality:
    - User registration and login
    - Product browsing

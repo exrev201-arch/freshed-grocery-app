@@ -76,12 +76,12 @@ function checkRenderConfig() {
     const renderYaml = fs.readFileSync(renderYamlPath, 'utf8');
     
     // Check if it contains both frontend and backend services
-    if (!renderYaml.includes('fresh-grocery-frontend')) {
+    if (!renderYaml.includes('freshed-grocery-frontend')) {
       log.error('Frontend service not found in render.yaml');
       return false;
     }
     
-    if (!renderYaml.includes('fresh-grocery-backend')) {
+    if (!renderYaml.includes('freshed-grocery-backend')) {
       log.error('Backend service not found in render.yaml');
       return false;
     }
@@ -189,7 +189,7 @@ function displayDeploymentReadiness() {
 }
 
 async function main() {
-  log.highlight('Fresh Grocery App - Final Deployment Verification\n');
+  log.highlight('Freshed Grocery App - Final Deployment Verification\n');
   
   let allChecksPassed = true;
   

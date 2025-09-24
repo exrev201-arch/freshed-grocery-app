@@ -1,8 +1,8 @@
-# 🚀 Fresh Grocery App - Deployment Ready! 🚀
+# 🚀 Freshed Grocery App - Deployment Ready! 🚀
 
 ## Status: ✅ READY FOR PRODUCTION DEPLOYMENT
 
-Congratulations! Your Fresh Grocery application is fully prepared and verified for deployment to Render.
+Congratulations! Your Freshed Grocery application is fully prepared and verified for deployment to Render.
 
 ## 📋 Deployment Summary
 
@@ -47,7 +47,7 @@ npm run deploy:verify
    VITE_CLICKPESA_MERCHANT_ID=your_merchant_id
    VITE_CLICKPESA_PAY_BILL_NUMBER=your_pay_bill_number
    VITE_CLICKPESA_DEMO_MODE=false
-   VITE_ADMIN_EMAIL=admin@fresh.co.tz
+   VITE_ADMIN_EMAIL=admin@freshed.co.tz
    VITE_ADMIN_PASSWORD=your_secure_password
    ```
 

@@ -1,4 +1,4 @@
-# Deployment Checklist for Fresh Grocery App
+# Deployment Checklist for Freshed Grocery App
 
 ## ✅ Pre-deployment Checks
 
@@ -35,21 +35,21 @@
 
 ### 2. Configure Services
 #### Frontend Service
-- Service name: fresh-grocery-frontend
+- Service name: freshed-grocery-frontend
 - Environment: Static Site
 - Build command: `npm run build`
 - Publish directory: `./dist`
 - Environment variables:
-  - VITE_APP_URL=https://fresh-grocery-frontend.onrender.com
+  - VITE_APP_URL=https://freshed-grocery-frontend.onrender.com
   - VITE_CLICKPESA_API_KEY=your_actual_key
   - VITE_CLICKPESA_MERCHANT_ID=your_merchant_id
   - VITE_CLICKPESA_PAY_BILL_NUMBER=your_pay_bill_number
   - VITE_CLICKPESA_DEMO_MODE=false
-  - VITE_ADMIN_EMAIL=admin@fresh.co.tz
+  - VITE_ADMIN_EMAIL=admin@freshed.co.tz
   - VITE_ADMIN_PASSWORD=your_secure_password
 
 #### Backend Service
-- Service name: fresh-grocery-backend
+- Service name: freshed-grocery-backend
 - Environment: Node
 - Build command: `cd backend && npm install && npm run build`
 - Start command: `cd backend && npm start`
@@ -59,7 +59,7 @@
   - JWT_REFRESH_SECRET=your_refresh_secret
   - SMTP_USER=your_smtp_user
   - SMTP_PASS=your_smtp_password
-  - CORS_ORIGIN=https://fresh-grocery-frontend.onrender.com
+  - CORS_ORIGIN=https://freshed-grocery-frontend.onrender.com
 
 ### 3. Deploy
 1. Click "Create Web Services" in Render

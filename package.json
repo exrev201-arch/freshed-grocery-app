@@ -1,8 +1,8 @@
 {
-  "name": "fresh-grocery-tz",
+  "name": "freshed-grocery-tz",
   "private": true,
   "version": "1.0.0",
-  "description": "Fresh Grocery Delivery Platform for Tanzania with ClickPesa Integration",
+  "description": "Freshed Grocery Delivery Platform for Tanzania with ClickPesa Integration",
   "type": "module",
   "scripts": {
     "dev": "vite",

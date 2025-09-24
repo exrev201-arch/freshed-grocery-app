@@ -1,4 +1,4 @@
-# Fresh Grocery Tanzania 🥦
+# Freshed Grocery Tanzania 🥦
 
 A modern grocery delivery platform for Tanzania with ClickPesa payment integration, ready for deployment to Render.
 
@@ -31,12 +31,12 @@ This application is configured for deployment to Render with automatic CI/CD.
 
 #### Frontend Variables
 ```bash
-VITE_APP_URL=https://your-app-name.onrender.com
+VITE_APP_URL=https://freshed-grocery-frontend.onrender.com
 VITE_CLICKPESA_API_KEY=your_clickpesa_api_key
 VITE_CLICKPESA_MERCHANT_ID=your_merchant_id
 VITE_CLICKPESA_PAY_BILL_NUMBER=your_pay_bill_number
 VITE_CLICKPESA_DEMO_MODE=false
-VITE_ADMIN_EMAIL=admin@fresh.co.tz
+VITE_ADMIN_EMAIL=admin@freshed.co.tz
 VITE_ADMIN_PASSWORD=your_secure_password
 ```
 
@@ -47,10 +47,10 @@ JWT_SECRET=your_jwt_secret_key
 JWT_REFRESH_SECRET=your_jwt_refresh_secret
 SMTP_USER=your_smtp_user
 SMTP_PASS=your_smtp_password
-FROM_EMAIL=Fresh Grocery <noreply@fresh.co.tz>
+FROM_EMAIL=Freshed Grocery <noreply@freshed.co.tz>
 PORT=10000
 NODE_ENV=production
-CORS_ORIGIN=https://your-app-name.onrender.com
+CORS_ORIGIN=https://freshed-grocery-frontend.onrender.com
 ```
 
 ## 📖 Documentation

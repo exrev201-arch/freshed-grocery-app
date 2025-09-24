@@ -1,7 +1,7 @@
 services:
   # Frontend Service (Vite React App)
   - type: web
-    name: fresh-grocery-frontend
+    name: freshed-grocery-frontend
     env: static
     buildCommand: npm run build
     staticPublishPath: ./dist
@@ -11,7 +11,7 @@ services:
     routes:
       - type: rewrite
         source: /api/
-        destination: https://fresh-grocery-backend.onrender.com/
+        destination: https://freshed-grocery-backend.onrender.com/
     headers:
       - path: /*
         name: X-Frame-Options
@@ -25,7 +25,7 @@ services:
 
   # Backend Service (Express API)
   - type: web
-    name: fresh-grocery-backend
+    name: freshed-grocery-backend
     env: node
     plan: free
     buildCommand: cd backend && npm install && npm run build
@@ -44,6 +44,6 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: CORS_ORIGIN
-        value: https://fresh-grocery-frontend.onrender.com
+        value: https://freshed-grocery-frontend.onrender.com
       - key: PORT
         value: 10000

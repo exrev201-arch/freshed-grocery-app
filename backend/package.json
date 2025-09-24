@@ -1,7 +1,7 @@
 {
-  "name": "fresh-grocery-backend",
+  "name": "freshed-grocery-backend",
   "version": "1.0.0",
-  "description": "Backend API for Fresh Grocery delivery app",
+  "description": "Backend API for Freshed Grocery delivery app",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -60,6 +60,6 @@
     "grocery",
     "delivery"
   ],
-  "author": "Fresh Grocery Team",
+  "author": "Freshed Grocery Team",
   "license": "MIT"
 }
