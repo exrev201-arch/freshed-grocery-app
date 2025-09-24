@@ -1,0 +1,49 @@
+services:
+  # Frontend Service (Vite React App)
+  - type: web
+    name: fresh-grocery-frontend
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+    routes:
+      - type: rewrite
+        source: /api/
+        destination: https://fresh-grocery-backend.onrender.com/
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains; preload
+
+  # Backend Service (Express API)
+  - type: web
+    name: fresh-grocery-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://fresh-grocery-frontend.onrender.com
+      - key: PORT
+        value: 10000

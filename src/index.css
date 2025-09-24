@@ -1,0 +1,146 @@
+/**
+ * =====================================
+ *         FRESH DESIGN SYSTEM
+ * =====================================
+ * 
+ * Project: Fresh - Grocery Delivery Platform
+ * Type: E-commerce / Food Delivery
+ * 
+ * DESIGN PHILOSOPHY
+ * -----------------
+ * Core Principle: Fresh, natural, trustworthy experience
+ * Design Style: Modern Organic with vibrant green accents
+ * Emotion Goal: Health, freshness, reliability, and convenience
+ * 
+ * VISUAL LANGUAGE
+ * ----------------
+ * Primary Focus: Product imagery and easy navigation
+ * Hierarchy: Clear pricing, prominent CTAs, readable content
+ * Whitespace: Clean breathing space for food photography
+ * 
+ * COLOR SYSTEM
+ * -------------
+ * Primary: 142 76% 36% - Fresh green for trust and nature
+ * Secondary: 47 96% 89% - Warm cream for comfort
+ * Accent: 24 100% 50% - Orange for urgency/offers  
+ * Success: 120 60% 50% - Positive green for confirmations
+ * Warning: 45 93% 58% - Amber for alerts
+ * 
+ * TYPOGRAPHY
+ * ----------
+ * Display: Bold headers for product names and offers
+ * Body: Clear, readable content for descriptions
+ * Scale: Generous sizing for mobile-first experience
+ * 
+ * INTERACTIONS
+ * ------------
+ * Feedback: Immediate visual response to actions
+ * Transitions: 250ms ease-out for natural feel
+ * States: Complete coverage for all interactive elements
+ * 
+ * ACCESSIBILITY
+ * -------------
+ * Contrast: WCAG AA compliant throughout
+ * Focus: Clear indicators for keyboard navigation
+ * Motion: Respects user preferences for reduced motion
+ * ====================================
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 210 40% 8%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 40% 8%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 40% 8%;
+        --primary: 142 76% 36%;
+        --primary-foreground: 355 25% 95%;
+        --secondary: 47 96% 89%;
+        --secondary-foreground: 210 40% 8%;
+        --muted: 210 40% 98%;
+        --muted-foreground: 215 13% 65%;
+        --accent: 24 100% 50%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 210 40% 90%;
+        --input: 210 40% 90%;
+        --ring: 142 76% 36%;
+        --success: 120 60% 50%;
+        --warning: 45 93% 58%;
+        --chart-1: 142 76% 36%;
+        --chart-2: 120 60% 50%;
+        --chart-3: 24 100% 50%;
+        --chart-4: 47 96% 60%;
+        --chart-5: 210 40% 60%;
+        --radius: 0.75rem;
+        --sidebar-background: 0 0% 98%;
+        --sidebar-foreground: 240 5.3% 26.1%;
+        --sidebar-primary: 142 76% 36%;
+        --sidebar-primary-foreground: 0 0% 98%;
+        --sidebar-accent: 47 96% 95%;
+        --sidebar-accent-foreground: 210 40% 8%;
+        --sidebar-border: 210 40% 90%;
+        --sidebar-ring: 142 76% 36%;
+    }
+
+    .dark {
+        --background: 210 40% 6%;
+        --foreground: 210 40% 98%;
+        --card: 210 40% 8%;
+        --card-foreground: 210 40% 98%;
+        --popover: 210 40% 8%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 142 76% 36%;
+        --primary-foreground: 355 25% 95%;
+        --secondary: 210 40% 12%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 210 40% 12%;
+        --muted-foreground: 215 13% 65%;
+        --accent: 24 100% 50%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 210 40% 20%;
+        --input: 210 40% 20%;
+        --ring: 142 76% 36%;
+        --success: 120 60% 50%;
+        --warning: 45 93% 58%;
+        --chart-1: 142 76% 36%;
+        --chart-2: 120 60% 50%;
+        --chart-3: 24 100% 50%;
+        --chart-4: 47 96% 60%;
+        --chart-5: 210 40% 60%;
+        --sidebar-background: 210 40% 8%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 142 76% 36%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 210 40% 12%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 210 40% 20%;
+        --sidebar-ring: 142 76% 36%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    /* FORCE LIGHT MODE - Override any dark class */
+    html:not(.force-dark) {
+        --background: 0 0% 100%;
+        --foreground: 210 40% 8%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 40% 8%;
+    }
+}

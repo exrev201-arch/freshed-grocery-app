@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#16a34a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Fresh TZ" />
+    <meta name="msapplication-TileColor" content="#16a34a" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- App Icons -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#16a34a" />
+    
+    <!-- SEO and Social -->
+    <meta name="description" content="Fresh groceries delivered fast in Dar es Salaam. Farm-fresh vegetables, fruits, and groceries at your doorstep. Order now for same-day delivery!" />
+    <meta name="keywords" content="groceries, fresh vegetables, fruits, delivery, Dar es Salaam, Tanzania, online shopping, farm fresh" />
+    <meta name="author" content="Fresh Grocery Tanzania" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Fresh Grocery Tanzania - Fresh Groceries Delivered Fast" />
+    <meta property="og:description" content="Get farm-fresh vegetables, fruits, and groceries delivered to your doorstep in Dar es Salaam. Quick, reliable, and always fresh." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://fresh.co.tz" />
+    <meta property="og:image" content="/icons/og-image.png" />
+    <meta property="og:site_name" content="Fresh Grocery Tanzania" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fresh Grocery Tanzania" />
+    <meta name="twitter:description" content="Fresh groceries delivered fast in Dar es Salaam" />
+    <meta name="twitter:image" content="/icons/twitter-image.png" />
+    
+    <!-- Performance and Security -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <title>Fresh Grocery Tanzania - Fresh Groceries Delivered Fast</title>
+</head>
+
+<body>
+    <script>
+      // IMMEDIATE DARK MODE FIX
+      document.documentElement.classList.remove('dark');
+      console.log('Dark mode removed from HTML');
+    </script>
+    <div id="root"></div>
+    <!-- IMPORTANT: Never remove the following script reference, otherwise advanced features like element editing will not work -->
+    <script src="https://static.devv.ai/devv-app.js" type="module"></script>
+    <script>
+      // Enhanced Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw-enhanced.js')
+            .then((registration) => {
+              console.log('Enhanced SW registered:', registration.scope);
+              
+              // Listen for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // New update available
+                      console.log('New app version available!');
+                    }
+                  });
+                }
+              });
+              
+              // Check for updates periodically
+              setInterval(() => {
+                registration.update();
+              }, 60000); // Check every minute
+            })
+            .catch((error) => {
+              console.log('Enhanced SW registration failed:', error);
+            });
+        });
+        
+        // Listen for messages from service worker
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          console.log('Message from SW:', event.data);
+        });
+      }
+
+      // PWA Installation Detection
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('PWA install prompt available');
+      });
+
+      // App lifecycle events
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('App became visible');
+        } else {
+          console.log('App became hidden');
+        }
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

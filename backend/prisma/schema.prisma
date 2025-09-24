@@ -1,0 +1,251 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  phone     String?
+  address   String?
+  preferences Json?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  orders    Order[]
+  favorites UserFavorite[]
+  profile   UserProfile?
+  otpCodes  OtpCode[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String  @unique @db.ObjectId
+  deliveryAddress    String?
+  deliveryPhone      String?
+  preferredDeliveryTime String?
+  dietaryRestrictions String[]
+  favoriteCategories String[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model UserFavorite {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  productId       String   @db.ObjectId
+  productName     String
+  productPrice    Float
+  productCategory String
+  createdAt       DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("user_favorites")
+}
+
+// Authentication
+model OtpCode {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  userId    String?  @db.ObjectId
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("otp_codes")
+}
+
+// Product Management
+model Product {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String
+  price         Float
+  category      String
+  imageUrl      String?
+  stockQuantity Int      @default(0)
+  isActive      Boolean  @default(true)
+  unit          String   @default("pc")
+  sku           String?  @unique
+  tags          String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orderItems    OrderItem[]
+  favorites     UserFavorite[]
+  inventoryLogs InventoryLog[]
+
+  @@map("products")
+}
+
+model InventoryLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  type      String   // 'addition', 'deduction', 'adjustment'
+  quantity  Int
+  reason    String?
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_logs")
+}
+
+// Order Management
+model Order {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber      String     @unique
+  userId           String     @db.ObjectId
+  status           OrderStatus @default(PENDING)
+  totalAmount      Float
+  paymentMethod    PaymentMethod
+  paymentStatus    PaymentStatus @default(PENDING)
+  deliveryAddress  String
+  deliveryPhone    String
+  deliveryNotes    String?
+  deliveryDate     String
+  deliveryTime     String
+  estimatedDelivery DateTime?
+  actualDelivery   DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  // Relations
+  user         User              @relation(fields: [userId], references: [id])
+  items        OrderItem[]
+  statusLogs   OrderStatusLog[]
+  delivery     DeliveryTracking?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId     String @db.ObjectId
+  productId   String @db.ObjectId
+  productName String
+  productPrice Float
+  quantity    Int
+  subtotal    Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderStatusLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String   @db.ObjectId
+  status    OrderStatus
+  notes     String?
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_status_logs")
+}
+
+// Delivery Management
+model DeliveryTracking {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId              String    @unique @db.ObjectId
+  deliveryPersonName   String?
+  deliveryPersonPhone  String?
+  status               DeliveryStatus @default(ASSIGNED)
+  assignedAt           DateTime?
+  pickedUpAt           DateTime?
+  deliveredAt          DateTime?
+  deliveryNotes        String?
+  locationUpdates      Json[]    // Array of location updates
+  currentLocation      Json?     // Current location
+  estimatedArrival     DateTime?
+  distanceRemaining    Float?
+  customerRating       Int?
+  customerFeedback     String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_tracking")
+}
+
+// Admin Management
+model AdminUser {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  name      String
+  password  String    // Hashed password
+  role      AdminRole @default(ADMIN)
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+// Enums
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  MOBILE_MONEY
+  CARD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum DeliveryStatus {
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
