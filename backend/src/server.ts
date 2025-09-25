@@ -155,7 +155,7 @@ app.use('*', (req: express.Request, res: express.Response) => {
 server.listen(PORT, () => {
   logger.info(`Fresh Grocery Backend API running on port ${PORT}`, 'SERVER');
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`, 'SERVER');
-  logger.info(`CORS enabled for: ${process.env.CORS_ORIGIN || 'http://localhost:5175'}`, 'SERVER');
+  logger.info(`CORS enabled for: ${process.env.CORS_ORIGIN || 'https://freshed-grocery-frontend.onrender.com'}`, 'SERVER');
 });
 
 // Graceful shutdown
