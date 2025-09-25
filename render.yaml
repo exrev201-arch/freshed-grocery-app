@@ -3,7 +3,7 @@ services:
   - type: web
     name: freshed-grocery-frontend
     env: static
-    buildCommand: npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: NODE_VERSION
@@ -28,8 +28,8 @@ services:
     name: freshed-grocery-backend
     env: node
     plan: free
-    buildCommand: cd backend && chmod +x render-build.sh && ./render-build.sh
-    startCommand: cd backend && chmod +x render-start.sh && ./render-start.sh
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_VERSION
         value: 18
