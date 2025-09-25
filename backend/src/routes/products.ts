@@ -237,7 +237,7 @@ router.get('/:id', param('id').isLength({ min: 1 }), validateRequest, async (req
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: product
     });
@@ -246,7 +246,7 @@ router.get('/:id', param('id').isLength({ min: 1 }), validateRequest, async (req
       error: error.message, 
       productId: req.params.id 
     });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to fetch product',
       message: error.message
@@ -315,14 +315,14 @@ router.post('/', productValidation, async (req: AuthRequest, res: Response) => {
       name: product.name 
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: product,
       message: 'Product created successfully'
     });
   } catch (error: any) {
     logger.error('Error creating product', 'PRODUCTS', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to create product',
       message: error.message
@@ -390,7 +390,7 @@ router.put('/:id', param('id').isLength({ min: 1 }), updateProductValidation, as
       name: product.name 
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: product,
       message: 'Product updated successfully'
@@ -400,7 +400,7 @@ router.put('/:id', param('id').isLength({ min: 1 }), updateProductValidation, as
       error: error.message,
       productId: req.params.id
     });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to update product',
       message: error.message
@@ -457,7 +457,7 @@ router.delete('/:id', param('id').isLength({ min: 1 }), validateRequest, async (
       name: existingProduct.name 
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Product deleted successfully'
     });
@@ -466,7 +466,7 @@ router.delete('/:id', param('id').isLength({ min: 1 }), validateRequest, async (
       error: error.message,
       productId: req.params.id
     });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to delete product',
       message: error.message
@@ -534,7 +534,7 @@ router.post('/:id/stock', [
       newStock: newStockQuantity
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedProduct,
       message: `Stock ${type} completed successfully`
@@ -544,7 +544,7 @@ router.post('/:id/stock', [
       error: error.message,
       productId: req.params.id
     });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to update stock',
       message: error.message

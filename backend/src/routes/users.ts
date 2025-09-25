@@ -10,7 +10,7 @@ const userController = new UserController();
 // Validation rules
 const updateProfileValidation = [
   body('name').optional().trim().isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
-  body('phone').optional().isMobilePhone().withMessage('Valid phone number required'),
+  body('phone').optional().isMobilePhone('any').withMessage('Valid phone number required'),
   body('address').optional().trim().isLength({ min: 5, max: 200 }).withMessage('Address must be 5-200 characters'),
   validateRequest
 ];

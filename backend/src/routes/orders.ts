@@ -15,7 +15,7 @@ const createOrderValidation = [
   body('totalAmount').isFloat({ min: 0 }).withMessage('Total amount must be positive'),
   body('paymentMethod').isIn(['CASH_ON_DELIVERY', 'MOBILE_MONEY', 'CARD']).withMessage('Invalid payment method'),
   body('deliveryAddress').trim().isLength({ min: 10 }).withMessage('Delivery address is required'),
-  body('deliveryPhone').isMobilePhone().withMessage('Valid phone number is required'),
+  body('deliveryPhone').isMobilePhone('any').withMessage('Valid phone number is required'),
   body('deliveryDate').isISO8601().withMessage('Valid delivery date is required'),
   body('deliveryTime').notEmpty().withMessage('Delivery time is required'),
   validateRequest

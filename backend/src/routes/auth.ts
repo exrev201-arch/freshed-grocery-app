@@ -3,9 +3,9 @@ import { body, param } from 'express-validator';
 import { validateRequest } from '../middleware/validation';
 import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';
-import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
-import crypto from 'crypto';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+import * as crypto from 'crypto';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -177,7 +177,7 @@ router.post('/verify-otp', otpVerifyValidation, async (req: Request, res: Respon
 
     logger.info('User authenticated successfully', 'AUTH', { userId: user.id, email });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Authentication successful',
       token,
@@ -193,7 +193,7 @@ router.post('/verify-otp', otpVerifyValidation, async (req: Request, res: Respon
     });
   } catch (error: any) {
     logger.error('Error verifying OTP', 'AUTH', { error: error.message, email: req.body.email });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to verify OTP',
       message: error.message
@@ -253,7 +253,7 @@ router.post('/admin/login', adminLoginValidation, async (req: Request, res: Resp
       role: admin.role 
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Admin authentication successful',
       token,
@@ -267,7 +267,7 @@ router.post('/admin/login', adminLoginValidation, async (req: Request, res: Resp
     });
   } catch (error: any) {
     logger.error('Error in admin login', 'AUTH', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to authenticate admin',
       message: error.message
@@ -361,7 +361,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
         role: decoded.role
       });
 
-      res.json({
+      return res.json({
         success: true,
         token: newToken,
         message: 'Token refreshed successfully'
@@ -374,7 +374,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     logger.error('Error refreshing token', 'AUTH', { error: error.message });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to refresh token',
       message: error.message

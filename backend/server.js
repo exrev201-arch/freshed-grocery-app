@@ -1,25 +1,26 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import dotenv from 'dotenv';
+// Simple JavaScript server for deployment
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const dotenv = require('dotenv');
 
 // Load environment variables
 dotenv.config();
 
 // Import routes
-import authRoutes from './routes/auth';
-import productRoutes from './routes/products';
-import orderRoutes from './routes/orders';
-import userRoutes from './routes/users';
-import adminRoutes from './routes/admin';
+const authRoutes = require('./src/routes/auth');
+const productRoutes = require('./src/routes/products');
+const orderRoutes = require('./src/routes/orders');
+const userRoutes = require('./src/routes/users');
+const adminRoutes = require('./src/routes/admin');
 
 // Import middleware
-import { errorHandler } from './middleware/errorHandler';
-import { requestLogger } from './middleware/requestLogger';
-import { logger } from './utils/logger';
+const { errorHandler } = require('./src/middleware/errorHandler');
+const { requestLogger } = require('./src/middleware/requestLogger');
+const { logger } = require('./src/utils/logger');
 
 // Initialize Express app
 const app = express();
@@ -28,7 +29,7 @@ const server = createServer(app);
 // Initialize Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
@@ -57,7 +58,7 @@ app.use(helmet());
 
 // CORS configuration
 const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+  origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
@@ -99,7 +100,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // Health check endpoint
-app.get('/health', (req: express.Request, res: express.Response) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -120,7 +121,7 @@ io.on('connection', (socket) => {
   logger.info('User connected', 'SOCKET', { socketId: socket.id });
 
   // Join user to their personal room for order updates
-  socket.on('join_user_room', (userId: string) => {
+  socket.on('join_user_room', (userId) => {
     socket.join(`user_${userId}`);
     logger.info('User joined their room', 'SOCKET', { userId, socketId: socket.id });
   });
@@ -143,7 +144,7 @@ app.set('io', io);
 app.use(errorHandler);
 
 // 404 handler
-app.use('*', (req: express.Request, res: express.Response) => {
+app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Endpoint not found',
     path: req.originalUrl,
@@ -166,4 +167,4 @@ process.on('SIGTERM', () => {
   });
 });
 
-export { io };
+module.exports = { io };
