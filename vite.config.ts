@@ -46,9 +46,20 @@ export default defineConfig({
     // Development server optimization
     server: {
         host: true, // Bind to 0.0.0.0
-        port: 5173, // Default Vite port
+        port: 4173, // Use the port detected by Render
         hmr: {
             overlay: false // Disable error overlay for better performance
         }
+    },
+    // Preview server configuration
+    preview: {
+        host: true, // Bind to 0.0.0.0
+        port: 4173, // Use the port detected by Render
+        strictPort: true,
+        // Allow the Render host
+        allowedHosts: [
+            'freshed-grocery-frontend.onrender.com',
+            'localhost'
+        ]
     }
 })

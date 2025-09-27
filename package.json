@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -25,6 +25,7 @@
     "deploy:frontend": "node scripts/prepare-frontend-deploy.js",
     "deploy:final-check": "node scripts/final-deployment-check.js",
     "deploy:test": "node scripts/test-frontend-deployment.js",
+    "test:app": "node scripts/test-full-application.js",
     "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {
