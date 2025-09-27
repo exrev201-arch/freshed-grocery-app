@@ -18,6 +18,7 @@
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "deploy": "echo 'Deploying backend to Render...'",
+    "verify:deploy": "node ../scripts/verify-deployment.cjs",
     "postbuild": "echo 'Backend build completed successfully'"
   },
   "dependencies": {

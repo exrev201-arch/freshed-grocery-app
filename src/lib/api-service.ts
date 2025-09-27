@@ -5,7 +5,7 @@
  * running on port 3001. It replaces the localStorage-based backend service.
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3001';
 
 // Helper function for API requests
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {

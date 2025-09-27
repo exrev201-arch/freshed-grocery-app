@@ -1,142 +1,253 @@
-# Freshed Grocery Tanzania 🥦
+# Freshed Grocery Delivery Platform - Tanzania
 
-A modern grocery delivery platform for Tanzania with ClickPesa payment integration.
+Freshed Grocery is a modern e-commerce platform for grocery delivery in Tanzania, featuring ClickPesa mobile money integration for seamless payments.
 
 ## 🌟 Features
 
-- **PWA Ready**: Installable on mobile devices with offline support
-- **Mobile Money Payments**: Integrated with ClickPesa for M-Pesa, Airtel Money, and Tigo Pesa
+- **Product Catalog**: Browse and search grocery items with categories
+- **Shopping Cart**: Add/remove items and adjust quantities
+- **User Authentication**: Secure registration and login with JWT
+- **Order Management**: Track order status and history
+- **Payment Integration**: ClickPesa mobile money payments (M-Pesa, Airtel Money)
+- **Admin Dashboard**: Manage products, orders, and users
 - **Responsive Design**: Works on mobile, tablet, and desktop
-- **Admin Dashboard**: Full-featured admin panel for managing products, orders, and users
-- **Real-time Updates**: Live order tracking and notifications
-- **Multi-language**: English and Swahili support
-- **Dark Mode**: Automatic theme switching based on system preferences
+- **PWA Support**: Installable as a mobile app
 
-## 🛠️ Tech Stack
-
-### Frontend
-- React 18 with TypeScript
-- Vite for fast builds
-- Tailwind CSS for styling
-- Zustand for state management
-- React Router for navigation
-- Lucide React for icons
-
-### Backend
-- Node.js with Express
-- MongoDB with Prisma ORM
-- JWT for authentication
-- Socket.IO for real-time communication
-
-### Payment Integration
-- ClickPesa API for mobile money payments
-- Support for M-Pesa, Airtel Money, Tigo Pesa
-- Card payments (Visa, Mastercard)
-
-## 🚀 Getting Started
+## 🚀 Deployment to Render
 
 ### Prerequisites
+
+1. [Render](https://render.com) account
+2. [GitHub](https://github.com) account with this repository
+3. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster
+4. [ClickPesa](https://clickpesa.com) merchant account
+5. [SendGrid](https://sendgrid.com) account for email notifications
+
+### Automated Deployment
+
+This repository includes a [render.yaml](file:///C:/Users/PC/Documents/freshed/render.yaml) file for automated deployment to Render:
+
+1. Fork this repository to your GitHub account
+2. Log in to your Render dashboard
+3. Click "New" → "Web Service"
+4. Connect your GitHub account and select this repository
+5. Configure the service:
+   - **Name**: `freshed-grocery-frontend`
+   - **Environment**: Node
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm run preview`
+6. Add environment variables (see below)
+7. Click "Create Web Service"
+8. Repeat for the backend service with:
+   - **Name**: `freshed-grocery-backend`
+   - **Build Command**: `npm install && cd backend && npm install`
+   - **Start Command**: `cd backend && npm start`
+
+### Environment Variables
+
+#### Frontend Variables
+
+Set these in your frontend service environment variables:
+
+```
+VITE_APP_URL=https://your-frontend-url.onrender.com
+VITE_APP_NAME="Freshed Grocery Tanzania"
+VITE_CLICKPESA_API_KEY=your_clickpesa_api_key
+VITE_CLICKPESA_MERCHANT_ID=your_clickpesa_merchant_id
+VITE_CLICKPESA_PAY_BILL_NUMBER=1804
+VITE_CLICKPESA_BASE_URL=https://api.clickpesa.com
+VITE_CLICKPESA_WEBHOOK_SECRET=your_secure_webhook_secret
+VITE_CLICKPESA_DEMO_MODE=false
+VITE_ADMIN_EMAIL=admin@freshed.co.tz
+VITE_ADMIN_PASSWORD=your_secure_admin_password
+```
+
+#### Backend Variables
+
+Set these in your backend service environment variables:
+
+```
+DATABASE_URL=your_mongodb_connection_string
+JWT_SECRET=your_generated_jwt_secret
+JWT_REFRESH_SECRET=your_generated_refresh_secret
+SMTP_USER=apikey
+SMTP_PASS=your_sendgrid_api_key
+FROM_EMAIL=Freshed Grocery <noreply@freshed.co.tz>
+PORT=10000
+NODE_ENV=production
+CORS_ORIGIN=https://your-frontend-url.onrender.com
+DEFAULT_ADMIN_EMAIL=admin@freshed.co.tz
+DEFAULT_ADMIN_NAME=Freshed
+DEFAULT_ADMIN_PASSWORD=your_secure_admin_password
+CLICKPESA_WEBHOOK_SECRET=your_clickpesa_webhook_secret
+```
+
+### Generating Secure Secrets
+
+To generate secure JWT secrets, run:
+
+```bash
+npm run generate:secrets
+```
+
+### Manual Deployment Verification
+
+To verify your deployment configuration:
+
+```bash
+npm run deploy:verify
+```
+
+## 🛠️ Local Development
+
+### Prerequisites
+
 - Node.js 18+
-- npm or yarn
-- MongoDB database
+- npm 8+
+- MongoDB instance
 
 ### Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/your-username/freshed-grocery-app.git
-cd freshed-grocery-app
-```
+   ```bash
+   git clone https://github.com/your-username/freshed-grocery-app.git
+   ```
 
 2. Install frontend dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 3. Install backend dependencies:
-```bash
-cd backend
-npm install
-cd ..
+   ```bash
+   cd backend
+   npm install
+   cd ..
+   ```
+
+4. Create a [.env](file:///C:/Users/PC/Documents/freshed/.env) file in the root directory with your configuration (see [.env.example](file:///C:/Users/PC/Documents/freshed/.env.example))
+
+### Running the Application
+
+1. Start the backend server:
+   ```bash
+   cd backend
+   npm run dev
+   ```
+
+2. In a new terminal, start the frontend:
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser to `http://localhost:5173`
+
+## 📁 Project Structure
+
+```
+freshed-grocery-app/
+├── backend/              # Express.js backend API
+│   ├── src/              # Backend source code
+│   │   ├── controllers/  # Request handlers
+│   │   ├── middleware/   # Custom middleware
+│   │   ├── models/       # Database models
+│   │   ├── routes/       # API routes
+│   │   ├── services/     # Business logic
+│   │   └── utils/        # Utility functions
+│   ├── prisma/           # Prisma schema and migrations
+│   └── start.js          # Backend entry point
+├── public/               # Static assets
+├── src/                  # Frontend source code
+│   ├── components/       # React components
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utility functions and services
+│   ├── pages/            # Page components
+│   └── styles/           # CSS and styling
+├── scripts/              # Utility scripts
+└── tests/                # Test files
 ```
 
-4. Set up environment variables (see .env.example files)
+## 🔧 Technologies Used
 
-5. Start the development servers:
-```bash
-# Frontend
-npm run dev
+### Frontend
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Radix UI
+- React Router
+- Zustand (State Management)
+- Axios (HTTP Client)
+- Framer Motion (Animations)
 
-# Backend (in a separate terminal)
-cd backend
-npm run dev
-```
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+- Prisma (ORM)
+- MongoDB
+- JWT (Authentication)
+- Nodemailer (Email)
+- ClickPesa SDK
 
-## 📱 PWA Features
+## 📱 ClickPesa Integration
 
-The application is a full-featured Progressive Web App with:
-- Installable on mobile devices
-- Offline support with service workers
-- Push notifications
-- Background sync
-- Add to Home Screen prompt
-- Standalone app-like experience
+This application integrates with ClickPesa for mobile money payments in Tanzania:
 
-## 💳 Payment Integration
+- M-Pesa Support
+- Airtel Money Support
+- Transaction Webhooks
+- Payment Status Tracking
 
-### ClickPesa Setup
-1. Create a ClickPesa merchant account
-2. Obtain API credentials
-3. Configure environment variables:
-   - VITE_CLICKPESA_API_KEY
-   - VITE_CLICKPESA_MERCHANT_ID
-   - VITE_CLICKPESA_PAY_BILL_NUMBER
+## 🔐 Security Features
 
-### Supported Payment Methods
-- M-Pesa (Vodacom)
-- Airtel Money
-- Tigo Pesa
-- Credit/Debit Cards (Visa, Mastercard)
-- Cash on Delivery
+- JWT-based Authentication
+- Password Hashing (bcrypt)
+- CORS Protection
+- Rate Limiting
+- Input Validation
+- Environment-based Configuration
 
-## 🚢 Deployment
+## 🎨 UI Components
 
-### Render Deployment
-The application is configured for deployment to Render with automatic CI/CD.
+The application uses a custom component library built with:
 
-1. Push code to GitHub
-2. Connect to Render
-3. Configure environment variables
-4. Deploy services
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
-
-### Environment Variables
-See [.env.example](.env.example) for required frontend variables and [backend/.env.example](backend/.env.example) for backend variables.
+- Radix UI primitives
+- Tailwind CSS for styling
+- Framer Motion for animations
+- Lucide React icons
 
 ## 🧪 Testing
 
-### Unit Tests
+Run tests with:
+
 ```bash
+# Frontend tests
+npm test
+
+# Backend tests
+cd backend
 npm test
 ```
 
-### End-to-End Tests
-```bash
-npm run test:e2e
-```
+## 📚 API Documentation
 
-### Code Quality
-```bash
-npm run lint
-npm run format
-```
+The backend API is documented with Swagger. Access it at `/api-docs` when running locally.
 
-## 📖 Documentation
+## 🚀 Performance Optimizations
 
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment instructions
-- [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) - Deployment verification checklist
-- [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) - Deployment overview
+- Code splitting with Vite
+- Image optimization
+- Caching strategies
+- Database indexing
+- Lazy loading components
+
+## 🌐 PWA Features
+
+- Offline support
+- Installable on mobile devices
+- Push notifications (coming soon)
+- Background sync (coming soon)
 
 ## 🤝 Contributing
 
@@ -148,14 +259,12 @@ npm run format
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](file:///C:/Users/PC/Documents/freshed/LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🆘 Support
 
-- ClickPesa for payment integration
-- All the open-source libraries and tools used in this project
-- The Tanzanian developer community
+For support, please open an issue on GitHub or contact the development team.
 
-## 📞 Support
+---
 
-For support, please open an issue on GitHub or contact the maintainers.
+**Happy Coding!** 🚀

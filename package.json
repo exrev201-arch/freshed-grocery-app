@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview",
+    "preview": "vite preview --host 0.0.0.0",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -19,6 +19,12 @@
     "deploy": "node scripts/deploy.cjs",
     "deploy:check": "node scripts/deploy.cjs",
     "deploy:verify": "node scripts/verify-deployment.cjs",
+    "generate:secrets": "node scripts/generate-jwt-secrets.js",
+    "test:api": "node scripts/test-backend-api.js",
+    "test:build": "node scripts/test-frontend-build.js",
+    "deploy:frontend": "node scripts/prepare-frontend-deploy.js",
+    "deploy:final-check": "node scripts/final-deployment-check.js",
+    "deploy:test": "node scripts/test-frontend-deployment.js",
     "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {

@@ -53,7 +53,7 @@ function verifyToken(token: string): TokenPayload | null {
 }
 
 // JWT Configuration
-const JWT_SECRET = import.meta.env.VITE_JWT_SECRET || 'fresh-grocery-jwt-secret-key';
+const JWT_SECRET = import.meta.env.VITE_APP_JWT_SECRET || 'fresh-grocery-jwt-secret-key';
 // OTP Configuration
 const OTP_EXPIRES_IN = 10 * 60 * 1000; // 10 minutes in milliseconds
 const OTP_MAX_ATTEMPTS = 3;
@@ -636,3 +636,5 @@ class EnhancedAuthService {
 // Export singleton instance
 export const enhancedAuthService = new EnhancedAuthService();
 export default enhancedAuthService;
+
+

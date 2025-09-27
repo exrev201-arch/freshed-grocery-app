@@ -1,124 +1,167 @@
-# Deployment Checklist for Freshed Grocery App
+# 🚀 Freshed Grocery App - Deployment Checklist
 
-## ✅ Pre-deployment Checks
+This checklist ensures you've completed all necessary steps for deploying your Freshed Grocery application to Render.
 
-### 1. Code Repository
-- [ ] All code is committed and pushed to GitHub
-- [ ] No sensitive information in code (API keys, passwords, etc.)
-- [ ] .env files are in .gitignore
-- [ ] README.md is up to date
+## 🔧 Pre-Deployment Checklist
 
-### 2. Configuration Files
-- [ ] render.yaml exists and is correctly configured
-- [ ] Environment variables are documented
-- [ ] Database migration scripts are ready (if applicable)
+### Repository Setup
+- [ ] Repository is on GitHub and up-to-date
+- [ ] [render.yaml](file:///C:/Users/PC/Documents/freshed/render.yaml) file is in the root directory
+- [ ] All required files are present:
+  - [ ] [package.json](file:///C:/Users/PC/Documents/freshed/package.json) (frontend)
+  - [ ] [backend/package.json](file:///C:/Users/PC/Documents/freshed/backend/package.json)
+  - [ ] [vite.config.ts](file:///C:/Users/PC/Documents/freshed/vite.config.ts)
+  - [ ] [backend/start.js](file:///C:/Users/PC/Documents/freshed/backend/start.js)
+  - [ ] [backend/src/server.ts](file:///C:/Users/PC/Documents/freshed/backend/src/server.ts)
 
-### 3. Build Process
-- [ ] Application builds successfully (`npm run build`)
-- [ ] No critical TypeScript errors
-- [ ] All assets are properly bundled
-- [ ] Service workers are correctly configured
+### Environment Preparation
+- [ ] MongoDB Atlas cluster is created and accessible
+- [ ] ClickPesa merchant account is set up
+- [ ] SendGrid account is created with API key
+- [ ] Domain names are registered (if using custom domains)
 
-### 4. Testing
-- [ ] Core functionality tested (checkout, payment, admin)
-- [ ] PWA features work correctly
-- [ ] Responsive design on mobile devices
-- [ ] Performance is acceptable
+### Security
+- [ ] Generated secure JWT secrets:
+  ```bash
+  npm run generate:secrets
+  ```
+- [ ] Changed default admin password from "Swordfish_1234"
+- [ ] Verified all API keys are valid and have proper permissions
 
-## 🚀 Deployment Steps
+## ☁️ Render Deployment
 
-### 1. Connect to Render
-1. Go to https://dashboard.render.com
-2. Connect your GitHub account
-3. Select your repository
-4. Render should automatically detect render.yaml
+### Frontend Service
+- [ ] Created Web Service on Render
+- [ ] Connected to GitHub repository
+- [ ] Configuration:
+  - **Name**: `freshed-grocery-frontend`
+  - **Environment**: Node
+  - **Build Command**: `npm install && npm run build`
+  - **Start Command**: `npm run preview`
+- [ ] Environment Variables Added:
+  - [ ] `VITE_APP_URL=https://your-frontend-url.onrender.com`
+  - [ ] `VITE_APP_NAME="Freshed Grocery Tanzania"`
+  - [ ] `VITE_CLICKPESA_API_KEY=your_actual_key`
+  - [ ] `VITE_CLICKPESA_MERCHANT_ID=your_merchant_id`
+  - [ ] `VITE_CLICKPESA_PAY_BILL_NUMBER=1804`
+  - [ ] `VITE_CLICKPESA_BASE_URL=https://api.clickpesa.com`
+  - [ ] `VITE_CLICKPESA_WEBHOOK_SECRET=your_secure_secret`
+  - [ ] `VITE_CLICKPESA_DEMO_MODE=false`
+  - [ ] `VITE_ADMIN_EMAIL=admin@freshed.co.tz`
+  - [ ] `VITE_ADMIN_PASSWORD=your_secure_password`
 
-### 2. Configure Services
-#### Frontend Service
-- Service name: freshed-grocery-frontend
-- Environment: Static Site
-- Build command: `npm run build`
-- Publish directory: `./dist`
-- Environment variables:
-  - VITE_APP_URL=https://freshed-grocery-frontend.onrender.com
-  - VITE_CLICKPESA_API_KEY=your_actual_key
-  - VITE_CLICKPESA_MERCHANT_ID=your_merchant_id
-  - VITE_CLICKPESA_PAY_BILL_NUMBER=your_pay_bill_number
-  - VITE_CLICKPESA_DEMO_MODE=false
-  - VITE_ADMIN_EMAIL=admin@freshed.co.tz
-  - VITE_ADMIN_PASSWORD=your_secure_password
+### Backend Service
+- [ ] Created Web Service on Render
+- [ ] Connected to same GitHub repository
+- [ ] Configuration:
+  - **Name**: `freshed-grocery-backend`
+  - **Environment**: Node
+  - **Build Command**: `npm install && cd backend && npm install`
+  - **Start Command**: `cd backend && npm start`
+- [ ] Environment Variables Added:
+  - [ ] `DATABASE_URL=your_mongodb_connection_string`
+  - [ ] `JWT_SECRET=your_generated_secret`
+  - [ ] `JWT_REFRESH_SECRET=your_generated_refresh_secret`
+  - [ ] `SMTP_USER=apikey`
+  - [ ] `SMTP_PASS=your_sendgrid_api_key`
+  - [ ] `FROM_EMAIL=Freshed Grocery <noreply@freshed.co.tz>`
+  - [ ] `PORT=10000`
+  - [ ] `NODE_ENV=production`
+  - [ ] `CORS_ORIGIN=https://your-frontend-url.onrender.com`
+  - [ ] `DEFAULT_ADMIN_EMAIL=admin@freshed.co.tz`
+  - [ ] `DEFAULT_ADMIN_NAME=Freshed`
+  - [ ] `DEFAULT_ADMIN_PASSWORD=your_secure_password`
+  - [ ] `CLICKPESA_WEBHOOK_SECRET=your_clickpesa_secret`
 
-#### Backend Service
-- Service name: freshed-grocery-backend
-- Environment: Node
-- Build command: `cd backend && npm install && npm run build`
-- Start command: `cd backend && npm start`
-- Environment variables:
-  - DATABASE_URL=your_database_connection_string
-  - JWT_SECRET=your_jwt_secret
-  - JWT_REFRESH_SECRET=your_refresh_secret
-  - SMTP_USER=your_smtp_user
-  - SMTP_PASS=your_smtp_password
-  - CORS_ORIGIN=https://freshed-grocery-frontend.onrender.com
+## 🔍 Post-Deployment Verification
 
-### 3. Deploy
-1. Click "Create Web Services" in Render
-2. Wait for deployment to complete
-3. Check logs for any errors
-4. Test the deployed application
+### Application Functionality
+- [ ] Frontend loads at `https://your-frontend-url.onrender.com`
+- [ ] Backend API accessible at `https://your-backend-url.onrender.com`
+- [ ] User registration works
+- [ ] User login works
+- [ ] Product catalog displays
+- [ ] Shopping cart functions
+- [ ] Checkout process works
+- [ ] ClickPesa payment integration works
+- [ ] Admin dashboard accessible at `/admin`
+- [ ] Email notifications sent
 
-## 🔍 Post-deployment Verification
+### Security Checks
+- [ ] HTTPS is enforced
+- [ ] CORS is properly configured
+- [ ] No sensitive information in logs
+- [ ] Environment variables are correctly used
 
-### 1. Frontend Verification
-- [ ] Application loads correctly
-- [ ] All pages are accessible
-- [ ] PWA features work (install, offline, push notifications)
-- [ ] ClickPesa integration works
-- [ ] Images and assets load properly
-
-### 2. Backend Verification
-- [ ] API endpoints respond correctly
-- [ ] Database connections work
-- [ ] Authentication functions properly
-- [ ] Email notifications are sent
-
-### 3. Integration Testing
-- [ ] User can register/login
-- [ ] Products display correctly
-- [ ] Cart functionality works
-- [ ] Checkout process completes
-- [ ] Orders are created successfully
-- [ ] Admin dashboard is accessible
+### Performance
+- [ ] Application loads within acceptable time
+- [ ] Images are optimized
+- [ ] No console errors in browser
 
 ## 🛠️ Troubleshooting
 
 ### Common Issues
-1. **CORS Errors**: Check CORS_ORIGIN configuration
-2. **Environment Variables**: Verify all required variables are set
-3. **Database Connection**: Check DATABASE_URL and credentials
-4. **Build Failures**: Check build logs for specific errors
-5. **Service Worker Issues**: Verify sw-enhanced.js is properly configured
 
-### Support
-- Render Support: https://render.com/help
-- ClickPesa Support: https://clickpesa.com/contact
-- GitHub Issues: https://github.com/your-repo/issues
+1. **Frontend Build Failures**
+   - Check Node.js version compatibility
+   - Verify all dependencies are correctly listed in [package.json](file:///C:/Users/PC/Documents/freshed/package.json)
 
-## 📈 Monitoring and Maintenance
+2. **Backend Startup Failures**
+   - Verify database connection string
+   - Check environment variables in Render dashboard
+   - Review logs for missing dependencies
 
-### 1. Monitoring
-- Set up uptime monitoring
-- Configure error tracking
-- Monitor performance metrics
+3. **CORS Errors**
+   - Ensure `CORS_ORIGIN` matches frontend URL exactly
+   - Check if URL includes `https://`
 
-### 2. Maintenance
-- Regular security updates
-- Database backups
-- Performance optimization
-- Feature updates
+4. **Database Connection Issues**
+   - Verify MongoDB Atlas IP whitelist includes Render IPs
+   - Check database credentials
 
-### 3. Scaling
-- Monitor resource usage
-- Configure auto-scaling if needed
-- Optimize database queries
-- Implement caching strategies
+5. **Email Delivery Problems**
+   - Verify SendGrid API key
+   - Check sender authentication in SendGrid
+
+### Monitoring
+
+- [ ] Set up uptime monitoring
+- [ ] Configure error tracking
+- [ ] Set up performance monitoring
+
+## 📈 Post-Launch Tasks
+
+### Analytics
+- [ ] Set up Google Analytics
+- [ ] Configure conversion tracking
+- [ ] Implement user behavior tracking
+
+### SEO
+- [ ] Submit sitemap to search engines
+- [ ] Verify robots.txt
+- [ ] Set up structured data
+
+### Marketing
+- [ ] Configure social media integration
+- [ ] Set up email marketing platform
+- [ ] Create social sharing features
+
+## 🆘 Support Resources
+
+- [Render Documentation](https://render.com/docs)
+- [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
+- [ClickPesa API Documentation](https://clickpesa.com/developer)
+- [SendGrid Documentation](https://sendgrid.com/docs/)
+
+## 📅 Maintenance Schedule
+
+- [ ] Weekly: Check application logs
+- [ ] Monthly: Review security settings
+- [ ] Quarterly: Update dependencies
+- [ ] Annually: Review and rotate secrets
+
+---
+
+✅ **Deployment Status**: Ready for Production  
+📅 **Prepared Date**: September 24, 2025  
+👨‍💻 **Prepared By**: Qoder AI Assistant

@@ -45,6 +45,8 @@ export default defineConfig({
     },
     // Development server optimization
     server: {
+        host: true, // Bind to 0.0.0.0
+        port: 5173, // Default Vite port
         hmr: {
             overlay: false // Disable error overlay for better performance
         }
