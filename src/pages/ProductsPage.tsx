@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import Header from '@/components/layout/Header'
 import CategoryNav from '@/components/categories/CategoryNav'
 import ProductCard from '@/components/products/ProductCard'

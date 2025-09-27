@@ -4,10 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/store/cart-store'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useEffect } from 'react'
 
 function CartSheet() {
     const navigate = useNavigate()
     const { items, isOpen, toggleCart, closeCart, updateQuantity, removeItem, getTotalItems, getTotalPrice } = useCartStore()
+    const { t, language } = useLanguage()
+
+    useEffect(() => {
+        console.log('CartSheet: Language changed to', language)
+    }, [language])
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('en-TZ', {
@@ -23,7 +30,7 @@ function CartSheet() {
                 <SheetHeader>
                     <SheetTitle className="flex items-center gap-2">
                         <ShoppingCart className="h-5 w-5" />
-                        Kikapu Chako ({getTotalItems()} bidhaa)
+                        {t('cartTitle')} ({getTotalItems()} {t('cartItems')})
                     </SheetTitle>
                 </SheetHeader>
 
@@ -32,8 +39,8 @@ function CartSheet() {
                         {items.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-center">
                                 <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-medium">Kikapu tupu</h3>
-                                <p className="text-muted-foreground">Ongeza bidhaa ili kuanza kununua!</p>
+                                <h3 className="text-lg font-medium">{t('cartEmpty')}</h3>
+                                <p className="text-muted-foreground">{t('cartEmptyDescription')}</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -92,7 +99,7 @@ function CartSheet() {
                     {items.length > 0 && (
                         <div className="border-t pt-4 space-y-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-lg font-semibold">Jumla:</span>
+                                <span className="text-lg font-semibold">{t('cartTotal')}:</span>
                                 <span className="text-lg font-bold text-primary">
                                     {formatPrice(getTotalPrice())}
                                 </span>
@@ -106,7 +113,7 @@ function CartSheet() {
                                     navigate('/checkout')
                                 }}
                             >
-                                Maliza Ununuzi
+                                {t('checkoutButton')}
                             </Button>
                         </div>
                     )}

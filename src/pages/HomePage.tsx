@@ -536,76 +536,41 @@ function HomePage() {
                     <DialogHeader>
                         <DialogTitle className="text-center flex items-center justify-center gap-2">
                             <Download className="h-6 w-6 text-primary" />
-                            Download Fresh App
+                            Install Fresh Web App
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6 pt-4">
                         <div className="text-center space-y-2">
                             <p className="text-muted-foreground">
-                                Get the Fresh Grocery app for the best shopping experience on your mobile device.
+                                Install our web app for the best shopping experience on your device.
                             </p>
                         </div>
 
-                        <div className="space-y-3">
-                            {/* App Store Button */}
-                            <Button 
-                                className="w-full flex items-center justify-center gap-3 h-14 bg-black hover:bg-gray-800 text-white"
-                                onClick={() => {
-                                    toast({
-                                        title: "Coming Soon!",
-                                        description: "iOS app will be available on the App Store soon.",
-                                    })
-                                }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                                        <span className="text-black font-bold text-lg">📱</span>
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-xs opacity-75">Download on the</div>
-                                        <div className="font-semibold">App Store</div>
-                                    </div>
-                                </div>
-                            </Button>
+                        <div className="space-y-4">
+                            {/* Web App Installation Instructions */}
+                            <div className="bg-muted/50 rounded-lg p-4">
+                                <h3 className="font-medium mb-2">How to Install:</h3>
+                                <ol className="text-sm space-y-2 list-decimal list-inside">
+                                    <li>Click the share button in your browser</li>
+                                    <li>Select "Add to Home Screen"</li>
+                                    <li>Open the app from your home screen</li>
+                                </ol>
+                            </div>
 
-                            {/* Google Play Button */}
-                            <Button 
-                                className="w-full flex items-center justify-center gap-3 h-14 bg-black hover:bg-gray-800 text-white"
-                                onClick={() => {
-                                    toast({
-                                        title: "Coming Soon!",
-                                        description: "Android app will be available on Google Play soon.",
-                                    })
-                                }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                                        <span className="text-black font-bold text-lg">📱</span>
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-xs opacity-75">Get it on</div>
-                                        <div className="font-semibold">Google Play</div>
-                                    </div>
+                            <div className="text-center py-4">
+                                <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+                                    <Smartphone className="h-4 w-4 text-primary" />
+                                    <span className="text-sm font-medium">Works on all devices!</span>
                                 </div>
-                            </Button>
+                            </div>
                         </div>
 
                         <div className="border-t pt-4">
                             <div className="text-center space-y-2">
-                                <p className="text-sm font-medium">📱 For now, use our web app!</p>
+                                <p className="text-sm font-medium">📱 Native apps coming soon!</p>
                                 <p className="text-xs text-muted-foreground">
-                                    Add this website to your home screen for a native app-like experience.
+                                    We're working on dedicated mobile apps for iOS and Android.
                                 </p>
-                                <div className="flex items-center justify-center gap-4 pt-2">
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <Smartphone className="h-3 w-3" />
-                                        <span>Mobile Optimized</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <Tablet className="h-3 w-3" />
-                                        <span>Tablet Ready</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

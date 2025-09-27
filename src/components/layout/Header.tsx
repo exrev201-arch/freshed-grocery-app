@@ -12,6 +12,8 @@ import CartSheet from '@/components/cart/CartSheet'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { mockProducts } from '@/lib/mock-data'
 import { adminService } from '@/lib/admin-service'
+import { LanguageSwitcher, MobileLanguageSwitcher } from '@/components/ui/LanguageSwitcher'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 function Header() {
     const [showLoginModal, setShowLoginModal] = useState(false)
@@ -27,8 +29,13 @@ function Header() {
     const { getTotalItems, toggleCart } = useCartStore()
     const { isAuthenticated, user } = useAuthStore()
     const { isAdminAuthenticated } = useAdminStore()
+    const { language } = useLanguage()
     const location = useLocation()
     const navigate = useNavigate()
+
+    useEffect(() => {
+        console.log('Header: Language changed to', language)
+    }, [language])
 
     // Load available products for suggestions
     useEffect(() => {
@@ -211,12 +218,12 @@ function Header() {
         <>
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-                    {/* Logo */}
+                    {/* Logo - Fixed to show on all screen sizes */}
                     <Link to="/" className="flex items-center space-x-2">
                         <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
                             <span className="text-primary-foreground font-bold text-sm">F</span>
                         </div>
-                        <span className="hidden sm:inline-block text-xl font-bold">Fresh</span>
+                        <span className="text-xl font-bold">Freshed</span>
                     </Link>
 
                     {/* Search Bar - Hidden on mobile */}
@@ -372,11 +379,13 @@ function Header() {
 
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center space-x-4">
+                        {/* Language Switcher */}
+                        <LanguageSwitcher />
                         
                         <Button 
                             variant="ghost" 
                             size="icon"
-                            onClick={handleUserClick}
+                            onClick={() => setShowUserProfile(true)}
                             className="relative"
                         >
                             <User className="h-5 w-5" />
@@ -415,134 +424,6 @@ function Header() {
                 {mobileMenuOpen && (
                     <div className="md:hidden border-t bg-background">
                         <div className="container mx-auto px-4 py-4 space-y-4">
-                            {/* Mobile Search */}
-                            <div ref={mobileSearchRef}>
-                                <form onSubmit={handleMobileSearch} className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                                    <Input 
-                                        placeholder="Search for products..." 
-                                        className="pl-10 pr-4"
-                                        value={mobileSearchQuery}
-                                        onChange={(e) => handleSearchInputChange(e.target.value, true)}
-                                        onFocus={() => handleSearchFocus(true)}
-                                    />
-                                </form>
-                                
-                                {/* Mobile Search Suggestions */}
-                                {showMobileSuggestions && (
-                                    <div className="bg-background border border-border rounded-md shadow-lg mt-2 max-h-64 overflow-y-auto">
-                                        {(() => {
-                                            const { history, popular, products } = getFilteredSuggestions(mobileSearchQuery)
-                                            const hasHistory = history.length > 0
-                                            const hasPopular = popular.length > 0
-                                            const hasProducts = products.length > 0
-                                            
-                                            if (!hasHistory && !hasPopular && !hasProducts && !mobileSearchQuery) {
-                                                const allHistory = getSearchHistory()
-                                                return (
-                                                    <div className="p-2">
-                                                        {allHistory.length > 0 && (
-                                                            <>
-                                                                <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                                    Recent
-                                                                </div>
-                                                                {allHistory.slice(0, 3).map((item: string, index: number) => (
-                                                                    <button
-                                                                        key={`mobile-history-${index}`}
-                                                                        className="w-full text-left px-3 py-2 hover:bg-muted rounded-sm flex items-center gap-2 text-sm"
-                                                                        onClick={() => handleSuggestionClick(item)}
-                                                                    >
-                                                                        <Clock className="h-4 w-4 text-muted-foreground" />
-                                                                        {item}
-                                                                    </button>
-                                                                ))}
-                                                            </>
-                                                        )}
-                                                        <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                            Popular
-                                                        </div>
-                                                        {popularSearches.slice(0, 3).map((item: string, index: number) => (
-                                                            <button
-                                                                key={`mobile-popular-${index}`}
-                                                                className="w-full text-left px-3 py-2 hover:bg-muted rounded-sm flex items-center gap-2 text-sm"
-                                                                onClick={() => handleSuggestionClick(item)}
-                                                            >
-                                                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                                                                {item}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )
-                                            }
-                                            
-                                            if (!hasHistory && !hasPopular && !hasProducts) {
-                                                return (
-                                                    <div className="p-4 text-center text-sm text-muted-foreground">
-                                                        No suggestions
-                                                    </div>
-                                                )
-                                            }
-                                            
-                                            return (
-                                                <div className="p-2">
-                                                    {hasProducts && (
-                                                        <>
-                                                            <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                                Products
-                                                            </div>
-                                                            {products.slice(0, 4).map((item: string, index: number) => (
-                                                                <button
-                                                                    key={`mobile-product-${index}`}
-                                                                    className="w-full text-left px-3 py-2 hover:bg-muted rounded-sm flex items-center gap-2 text-sm"
-                                                                    onClick={() => handleSuggestionClick(item)}
-                                                                >
-                                                                    <Package className="h-4 w-4 text-muted-foreground" />
-                                                                    {item}
-                                                                </button>
-                                                            ))}
-                                                        </>
-                                                    )}
-                                                    {hasHistory && (
-                                                        <>
-                                                            <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                                Recent
-                                                            </div>
-                                                            {history.slice(0, 2).map((item: string, index: number) => (
-                                                                <button
-                                                                    key={`mobile-history-${index}`}
-                                                                    className="w-full text-left px-3 py-2 hover:bg-muted rounded-sm flex items-center gap-2 text-sm"
-                                                                    onClick={() => handleSuggestionClick(item)}
-                                                                >
-                                                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                                                    {item}
-                                                                </button>
-                                                            ))}
-                                                        </>
-                                                    )}
-                                                    {hasPopular && (
-                                                        <>
-                                                            <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                                Popular
-                                                            </div>
-                                                            {popular.slice(0, 2).map((item: string, index: number) => (
-                                                                <button
-                                                                    key={`mobile-popular-${index}`}
-                                                                    className="w-full text-left px-3 py-2 hover:bg-muted rounded-sm flex items-center gap-2 text-sm"
-                                                                    onClick={() => handleSuggestionClick(item)}
-                                                                >
-                                                                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                                                                    {item}
-                                                                </button>
-                                                            ))}
-                                                        </>
-                                                    )}
-                                                </div>
-                                            )
-                                        })()} 
-                                    </div>
-                                )}
-                            </div>
-                            
                             {/* Mobile Navigation */}
                             <div className="flex justify-center space-x-6 pb-4 border-b">
                                 <Link to={navItem.to} className="flex flex-col items-center space-y-1">
@@ -561,11 +442,13 @@ function Header() {
                             
                             {/* Mobile Actions */}
                             <div className="flex justify-center space-x-6">
+                                {/* Language Switcher */}
+                                <MobileLanguageSwitcher />
                                 
                                 <Button 
                                     variant="ghost" 
                                     size="sm"
-                                    onClick={handleUserClick}
+                                    onClick={() => setShowUserProfile(true)}
                                     className="flex flex-col items-center space-y-1"
                                 >
                                     <User className="h-5 w-5" />

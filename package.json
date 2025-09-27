@@ -26,6 +26,7 @@
     "deploy:final-check": "node scripts/final-deployment-check.js",
     "deploy:test": "node scripts/test-frontend-deployment.js",
     "test:app": "node scripts/test-full-application.js",
+    "test:ui-fixes": "node scripts/test-ui-fixes.js",
     "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {

@@ -12,6 +12,7 @@ import PWAStatusIndicator from '@/components/pwa/PWAStatusIndicator';
 import PWAOnboarding from '@/components/pwa/PWAOnboarding';
 import AppNavigation from '@/components/pwa/AppNavigation';
 import PWAFeatureSummary from '@/components/pwa/PWAFeatureSummary';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 // Lazy load heavy pages for better performance
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
@@ -35,53 +36,55 @@ function App() {
     return (
         <ErrorBoundary>
             <TooltipProvider>
-                <PWAStatusIndicator />
-                <PWAOnboarding />
-                {/* <AppThemeManager /> - Temporarily disabled */}
-                <PWAFeatureSummary />
-                <BrowserRouter>
-                    <Suspense fallback={<LoadingSpinner fullScreen text="Inapakia ukurasa..." />}>
-                        <Routes>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/products" element={<ProductsPage />} />
-                            <Route path="/product/:productId" element={<ProductPage />} />
-                            <Route path="/checkout" element={
-                                <ProtectedRoute>
-                                    <CheckoutPage />
-                                </ProtectedRoute>
-                            } />
-                            <Route path="/order-confirmation/:orderId" element={
-                                <ProtectedRoute>
-                                    <OrderConfirmationPage />
-                                </ProtectedRoute>
-                            } />
-                            <Route path="/delivery/:orderId" element={
-                                <ProtectedRoute>
-                                    <DeliveryPage />
-                                </ProtectedRoute>
-                            } />
-                            <Route path="/demo-payment" element={<DemoPaymentPage />} />
-                            <Route path="/debug-orders" element={<OrderDebugComponent />} />
-                            <Route path="/admin/login" element={
-                                <AdminRouteGuard requireAdmin={false}>
-                                    <Suspense fallback={<LoadingSpinner fullScreen text="Loading..." />}>
-                                        <AdminLoginPage />
-                                    </Suspense>
-                                </AdminRouteGuard>
-                            } />
-                            <Route path="/admin" element={
-                                <AdminRouteGuard requireAdmin={true}>
-                                    <AdminProtectedRoute requiredPermission="read">
-                                        <AdminDashboard />
-                                    </AdminProtectedRoute>
-                                </AdminRouteGuard>
-                            } />
-                            <Route path="*" element={<NotFoundPage />} />
-                        </Routes>
-                        <AppNavigation />
-                    </Suspense>
-                </BrowserRouter>
-                <Toaster />
+                <LanguageProvider>
+                    <PWAStatusIndicator />
+                    <PWAOnboarding />
+                    {/* <AppThemeManager /> - Temporarily disabled */}
+                    <PWAFeatureSummary />
+                    <BrowserRouter>
+                        <Suspense fallback={<LoadingSpinner fullScreen text="Inapakia ukurasa..." />}>
+                            <Routes>
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/products" element={<ProductsPage />} />
+                                <Route path="/product/:productId" element={<ProductPage />} />
+                                <Route path="/checkout" element={
+                                    <ProtectedRoute>
+                                        <CheckoutPage />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/order-confirmation/:orderId" element={
+                                    <ProtectedRoute>
+                                        <OrderConfirmationPage />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/delivery/:orderId" element={
+                                    <ProtectedRoute>
+                                        <DeliveryPage />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/demo-payment" element={<DemoPaymentPage />} />
+                                <Route path="/debug-orders" element={<OrderDebugComponent />} />
+                                <Route path="/admin/login" element={
+                                    <AdminRouteGuard requireAdmin={false}>
+                                        <Suspense fallback={<LoadingSpinner fullScreen text="Loading..." />}>
+                                            <AdminLoginPage />
+                                        </Suspense>
+                                    </AdminRouteGuard>
+                                } />
+                                <Route path="/admin" element={
+                                    <AdminRouteGuard requireAdmin={true}>
+                                        <AdminProtectedRoute requiredPermission="read">
+                                            <AdminDashboard />
+                                        </AdminProtectedRoute>
+                                    </AdminRouteGuard>
+                                } />
+                                <Route path="*" element={<NotFoundPage />} />
+                            </Routes>
+                            <AppNavigation />
+                        </Suspense>
+                    </BrowserRouter>
+                    <Toaster />
+                </LanguageProvider>
             </TooltipProvider>
         </ErrorBoundary>
     );
