@@ -691,6 +691,19 @@ const translations = {
     cartLabel: 'Kikapu',
     profileLabel: 'Wasifu',
     
+    // Category translations
+    categories: 'Kategoria',
+    categoryVegetables: 'Mboga Safi',
+    categoryFruits: 'Matunda Safi',
+    categoryHerbs: 'Vitunguu & Viungo',
+    categoryDairy: 'Maziwa & Mayai',
+    categoryGrains: 'Nafaka & Mihogo',
+    categoryMeat: 'Nyama Safi',
+    categoryBeverages: 'Vinywaji',
+    categorySnacks: 'Vyakula vya Snack',
+    categoryHousehold: 'Vyombo vya Nyumbani',
+    categoryOther: 'Nyingine',
+    
     // HomePage translations
     freshGroceries: 'Vyakula Safi',
     deliveredFast: 'Uwasilishaji wa Haraka',
