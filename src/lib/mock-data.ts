@@ -16,175 +16,175 @@ export const categories = [
 export const mockProducts: Product[] = [
     // Vegetables
     {
-        id: '1',
-        name: 'Fresh Tomatoes',
+        id: 'freshTomatoes',
+        name: 'freshTomatoes',
         price: 2500,
         image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&h=300&fit=crop',
         category: 'vegetables',
         unit: 'per kg',
-        description: 'Farm-fresh red tomatoes, perfect for cooking and salads',
+        description: 'freshTomatoesDesc',
         inStock: true
     },
     {
-        id: '2',
-        name: 'Green Spinach',
+        id: 'greenSpinach',
+        name: 'greenSpinach',
         price: 1800,
         image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop',
         category: 'vegetables',
         unit: 'per bunch',
-        description: 'Nutrient-rich spinach leaves, freshly harvested',
+        description: 'greenSpinachDesc',
         inStock: true
     },
     {
-        id: '3',
-        name: 'Red Onions',
+        id: 'redOnions',
+        name: 'redOnions',
         price: 2200,
         image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400&h=300&fit=crop',
         category: 'vegetables',
         unit: 'per kg',
-        description: 'Sweet red onions, ideal for all cooking needs',
+        description: 'redOnionsDesc',
         inStock: true
     },
     {
-        id: '4',
-        name: 'Fresh Carrots',
+        id: 'freshCarrots',
+        name: 'freshCarrots',
         price: 1900,
         image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop',
         category: 'vegetables',
         unit: 'per kg',
-        description: 'Crunchy orange carrots, rich in vitamins',
+        description: 'freshCarrotsDesc',
         inStock: true
     },
 
     // Fruits
     {
-        id: '5',
-        name: 'Sweet Mangoes',
+        id: 'sweetMangoes',
+        name: 'sweetMangoes',
         price: 4500,
         image: 'https://images.unsplash.com/photo-1605027990121-cbae9167133a?w=400&h=300&fit=crop',
         category: 'fruits',
         unit: 'per kg',
-        description: 'Ripe, juicy mangoes from local farms',
+        description: 'sweetMangoesDesc',
         inStock: true
     },
     {
-        id: '6',
-        name: 'Fresh Bananas',
+        id: 'freshBananas',
+        name: 'freshBananas',
         price: 2800,
         image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
         category: 'fruits',
         unit: 'per dozen',
-        description: 'Yellow bananas, perfect ripeness for eating',
+        description: 'freshBananasDesc',
         inStock: true
     },
     {
-        id: '7',
-        name: 'Green Avocados',
+        id: 'greenAvocados',
+        name: 'greenAvocados',
         price: 5200,
         image: 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=400&h=300&fit=crop',
         category: 'fruits',
         unit: 'per kg',
-        description: 'Premium avocados, creamy and nutritious',
+        description: 'greenAvocadosDesc',
         inStock: true
     },
 
     // Herbs
     {
-        id: '8',
-        name: 'Fresh Coriander',
+        id: 'freshCoriander',
+        name: 'freshCoriander',
         price: 800,
         image: 'https://images.unsplash.com/photo-1607742195653-e4d9ce6e8c3b?w=400&h=300&fit=crop',
         category: 'herbs',
         unit: 'per bunch',
-        description: 'Aromatic coriander leaves for seasoning',
+        description: 'freshCorianderDesc',
         inStock: true
     },
     {
-        id: '9',
-        name: 'Fresh Mint',
+        id: 'freshMint',
+        name: 'freshMint',
         price: 900,
         image: 'https://images.unsplash.com/photo-1628556270448-4d8c9d0b5c41?w=400&h=300&fit=crop',
         category: 'herbs',
         unit: 'per bunch',
-        description: 'Fresh mint leaves for teas and cooking',
+        description: 'freshMintDesc',
         inStock: true
     },
 
     // Dairy
     {
-        id: '10',
-        name: 'Fresh Milk',
+        id: 'freshMilk',
+        name: 'freshMilk',
         price: 3200,
         image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop',
         category: 'dairy',
         unit: 'per liter',
-        description: 'Fresh cow milk, delivered daily',
+        description: 'freshMilkDesc',
         inStock: true
     },
     {
-        id: '11',
-        name: 'Farm Eggs',
+        id: 'farmEggs',
+        name: 'farmEggs',
         price: 4800,
         image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=300&fit=crop',
         category: 'dairy',
         unit: 'per tray (30 eggs)',
-        description: 'Free-range chicken eggs from local farms',
+        description: 'farmEggsDesc',
         inStock: true
     },
 
     // Grains
     {
-        id: '12',
-        name: 'White Rice',
+        id: 'whiteRice',
+        name: 'whiteRice',
         price: 6500,
         image: 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop',
         category: 'grains',
         unit: 'per 5kg bag',
-        description: 'Premium white rice, perfect for daily meals',
+        description: 'whiteRiceDesc',
         inStock: true
     },
 
     // Beverages
     {
-        id: '13',
-        name: 'Fresh Orange Juice',
+        id: 'freshOrangeJuice',
+        name: 'freshOrangeJuice',
         price: 3500,
         image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&h=300&fit=crop',
         category: 'beverages',
         unit: 'per 500ml',
-        description: 'Freshly squeezed orange juice, no preservatives',
+        description: 'freshOrangeJuiceDesc',
         inStock: true
     },
     {
-        id: '14',
-        name: 'Coconut Water',
+        id: 'coconutWater',
+        name: 'coconutWater',
         price: 2500,
         image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
         category: 'beverages',
         unit: 'per bottle',
-        description: 'Natural coconut water, refreshing and healthy',
+        description: 'coconutWaterDesc',
         inStock: true
     },
 
     // Snacks
     {
-        id: '15',
-        name: 'Mixed Nuts',
+        id: 'mixedNuts',
+        name: 'mixedNuts',
         price: 4200,
         image: 'https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?w=400&h=300&fit=crop',
         category: 'snacks',
         unit: 'per 250g',
-        description: 'Premium mixed nuts, perfect for healthy snacking',
+        description: 'mixedNutsDesc',
         inStock: true
     },
     {
-        id: '16',
-        name: 'Dried Fruits Mix',
+        id: 'driedFruitsMix',
+        name: 'driedFruitsMix',
         price: 3800,
         image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
         category: 'snacks',
         unit: 'per 200g',
-        description: 'Natural dried fruits, no added sugar',
+        description: 'driedFruitsMixDesc',
         inStock: true
     }
 ]

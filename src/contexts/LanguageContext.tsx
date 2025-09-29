@@ -742,7 +742,64 @@ const translations = {
     whatCustomersSayDescription: 'Usiweke tu maneno yetu. Hivi ndivyo wateja wa kweli wanavyosema kuhusu Fresh.',
     customerSay1: 'Fresh imekuwa mabadiliko kwa familia yetu. Mboga daima ziko safi na matunda yameiva vizuri. Uwasilishaji ni waaminifu sana - hawajawahi kuchelewa!',
     customerSay2: 'Kama mmiliki wa mkahawa, ubora ni kila kitu. Fresh daima inatoa bidhaa za ubora wa juu. Ushirikiano wao na wakulima unajionyesha katika ubunifu.',
-    customerSay3: 'Ninapenda kuwa naweza kupata bidhaa za kikuu kwa haraka. Programu ni rahisi sana kutumia na huduma kwa wateja ni bora sana. Ninapendekeza sana!'
+    customerSay3: 'Ninapenda kuwa naweza kupata bidhaa za kikuu kwa haraka. Programu ni rahisi sana kutumia na huduma kwa wateja ni bora sana. Ninapendekeza sana!',
+    readyToGetFresh: 'Tayari Kupata Bidhaa Safi?',
+    readyToGetFreshDescription: 'Jiunge na maelfu ya wateja waliofurahi kutumia Fresh kwa mahitaji yao ya kila siku. Uwasilishaji wa haraka, ubora umehakikishwa, bei zisizoweza kushindwa.',
+    startShoppingCTA: 'Anza Kununua',
+    learnMore: 'Jifunze Zaidi',
+    
+    // HomePage statistics translations
+    happyCustomers: 'Wateja Wafurahi',
+    ordersDelivered: 'Maagizo Yaliyowasilishwa',
+    averageRating: 'Kiwango cha Wastani',
+    customerRetention: 'Uendeleaji wa Wateja',
+    
+    // Product names and descriptions translations
+    // Vegetables
+    freshTomatoes: 'Nyanya Safi',
+    freshTomatoesDesc: 'Nyanya nyekundu zilizokuswa shambani, nzuri kwa kupika na saladi',
+    greenSpinach: 'Sokosoko ya Kijani',
+    greenSpinachDesc: 'Sokosoko yenye virutuba vingi, iliyokuswa hivi karibuni',
+    redOnions: 'Vitunguu Vyekundu',
+    redOnionsDesc: 'Vitunguu vitamu vyekundu, vinavyofaa kwa mahitaji yote ya kupika',
+    freshCarrots: 'Karoti Safi',
+    freshCarrotsDesc: 'Karoti za rangi ya machungwa, zinazojaa vitamini',
+    
+    // Fruits
+    sweetMangoes: 'Embe Tamu',
+    sweetMangoesDesc: 'Embe zilizoiva, zenye juisi kutoka kwa mashamba ya ndani',
+    freshBananas: 'Ndizi Safi',
+    freshBananasDesc: 'Ndizi za manjano, zilizoiva kikamili kwa kula',
+    greenAvocados: 'Parachichi za Kijani',
+    greenAvocadosDesc: 'Parachichi za ubora wa juu, laini na yenye virutuba',
+    
+    // Herbs
+    freshCoriander: 'Koriana Safi',
+    freshCorianderDesc: 'Majani ya koriana yenye harufu nzuri kwa viungo',
+    freshMint: 'Pudina Safi',
+    freshMintDesc: 'Majani ya pudina safi kwa chai na kupika',
+    
+    // Dairy
+    freshMilk: 'Maziwa Safi',
+    freshMilkDesc: 'Maziwa ya ng\'ombe safi, yanayowasilishwa kila siku',
+    farmEggs: 'Mayai ya Shambani',
+    farmEggsDesc: 'Mayai ya kuku wa angani kutoka kwa mashamba ya ndani',
+    
+    // Grains
+    whiteRice: 'Wali Mweupe',
+    whiteRiceDesc: 'Wali wa ubora wa juu, unaofaa kwa karamu za kila siku',
+    
+    // Beverages
+    freshOrangeJuice: 'Juisi ya Machungwa Safi',
+    freshOrangeJuiceDesc: 'Juisi iliyochanywa hivi karibuni, pasipo vifaa vya kuhifadhi',
+    coconutWater: 'Maji ya Nazi',
+    coconutWaterDesc: 'Maji ya nazi asili, yenye ladha nzuri na yenye afya',
+    
+    // Snacks
+    mixedNuts: 'Nuts Zilizochanganywa',
+    mixedNutsDesc: 'Nuts za ubora wa juu, zinazofaa kwa kula kwa afya',
+    driedFruitsMix: 'Mchanganyiko wa Matunda Yaliyokauka',
+    driedFruitsMixDesc: 'Matunda yaliyokauka asili, pasipo sukari iliyongezea'
   }
 };
 

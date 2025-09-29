@@ -45,7 +45,7 @@ function ProductCard({ product }: ProductCardProps) {
         addItem(product)
         toast({
             title: t('addedToCart'),
-            description: `${product.name} ${t('addedToCartDescription')}`,
+            description: `${t(product.id)} ${t('addedToCartDescription')}`,
             duration: 2000,
         })
     }
@@ -71,21 +71,21 @@ function ProductCard({ product }: ProductCardProps) {
                     setIsFavorited(false)
                     toast({
                         title: t('removedFromFavorites'),
-                        description: `${product.name} ${t('removedFromFavoritesDescription')}`,
+                        description: `${t(product.id)} ${t('removedFromFavoritesDescription')}`,
                     })
                 }
             } else {
                 // Add to favorites
                 await UserService.addToFavorites({
                     product_id: product.id,
-                    product_name: product.name,
+                    product_name: t(product.id),
                     product_price: product.price,
                     product_category: product.category,
                 })
                 setIsFavorited(true)
                 toast({
                     title: t('addedToFavorites'),
-                    description: `${product.name} ${t('addedToFavoritesDescription')}`,
+                    description: `${t(product.id)} ${t('addedToFavoritesDescription')}`,
                 })
             }
         } catch (error) {
@@ -105,7 +105,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <div className="aspect-square bg-muted overflow-hidden">
                     <img
                         src={product.image}
-                        alt={product.name}
+                        alt={t(product.id)}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                 </div>
@@ -115,7 +115,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <div className="space-y-2">
                     <div className="flex items-start justify-between">
                         <Link to={`/product/${product.id}`} className="flex-1">
-                            <h3 className="font-medium leading-tight hover:text-primary transition-colors">{product.name}</h3>
+                            <h3 className="font-medium leading-tight hover:text-primary transition-colors">{t(product.id)}</h3>
                         </Link>
                         <div className="flex items-center gap-1">
                             <button
@@ -146,7 +146,7 @@ function ProductCard({ product }: ProductCardProps) {
 
                     {product.description && (
                         <p className="text-xs text-muted-foreground line-clamp-2">
-                            {product.description}
+                            {t(`${product.id}Desc`)}
                         </p>
                     )}
 
