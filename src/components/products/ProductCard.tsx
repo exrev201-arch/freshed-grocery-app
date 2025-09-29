@@ -8,6 +8,7 @@ import { Product, useCartStore } from '@/store/cart-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useToast } from '@/hooks/use-toast'
 import { UserService } from '@/lib/user-service'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface ProductCardProps {
     product: Product
@@ -19,6 +20,7 @@ function ProductCard({ product }: ProductCardProps) {
     const { toast } = useToast()
     const [isFavorited, setIsFavorited] = useState(false)
     const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+    const { t } = useLanguage()
 
     // Check if product is favorited when user is authenticated
     useEffect(() => {
@@ -42,8 +44,8 @@ function ProductCard({ product }: ProductCardProps) {
     const handleAddToCart = () => {
         addItem(product)
         toast({
-            title: "Added to cart!",
-            description: `${product.name} has been added to your cart.`,
+            title: t('addedToCart'),
+            description: `${product.name} ${t('addedToCartDescription')}`,
             duration: 2000,
         })
     }
@@ -51,8 +53,8 @@ function ProductCard({ product }: ProductCardProps) {
     const handleToggleFavorite = async () => {
         if (!isAuthenticated || !user) {
             toast({
-                title: "Login Required",
-                description: "Please log in to save favorites.",
+                title: t('loginRequired'),
+                description: t('loginToAddToFavorites'),
                 variant: "destructive",
             })
             return
@@ -68,8 +70,8 @@ function ProductCard({ product }: ProductCardProps) {
                     await UserService.removeFromFavorites(user.uid, favorite._id)
                     setIsFavorited(false)
                     toast({
-                        title: "Removed from favorites",
-                        description: `${product.name} has been removed from your favorites.`,
+                        title: t('removedFromFavorites'),
+                        description: `${product.name} ${t('removedFromFavoritesDescription')}`,
                     })
                 }
             } else {
@@ -82,14 +84,14 @@ function ProductCard({ product }: ProductCardProps) {
                 })
                 setIsFavorited(true)
                 toast({
-                    title: "Added to favorites!",
-                    description: `${product.name} has been added to your favorites.`,
+                    title: t('addedToFavorites'),
+                    description: `${product.name} ${t('addedToFavoritesDescription')}`,
                 })
             }
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to update favorites. Please try again.",
+                title: t('error'),
+                description: t('failedToUpdateFavorites'),
                 variant: "destructive",
             })
         } finally {
@@ -130,11 +132,11 @@ function ProductCard({ product }: ProductCardProps) {
                             </button>
                             {product.inStock ? (
                                 <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-green-100 text-green-800">
-                                    In Stock
+                                    {t('inStock')}
                                 </Badge>
                             ) : (
                                 <Badge variant="destructive" className="text-xs px-2 py-0.5">
-                                    Out of Stock
+                                    {t('outOfStock')}
                                 </Badge>
                             )}
                         </div>
@@ -160,7 +162,7 @@ function ProductCard({ product }: ProductCardProps) {
                             className="gap-1"
                         >
                             <Plus className="h-3 w-3" />
-                            Add
+                            {t('addToCart')}
                         </Button>
                     </div>
                 </div>

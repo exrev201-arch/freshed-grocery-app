@@ -33,6 +33,8 @@ function App() {
         console.log('Forced light mode in App component')
     }, [])
 
+    console.log('App component rendering');
+
     return (
         <ErrorBoundary>
             <TooltipProvider>
@@ -66,7 +68,7 @@ function App() {
                                 <Route path="/debug-orders" element={<OrderDebugComponent />} />
                                 <Route path="/admin/login" element={
                                     <AdminRouteGuard requireAdmin={false}>
-                                        <Suspense fallback={<LoadingSpinner fullScreen text="Loading..." />}>
+                                        <Suspense fallback={<LoadingSpinner fullScreen text="Inapakia..." />}>
                                             <AdminLoginPage />
                                         </Suspense>
                                     </AdminRouteGuard>

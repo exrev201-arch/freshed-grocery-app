@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getOrderDelivery, LocationUpdate } from '@/lib/delivery-service';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LiveDeliveryTrackerProps {
     orderId: string;
@@ -51,6 +52,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
     const [currentLocation, setCurrentLocation] = useState<LocationUpdate | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     useEffect(() => {
         loadDeliveryData();
@@ -105,8 +107,8 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
             console.error('Error loading delivery data:', error);
             if (!isAutoRefresh) {
                 toast({
-                    title: "Kosa",
-                    description: "Imeshindwa kupakia data ya uongozi. Tafadhali jaribu tena.",
+                    title: t('error'),
+                    description: t('failedToLoadDeliveryData'),
                     variant: "destructive"
                 });
             }
@@ -122,12 +124,12 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
         const diffMs = now.getTime() - time.getTime();
         const diffMins = Math.floor(diffMs / 60000);
 
-        if (diffMins < 1) return 'Sasa hivi';
-        if (diffMins < 60) return `${diffMins} dakika zilizopita`;
+        if (diffMins < 1) return t('justNow');
+        if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
         const diffHours = Math.floor(diffMins / 60);
-        if (diffHours < 24) return `${diffHours} saa zilizopita`;
+        if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
         const diffDays = Math.floor(diffHours / 24);
-        return `${diffDays} siku zilizopita`;
+        return `${diffDays} ${t('daysAgo')}`;
     };
 
     const getStatusColor = (status: string): string => {
@@ -152,14 +154,14 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
     };
 
     const formatStatus = (status: string): string => {
-        const statusMap: Record<string, string> = {
-            'assigned': 'Umepewa',
-            'picked_up': 'Umechukuliwa',
-            'in_transit': 'Inasafirishwa',
-            'delivered': 'Imefikishwa',
-            'failed': 'Imeshindwa'
-        };
-        return statusMap[status] || status;
+        switch (status) {
+            case 'assigned': return t('assigned');
+            case 'picked_up': return t('pickedUp');
+            case 'in_transit': return t('inTransit');
+            case 'delivered': return t('deliveredStatus');
+            case 'failed': return t('failed');
+            default: return status;
+        }
     };
 
     if (loading) {
@@ -168,7 +170,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                 <CardContent className="p-6">
                     <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                        <span className="ml-2">Inapakia taarifa za uongozi...</span>
+                        <span className="ml-2">{t('loadingDeliveryInfo')}</span>
                     </div>
                 </CardContent>
             </Card>
@@ -181,8 +183,8 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                 <CardContent className="p-6">
                     <div className="text-center text-muted-foreground">
                         <Truck className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p>Hakuna taarifa za uongozi</p>
-                        <p className="text-sm">Agizo bado halijapewa uongozi</p>
+                        <p>{t('noDeliveryInfo')}</p>
+                        <p className="text-sm">{t('orderNotAssignedToDelivery')}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -202,7 +204,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                                     <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
                                 )}
                             </div>
-                            <span>Ufuatiliaji wa Moja kwa Moja</span>
+                            <span>{t('liveTracking')}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <Badge className={getStatusColor(deliveryData.status)}>
@@ -236,7 +238,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                             onClick={() => window.open(`tel:${deliveryData.delivery_person_phone}`)}
                         >
                             <Phone className="h-4 w-4 mr-1" />
-                            Piga
+                            {t('call')}
                         </Button>
                     </div>
 
@@ -245,7 +247,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                         <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                             <div className="flex items-center space-x-2">
                                 <Clock className="h-4 w-4 text-green-600" />
-                                <span className="text-sm font-medium">Wakati wa Kufika:</span>
+                                <span className="text-sm font-medium">{t('estimatedArrival')}:</span>
                             </div>
                             <span className="font-medium text-green-700">
                                 {new Date(deliveryData.estimated_arrival).toLocaleTimeString('sw-TZ', {
@@ -259,7 +261,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                     {/* Distance Remaining */}
                     {deliveryData.distance_remaining && (
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Umbali Uliosalia:</span>
+                            <span className="text-sm text-muted-foreground">{t('distanceRemaining')}:</span>
                             <span className="font-medium">{deliveryData.distance_remaining.toFixed(1)} km</span>
                         </div>
                     )}
@@ -270,7 +272,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                             <Separator />
                             <h4 className="font-medium flex items-center">
                                 <MapPin className="h-4 w-4 mr-2 text-green-600" />
-                                Mahali pa Sasa
+                                {t('currentLocation')}
                             </h4>
                             <div className="bg-muted/30 p-3 rounded-lg">
                                 <div className="grid grid-cols-2 gap-2 text-sm">
@@ -284,17 +286,17 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                                     </div>
                                     {currentLocation.address && (
                                         <div className="col-span-2">
-                                            <span className="text-muted-foreground">Anwani:</span>
+                                            <span className="text-muted-foreground">{t('address')}:</span>
                                             <p>{currentLocation.address}</p>
                                         </div>
                                     )}
                                     <div>
-                                        <span className="text-muted-foreground">Mrejesho:</span>
+                                        <span className="text-muted-foreground">{t('updated')}:</span>
                                         <p>{formatTimeAgo(currentLocation.timestamp)}</p>
                                     </div>
                                     {currentLocation.speed && (
                                         <div>
-                                            <span className="text-muted-foreground">Kasi:</span>
+                                            <span className="text-muted-foreground">{t('speed')}:</span>
                                             <p>{currentLocation.speed.toFixed(1)} km/h</p>
                                         </div>
                                     )}
@@ -303,7 +305,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                                     <>
                                         <Separator className="my-2" />
                                         <p className="text-sm text-muted-foreground">
-                                            <strong>Maelezo:</strong> {currentLocation.notes}
+                                            <strong>{t('notes')}:</strong> {currentLocation.notes}
                                         </p>
                                     </>
                                 )}
@@ -319,7 +321,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                                 }}
                             >
                                 <MapPin className="h-4 w-4 mr-2" />
-                                Fungua katika Ramani ya Google
+                                {t('openInGoogleMaps')}
                             </Button>
                         </div>
                     )}
@@ -328,7 +330,7 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                     {locationHistory.length > 1 && (
                         <div className="space-y-2">
                             <Separator />
-                            <h4 className="font-medium">Historia ya Mahali ({locationHistory.length} update)</h4>
+                            <h4 className="font-medium">{t('locationHistory')} ({locationHistory.length} {t('updates')})</h4>
                             <div className="max-h-48 overflow-y-auto space-y-2">
                                 {locationHistory.slice().reverse().map((location, index) => (
                                     <div key={index} className="flex items-start space-x-2 text-sm p-2 hover:bg-muted/30 rounded">
@@ -363,10 +365,10 @@ const LiveDeliveryTracker: React.FC<LiveDeliveryTrackerProps> = ({
                     {lastUpdate && (
                         <div className="text-center pt-2 border-t">
                             <p className="text-xs text-muted-foreground">
-                                Imesasishwa: {formatTimeAgo(lastUpdate.toISOString())}
+                                {t('updated')}: {formatTimeAgo(lastUpdate.toISOString())}
                                 {refreshInterval > 0 && (
                                     <span className="ml-2">
-                                        • Inasasisha kila {Math.floor(refreshInterval / 1000)} sekunde
+                                        • {t('refreshingEvery')} {Math.floor(refreshInterval / 1000)} {t('seconds')}
                                     </span>
                                 )}
                             </p>

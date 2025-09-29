@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -26,13 +27,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const [activeTab, setActiveTab] = useState('login');
     const { sendOTP, verifyOTP, isLoading } = useAuthStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!loginIdentifier.trim()) {
             toast({
-                title: "Email/Phone Required",
-                description: "Please enter your email address or phone number.",
+                title: t('emailPhoneRequired'),
+                description: t('enterEmailOrPhone'),
                 variant: "destructive",
             });
             return;
@@ -40,8 +42,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (!password.trim()) {
             toast({
-                title: "Password Required",
-                description: "Please enter your password.",
+                title: t('passwordRequired'),
+                description: t('enterPassword'),
                 variant: "destructive",
             });
             return;
@@ -53,14 +55,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             await sendOTP(loginIdentifier);
             setStep('otp');
             toast({
-                title: "Verification Code Sent!",
-                description: "Check your email/SMS for the verification code.",
+                title: t('verificationCodeSent'),
+                description: t('checkEmailSMSForCode'),
             });
         } catch (error) {
             console.error('Login error:', error);
             toast({
-                title: "Login Failed",
-                description: "Invalid credentials. Please try again.",
+                title: t('loginFailed'),
+                description: t('invalidCredentials'),
                 variant: "destructive",
             });
         }
@@ -70,8 +72,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         e.preventDefault();
         if (!name.trim()) {
             toast({
-                title: "Name Required",
-                description: "Please enter your full name.",
+                title: t('nameRequired'),
+                description: t('enterFullName'),
                 variant: "destructive",
             });
             return;
@@ -79,8 +81,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (!email.trim()) {
             toast({
-                title: "Email Required",
-                description: "Please enter your email address.",
+                title: t('emailRequired'),
+                description: t('enterEmailAddress'),
                 variant: "destructive",
             });
             return;
@@ -88,8 +90,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (!phone.trim()) {
             toast({
-                title: "Phone Required",
-                description: "Please enter your phone number.",
+                title: t('phoneRequired'),
+                description: t('enterPhoneNumber'),
                 variant: "destructive",
             });
             return;
@@ -97,8 +99,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (!password.trim()) {
             toast({
-                title: "Password Required",
-                description: "Please enter your password.",
+                title: t('passwordRequired'),
+                description: t('enterPassword'),
                 variant: "destructive",
             });
             return;
@@ -106,8 +108,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (password !== confirmPassword) {
             toast({
-                title: "Passwords Don't Match",
-                description: "Please make sure both passwords match.",
+                title: t('passwordsDontMatch'),
+                description: t('passwordsMustMatch'),
                 variant: "destructive",
             });
             return;
@@ -115,8 +117,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         if (password.length < 6) {
             toast({
-                title: "Password Too Short",
-                description: "Password must be at least 6 characters long.",
+                title: t('passwordTooShort'),
+                description: t('passwordMinLength'),
                 variant: "destructive",
             });
             return;
@@ -127,14 +129,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             await sendOTP(email);
             setStep('otp');
             toast({
-                title: "Account Created!",
-                description: "Please verify your email to complete registration.",
+                title: t('accountCreated'),
+                description: t('verifyEmailToCompleteRegistration'),
             });
         } catch (error) {
             console.error('Signup error:', error);
             toast({
-                title: "Signup Failed",
-                description: "Failed to create account. Please try again.",
+                title: t('signupFailed'),
+                description: t('failedToCreateAccount'),
                 variant: "destructive",
             });
         }
@@ -144,8 +146,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         e.preventDefault();
         if (!otp.trim()) {
             toast({
-                title: "Code Required",
-                description: "Please enter the verification code.",
+                title: t('codeRequired'),
+                description: t('enterVerificationCode'),
                 variant: "destructive",
             });
             return;
@@ -155,10 +157,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             const identifier = activeTab === 'login' ? loginIdentifier : email;
             await verifyOTP(identifier, otp);
             toast({
-                title: "Welcome to Fresh!",
+                title: t('welcomeToFresh'),
                 description: activeTab === 'login' 
-                    ? "You've successfully logged in."
-                    : "Your account has been created successfully!",
+                    ? t('successfullyLoggedIn')
+                    : t('accountCreatedSuccessfully'),
             });
             onClose();
             // Reset form
@@ -168,8 +170,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         } catch (error) {
             console.error('OTP verification error:', error);
             toast({
-                title: "Invalid Code",
-                description: "The verification code is incorrect. Please try again.",
+                title: t('invalidCode'),
+                description: t('incorrectVerificationCode'),
                 variant: "destructive",
             });
         }
@@ -224,17 +226,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
                         {step === 'auth' 
-                            ? (activeTab === 'login' ? 'Welcome Back' : 'Join Fresh Today')
-                            : 'Enter Verification Code'
+                            ? (activeTab === 'login' ? t('welcomeBack') : t('joinFreshToday'))
+                            : t('verificationCodeLogin')
                         }
                     </h2>
                     <p className="text-gray-600">
                         {step === 'auth'
                             ? (activeTab === 'login' 
-                                ? 'Sign in to continue shopping for fresh groceries'
-                                : 'Create your account and start shopping for fresh groceries'
+                                ? t('signInToContinueShopping')
+                                : t('createAccountToStartShopping')
                               )
-                            : `We sent a 6-digit code to ${activeTab === 'login' ? loginIdentifier : email}. For testing, you can use: 123456`
+                            : `${t('verificationCodeSentTo')} ${activeTab === 'login' ? loginIdentifier : email}. ${t('forTestingUseCode')}: 123456`
                         }
                     </p>
                 </div>
@@ -243,14 +245,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     <div key="auth">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="login">Login</TabsTrigger>
-                                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                                <TabsTrigger value="login">{t('login')}</TabsTrigger>
+                                <TabsTrigger value="signup">{t('signUp')}</TabsTrigger>
                             </TabsList>
                             
                             <TabsContent value="login" className="mt-4">
                                 <form onSubmit={handleLogin} className="space-y-4">
                                     <div>
-                                        <Label htmlFor="login-identifier">Email or Phone Number</Label>
+                                        <Label htmlFor="login-identifier">{t('emailOrPhoneNumber')}</Label>
                                         <div className="relative">
                                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                             <Input
@@ -258,7 +260,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                                 type="text"
                                                 value={loginIdentifier}
                                                 onChange={(e) => setLoginIdentifier(e.target.value)}
-                                                placeholder="your@email.com or +255 XXX XXX XXX"
+                                                placeholder={t('emailOrPhonePlaceholder')}
                                                 className="mt-1 pl-10"
                                                 required
                                             />
@@ -266,14 +268,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="login-password">Password</Label>
+                                        <Label htmlFor="login-password">{t('password')}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="login-password"
                                                 type={showPassword ? "text" : "password"}
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="Enter your password"
+                                                placeholder={t('enterYourPassword')}
                                                 className="mt-1 pr-10"
                                                 required
                                             />
@@ -292,7 +294,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                         className="w-full"
                                         disabled={isLoading}
                                     >
-                                        {isLoading ? 'Signing In...' : 'Sign In'}
+                                        {isLoading ? t('signingIn') : t('signIn')}
                                     </Button>
                                 </form>
                             </TabsContent>
@@ -300,7 +302,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                             <TabsContent value="signup" className="mt-4">
                                 <form onSubmit={handleSignup} className="space-y-4">
                                     <div>
-                                        <Label htmlFor="signup-name">Full Name</Label>
+                                        <Label htmlFor="signup-name">{t('fullName')}</Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                             <Input
@@ -308,7 +310,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                                 type="text"
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
-                                                placeholder="Enter your full name"
+                                                placeholder={t('enterFullName')}
                                                 className="mt-1 pl-10"
                                                 required
                                             />
@@ -316,7 +318,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="signup-email">Email Address</Label>
+                                        <Label htmlFor="signup-email">{t('emailAddress')}</Label>
                                         <div className="relative">
                                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                             <Input
@@ -332,7 +334,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="signup-phone">Phone Number</Label>
+                                        <Label htmlFor="signup-phone">{t('phoneNumber')}</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                             <Input
@@ -340,7 +342,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                                 type="tel"
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
-                                                placeholder="+255 XXX XXX XXX"
+                                                placeholder={t('phoneNumberPlaceholder')}
                                                 className="mt-1 pl-10"
                                                 required
                                             />
@@ -348,14 +350,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="signup-password">Password</Label>
+                                        <Label htmlFor="signup-password">{t('password')}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="signup-password"
                                                 type={showPassword ? "text" : "password"}
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="Create a password"
+                                                placeholder={t('createPassword')}
                                                 className="mt-1 pr-10"
                                                 required
                                             />
@@ -370,14 +372,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                                        <Label htmlFor="signup-confirm-password">{t('confirmPassword')}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="signup-confirm-password"
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                                placeholder="Confirm your password"
+                                                placeholder={t('confirmYourPassword')}
                                                 className="mt-1 pr-10"
                                                 required
                                             />
@@ -396,7 +398,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                         className="w-full"
                                         disabled={isLoading}
                                     >
-                                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                                        {isLoading ? t('creatingAccount') : t('createAccount')}
                                     </Button>
                                 </form>
                             </TabsContent>
@@ -406,13 +408,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     <div key="otp">
                         <form onSubmit={handleVerifyOTP} className="space-y-4">
                             <div>
-                                <Label htmlFor="otp">Verification Code</Label>
+                                <Label htmlFor="otp">{t('verificationCodeLogin')}</Label>
                                 <Input
                                     id="otp"
                                     type="text"
                                     value={otp}
                                     onChange={(e) => setOTP(e.target.value)}
-                                    placeholder="Enter 6-digit code"
+                                    placeholder={t('enter6DigitCode')}
                                     className="mt-1 text-center text-lg tracking-widest"
                                     maxLength={6}
                                     required
@@ -424,7 +426,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                 className="w-full"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Verifying...' : 'Verify & Login'}
+                                {isLoading ? t('verifying') : t('verifyAndLogin')}
                             </Button>
 
                             <Button
@@ -434,7 +436,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                 className="w-full"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
-                                Back to Email
+                                {t('backToEmail')}
                             </Button>
                         </form>
                     </div>
@@ -442,7 +444,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                 <div className="mt-6 pt-4 border-t border-gray-100">
                     <p className="text-sm text-gray-500 text-center">
-                        By continuing, you agree to Fresh&apos;s terms of service and privacy policy.
+                        {t('byContinuingYouAgree')}
                     </p>
                 </div>
             </div>

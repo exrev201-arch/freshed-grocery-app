@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle, CreditCard, Smartphone } from 'lucide-react';
 import { clickPesaService } from '@/lib/clickpesa-service';
 import type { PaymentInitiationRequest } from '@/lib/clickpesa-service';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ClickPesaTestComponent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +14,7 @@ const ClickPesaTestComponent: React.FC = () => {
     message: string;
     checkoutUrl?: string;
   } | null>(null);
+  const { t } = useLanguage();
 
   const runConnectionTest = async () => {
     setIsLoading(true);
@@ -21,22 +23,22 @@ const ClickPesaTestComponent: React.FC = () => {
     try {
       // Test health check
       const health = await clickPesaService.healthCheck();
-      console.log('ClickPesa Health Check:', health);
+      console.log(t('clickPesaHealthCheck'), health);
 
       // Create a test payment request
       const testPaymentRequest: PaymentInitiationRequest = {
-        orderId: 'test-order-' + Date.now(),
+        orderId: `test-order-${Date.now()}`,
         amount: 1000, // 1000 TZS test amount
         currency: 'TZS',
         method: 'mpesa',
         customerInfo: {
-          name: 'Test Customer',
+          name: t('testCustomer'),
           email: 'test@example.com',
           phone: '+255123456789',
         },
         metadata: {
           testMode: true,
-          description: 'ClickPesa integration test payment',
+          description: t('clickPesaIntegrationTestPayment'),
         },
       };
 
@@ -45,17 +47,17 @@ const ClickPesaTestComponent: React.FC = () => {
       
       setTestResult({
         success: true,
-        message: 'ClickPesa integration test successful! Payment URL generated.',
+        message: t('clickPesaIntegrationTestSuccessful'),
         checkoutUrl: result.checkoutUrl,
       });
 
-      console.log('✅ ClickPesa Test Result:', result);
+      console.log(`✅ ${t('clickPesaTestResult')}`, result);
 
     } catch (error) {
-      console.error('❌ ClickPesa Test Failed:', error);
+      console.error(`❌ ${t('clickPesaTestFailed')}`, error);
       setTestResult({
         success: false,
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
+        message: error instanceof Error ? error.message : t('unknownErrorOccurred'),
       });
     } finally {
       setIsLoading(false);
@@ -73,28 +75,28 @@ const ClickPesaTestComponent: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          ClickPesa Integration Test
+          {t('clickPesaIntegrationTest')}
         </CardTitle>
         <CardDescription>
-          Test your ClickPesa credentials and payment gateway integration
+          {t('testYourClickPesaCredentials')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Configuration Status */}
         <div className="space-y-2">
-          <h3 className="font-medium">Configuration Status</h3>
+          <h3 className="font-medium">{t('configurationStatus')}</h3>
           <div className="grid grid-cols-2 gap-2">
             <Badge variant="outline" className="justify-start">
-              API Key: {import.meta.env.VITE_CLICKPESA_API_KEY ? '✅ Set' : '❌ Missing'}
+              {t('apiKey')}: {import.meta.env.VITE_CLICKPESA_API_KEY ? `✅ ${t('set')}` : `❌ ${t('missing')}`}
             </Badge>
             <Badge variant="outline" className="justify-start">
-              Merchant ID: {import.meta.env.VITE_CLICKPESA_MERCHANT_ID ? '✅ Set' : '❌ Missing'}
+              {t('merchantId')}: {import.meta.env.VITE_CLICKPESA_MERCHANT_ID ? `✅ ${t('set')}` : `❌ ${t('missing')}`}
             </Badge>
             <Badge variant="outline" className="justify-start">
-              Pay Bill: {import.meta.env.VITE_CLICKPESA_PAY_BILL_NUMBER ? '✅ Set' : '❌ Missing'}
+              {t('payBill')}: {import.meta.env.VITE_CLICKPESA_PAY_BILL_NUMBER ? `✅ ${t('set')}` : `❌ ${t('missing')}`}
             </Badge>
             <Badge variant={import.meta.env.VITE_CLICKPESA_DEMO_MODE === 'true' ? 'secondary' : 'default'}>
-              Mode: {import.meta.env.VITE_CLICKPESA_DEMO_MODE === 'true' ? 'Demo' : 'Production'}
+              {t('mode')}: {import.meta.env.VITE_CLICKPESA_DEMO_MODE === 'true' ? t('demo') : t('production')}
             </Badge>
           </div>
         </div>
@@ -108,12 +110,12 @@ const ClickPesaTestComponent: React.FC = () => {
           {isLoading ? (
             <>
               <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-              Testing ClickPesa Connection...
+              {t('testingClickPesaConnection')}
             </>
           ) : (
             <>
               <Smartphone className="h-4 w-4 mr-2" />
-              Test ClickPesa Integration
+              {t('testClickPesaIntegration')}
             </>
           )}
         </Button>
@@ -133,7 +135,7 @@ const ClickPesaTestComponent: React.FC = () => {
               )}
               <div className="flex-1">
                 <p className="font-medium">
-                  {testResult.success ? 'Test Successful!' : 'Test Failed'}
+                  {testResult.success ? t('testSuccessful') : t('testFailed')}
                 </p>
                 <p className="text-sm mt-1">{testResult.message}</p>
                 
@@ -144,7 +146,7 @@ const ClickPesaTestComponent: React.FC = () => {
                     size="sm"
                     className="mt-2"
                   >
-                    Open Test Payment Page
+                    {t('openTestPaymentPage')}
                   </Button>
                 )}
               </div>
@@ -154,12 +156,12 @@ const ClickPesaTestComponent: React.FC = () => {
 
         {/* Instructions */}
         <div className="text-sm text-gray-600 space-y-2">
-          <p><strong>To complete setup:</strong></p>
+          <p><strong>{t('toCompleteSetup')}:</strong></p>
           <ol className="list-decimal list-inside space-y-1 ml-2">
-            <li>Update your <code>.env</code> file with actual ClickPesa credentials</li>
-            <li>Set <code>VITE_CLICKPESA_DEMO_MODE=false</code> for production</li>
-            <li>Restart your development server</li>
-            <li>Click "Test ClickPesa Integration" to verify</li>
+            <li>{t('updateYourEnvFile')}</li>
+            <li>{t('setDemoModeToFalse')}</li>
+            <li>{t('restartDevelopmentServer')}</li>
+            <li>{t('clickTestClickPesaIntegration')}</li>
           </ol>
         </div>
       </CardContent>

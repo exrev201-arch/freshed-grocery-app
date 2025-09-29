@@ -10,8 +10,10 @@ import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 import CustomerSupport from '@/components/support/CustomerSupport'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 function ProductsPage() {
+    const { t } = useLanguage()
     const { toast } = useToast()
     const [searchParams, setSearchParams] = useSearchParams()
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -123,9 +125,9 @@ function ProductsPage() {
             <div className="container mx-auto px-4 py-6">
                 {/* Page Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">All Products</h1>
+                    <h1 className="text-4xl font-bold mb-2">{t('allProducts')}</h1>
                     <p className="text-muted-foreground">
-                        Discover fresh groceries delivered to your doorstep in Dar es Salaam
+                        {t('discoverGroceries')}
                     </p>
                 </div>
 
@@ -141,7 +143,7 @@ function ProductsPage() {
                 {(selectedCategory || searchQuery) && (
                     <div className="mb-6">
                         <Button variant="outline" onClick={clearFilters}>
-                            Clear all filters
+                            {t('clearFilters')}
                         </Button>
                     </div>
                 )}
@@ -149,9 +151,9 @@ function ProductsPage() {
                 {/* Results Summary */}
                 <div className="mb-6">
                     <p className="text-sm text-muted-foreground">
-                        Showing {filteredProducts.length} of {productsToShow.length} products
+                        {t('showingProducts')} {filteredProducts.length} {t('ofProducts')} {productsToShow.length} {t('productsCount')}
                         {selectedCategory && (
-                            <span> in <span className="font-medium capitalize">{selectedCategory}</span></span>
+                            <span> {t('inCategory')} <span className="font-medium capitalize">{selectedCategory}</span></span>
                         )}
                     </p>
                 </div>
@@ -160,17 +162,17 @@ function ProductsPage() {
                 {loadingProducts ? (
                     <div className="text-center py-16">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">Loading products...</p>
+                        <p className="text-muted-foreground">{t('loadingProducts')}</p>
                     </div>
                 ) : filteredProducts.length === 0 ? (
                     <div className="text-center py-16">
                         <div className="text-6xl mb-4">🔍</div>
-                        <h3 className="text-xl font-semibold mb-2">No products found</h3>
+                        <h3 className="text-xl font-semibold mb-2">{t('noProductsFound')}</h3>
                         <p className="text-muted-foreground mb-4">
-                            Try adjusting your search or filters to find what you're looking for.
+                            {t('noProductsFoundDescription')}
                         </p>
                         <Button onClick={clearFilters}>
-                            Clear all filters
+                            {t('clearFilters')}
                         </Button>
                     </div>
                 ) : (
@@ -186,21 +188,17 @@ function ProductsPage() {
             <section className="py-16 bg-primary text-primary-foreground">
                 <div className="container mx-auto px-4 text-center space-y-8">
                     <div className="space-y-4">
-                        <h2 className="text-3xl font-bold">Ready to Get Fresh?</h2>
+                        <h2 className="text-3xl font-bold">{t('readyToGetFresh')}</h2>
                         <p className="text-lg opacity-90 max-w-2xl mx-auto">
-                            Join thousands of satisfied customers who trust Fresh for their daily grocery needs.
-                            Fast delivery, guaranteed quality, unbeatable prices.
+                            {t('readyToGetFreshDescription')}
                         </p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
                             <Link to="/">
-                                Browse More <ArrowRight className="ml-2 h-5 w-5" />
+                                {t('browseMore')} <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
-                        </Button>
-                        <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-primary-foreground text-black hover:bg-primary-foreground/20 hover:text-primary-foreground">
-                            Learn More
                         </Button>
                     </div>
                 </div>

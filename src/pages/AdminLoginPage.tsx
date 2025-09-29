@@ -9,6 +9,7 @@ import { adminService } from '@/lib/admin-service';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Mail, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AdminLoginPage = () => {
     const [email, setEmail] = useState('admin@fresh.co.tz');
@@ -18,6 +19,7 @@ const AdminLoginPage = () => {
     const { adminUser, isAdminAuthenticated, adminLogin } = useAdminStore();
     const { toast } = useToast();
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     // Redirect if already logged in
     useEffect(() => {
@@ -52,8 +54,8 @@ const AdminLoginPage = () => {
                 });
                 
                 toast({
-                    title: "Admin Account Created",
-                    description: "Initial admin account has been created successfully.",
+                    title: t('adminAccountCreated'),
+                    description: t('adminAccountCreatedDescription'),
                 });
             }
             
@@ -64,8 +66,8 @@ const AdminLoginPage = () => {
             adminLogin(adminUserData);
             
             toast({
-                title: "Login Successful",
-                description: `Welcome back, ${adminUserData.name}!`,
+                title: t('loginSuccessful'),
+                description: `${t('welcomeBack')} ${adminUserData.name}!`,
             });
             
             navigate('/admin');
@@ -73,8 +75,8 @@ const AdminLoginPage = () => {
         } catch (error: any) {
             console.error('Admin login error:', error);
             toast({
-                title: "Login Failed",
-                description: error.message || "Invalid credentials. Please try again.",
+                title: t('loginFailed'),
+                description: error.message || t('invalidCredentials'),
                 variant: "destructive",
             });
         } finally {
@@ -92,7 +94,7 @@ const AdminLoginPage = () => {
                         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Fresh
+                        {t('backToFresh')}
                     </Link>
                 </div>
 
@@ -101,16 +103,16 @@ const AdminLoginPage = () => {
                         <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Shield className="w-10 h-10 text-primary" />
                         </div>
-                        <CardTitle className="text-2xl font-bold">Admin Portal</CardTitle>
+                        <CardTitle className="text-2xl font-bold">{t('adminPortal')}</CardTitle>
                         <CardDescription className="text-base">
-                            Sign in to access the admin dashboard
+                            {t('signInToAccessAdminDashboard')}
                         </CardDescription>
                         
                         {/* Security Warning */}
                         <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                             <p className="text-sm text-amber-800">
-                                ⚠️ <strong>Authorized Personnel Only</strong><br/>
-                                This area is restricted to administrative staff only. Unauthorized access attempts are logged and monitored.
+                                ⚠️ <strong>{t('authorizedPersonnelOnly')}</strong><br/>
+                                {t('restrictedAreaWarning')}
                             </p>
                         </div>
                     </CardHeader>
@@ -118,7 +120,7 @@ const AdminLoginPage = () => {
                     <CardContent>
                         <form onSubmit={handleAdminLogin} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email Address</Label>
+                                <Label htmlFor="email">{t('emailAddress')}</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                     <Input
@@ -135,14 +137,14 @@ const AdminLoginPage = () => {
                             </div>
                             
                             <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">{t('password')}</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Enter your password"
+                                        placeholder={t('enterYourPassword')}
                                         className="pr-10"
                                         required
                                         disabled={isLoading}
@@ -165,29 +167,29 @@ const AdminLoginPage = () => {
                                 {isLoading ? (
                                     <>
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                        Signing In...
+                                        {t('signingIn')}
                                     </>
                                 ) : (
-                                    'Sign In'
+                                    t('signIn')
                                 )}
                             </Button>
                         </form>
 
                         {/* Demo Credentials */}
                         <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                            <h4 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h4>
+                            <h4 className="text-sm font-medium text-blue-900 mb-2">{t('demoCredentials')}</h4>
                             <div className="text-xs text-blue-700 space-y-1">
-                                <div><strong>Email:</strong> admin@fresh.co.tz</div>
-                                <div><strong>Password:</strong> admin123</div>
+                                <div><strong>{t('email')}:</strong> admin@fresh.co.tz</div>
+                                <div><strong>{t('password')}:</strong> admin123</div>
                                 <div className="text-blue-600 mt-2">
-                                    💡 These are default credentials for testing
+                                    💡 {t('demoCredentialsNote')}
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-6 text-center">
                             <p className="text-sm text-muted-foreground">
-                                Protected admin area • Fresh Grocery Platform
+                                {t('protectedAdminArea')}
                             </p>
                         </div>
                     </CardContent>

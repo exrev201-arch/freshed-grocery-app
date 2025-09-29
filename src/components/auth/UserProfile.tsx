@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { UserService, UserFavorite, UserProfile as UserProfileType } from '@/lib/user-service';
 import { OrderService, Order } from '@/lib/order-service';
 import OrderTracker from '@/components/orders/OrderTracker';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UserProfileProps {
     isOpen: boolean;
@@ -19,6 +20,7 @@ interface UserProfileProps {
 export function UserProfile({ isOpen, onClose }: UserProfileProps) {
     const { user, logout } = useAuthStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites'>('profile');
     const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
     const [favorites, setFavorites] = useState<UserFavorite[]>([]);
@@ -106,16 +108,16 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
             }
 
             toast({
-                title: "Profile updated!",
-                description: "Your profile has been saved successfully.",
+                title: t('profileUpdated'),
+                description: t('profileSavedSuccessfully'),
             });
 
             // Reload data
             await loadUserData();
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to save profile. Please try again.",
+                title: t('error'),
+                description: t('failedToSaveProfile'),
                 variant: "destructive",
             });
         } finally {
@@ -130,13 +132,13 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
             await UserService.removeFromFavorites(user.uid, favorite._id);
             setFavorites(prev => prev.filter(f => f._id !== favorite._id));
             toast({
-                title: "Removed from favorites",
-                description: `${favorite.product_name} has been removed from your favorites.`,
+                title: t('removedFromFavorites'),
+                description: `${favorite.product_name} ${t('removedFromFavoritesDescription')}`,
             });
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to remove from favorites. Please try again.",
+                title: t('error'),
+                description: t('failedToRemoveFromFavorites'),
                 variant: "destructive",
             });
         }
@@ -146,14 +148,14 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
         try {
             await logout();
             toast({
-                title: "Logged out",
-                description: "You've been successfully logged out.",
+                title: t('loggedOut'),
+                description: t('successfullyLoggedOut'),
             });
             onClose();
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to logout. Please try again.",
+                title: t('error'),
+                description: t('failedToLogout'),
                 variant: "destructive",
             });
         }
@@ -172,7 +174,7 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                                 <User className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="font-semibold">{user.name || 'Fresh User'}</h2>
+                                <h2 className="font-semibold">{user.name || t('freshUser')}</h2>
                                 <p className="text-primary-foreground/80 text-sm">
                                     {user.email}
                                 </p>
@@ -190,9 +192,9 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                 {/* Navigation Tabs */}
                 <div className="flex border-b border-border bg-background">
                     {[
-                        { id: 'profile', label: 'Profile', icon: User },
-                        { id: 'orders', label: 'Orders', icon: Package },
-                        { id: 'favorites', label: 'Favorites', icon: Heart },
+                        { id: 'profile', label: t('userProfile'), icon: User },
+                        { id: 'orders', label: t('orders'), icon: Package },
+                        { id: 'favorites', label: t('favorites'), icon: Heart },
                     ].map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
@@ -216,23 +218,23 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                             {isLoading ? (
                                 <div className="text-center py-4">
                                     <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent mx-auto mb-2"></div>
-                                    <p className="text-sm text-muted-foreground">Loading profile...</p>
+                                    <p className="text-sm text-muted-foreground">{t('loadingProfile')}</p>
                                 </div>
                             ) : (
                                 <>
                                     <div>
-                                        <Label htmlFor="name">Full Name</Label>
+                                        <Label htmlFor="name">{t('fullName')}</Label>
                                         <Input
                                             id="name"
                                             value={formData.name}
                                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                            placeholder="Enter your full name"
+                                            placeholder={t('enterFullName')}
                                             className="mt-1"
                                         />
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="email">Email</Label>
+                                        <Label htmlFor="email">{t('email')}</Label>
                                         <Input
                                             id="email"
                                             value={user?.email || ''}
@@ -242,25 +244,25 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="phone">Phone Number</Label>
+                                        <Label htmlFor="phone">{t('phoneNumber')}</Label>
                                         <Input
                                             id="phone"
                                             value={formData.phone}
                                             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                            placeholder="+255 XXX XXX XXX"
+                                            placeholder={t('phoneNumberPlaceholder')}
                                             className="mt-1"
                                         />
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="address">Delivery Address</Label>
+                                        <Label htmlFor="address">{t('deliveryAddress')}</Label>
                                         <div className="flex items-center space-x-2 mt-1">
                                             <MapPin className="w-4 h-4 text-gray-400" />
                                             <Input
                                                 id="address"
                                                 value={formData.address}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                                                placeholder="Enter your address in Dar es Salaam"
+                                                placeholder={t('enterDeliveryAddress')}
                                                 className="flex-1"
                                             />
                                         </div>
@@ -272,14 +274,14 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                                         className="w-full"
                                     >
                                         <Save className="w-4 h-4 mr-2" />
-                                        {isSaving ? 'Saving...' : 'Save Profile'}
+                                        {isSaving ? t('saving') : t('saveProfile')}
                                     </Button>
 
                                     <Separator />
 
                                     <div className="text-xs text-muted-foreground space-y-1">
-                                        <p>Member since: {user ? new Date(user.createdTime).toLocaleDateString() : 'N/A'}</p>
-                                        <p>Last login: {user ? new Date(user.lastLoginTime).toLocaleDateString() : 'N/A'}</p>
+                                        <p>{t('memberSince')}: {user ? new Date(user.createdTime).toLocaleDateString() : 'N/A'}</p>
+                                        <p>{t('lastLogin')}: {user ? new Date(user.lastLoginTime).toLocaleDateString() : 'N/A'}</p>
                                     </div>
                                 </>
                             )}
@@ -291,19 +293,19 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                             {isLoading ? (
                                 <div className="text-center py-4">
                                     <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent mx-auto mb-2"></div>
-                                    <p className="text-sm text-muted-foreground">Loading orders...</p>
+                                    <p className="text-sm text-muted-foreground">{t('loadingOrders')}</p>
                                 </div>
                             ) : orders.length === 0 ? (
                                 <div className="text-center py-8">
                                     <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                                    <h3 className="font-medium text-foreground mb-2">No orders yet</h3>
+                                    <h3 className="font-medium text-foreground mb-2">{t('noOrdersYet')}</h3>
                                     <p className="text-muted-foreground text-sm mb-4">
-                                        Your order history will appear here
+                                        {t('orderHistoryWillAppearHere')}
                                     </p>
                                     <Button
                                         onClick={onClose}
                                     >
-                                        Start Shopping
+                                        {t('startShoppingButton')}
                                     </Button>
                                 </div>
                             ) : (
@@ -327,19 +329,19 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                             {isLoading ? (
                                 <div className="text-center py-4">
                                     <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent mx-auto mb-2"></div>
-                                    <p className="text-sm text-muted-foreground">Loading favorites...</p>
+                                    <p className="text-sm text-muted-foreground">{t('loadingFavorites')}</p>
                                 </div>
                             ) : favorites.length === 0 ? (
                                 <div className="text-center py-8">
                                     <Heart className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                                    <h3 className="font-medium text-foreground mb-2">No favorites yet</h3>
+                                    <h3 className="font-medium text-foreground mb-2">{t('noFavoritesYet')}</h3>
                                     <p className="text-muted-foreground text-sm mb-4">
-                                        Products you favorite will appear here
+                                        {t('productsYouFavoriteWillAppearHere')}
                                     </p>
                                     <Button
                                         onClick={onClose}
                                     >
-                                        Browse Products
+                                        {t('browseProducts')}
                                     </Button>
                                 </div>
                             ) : (
@@ -379,7 +381,7 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
                         className="w-full border-destructive/20 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     >
                         <LogOut className="w-4 h-4 mr-2" />
-                        Logout
+                        {t('logout')}
                     </Button>
                 </div>
             </div>

@@ -14,8 +14,10 @@ import { Toaster } from '@/components/ui/toaster'
 import { Badge } from '@/components/ui/badge'
 import CustomerSupport from '@/components/support/CustomerSupport'
 import { Link } from 'react-router-dom'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 function HomePage() {
+    const { t } = useLanguage()
     const { toast } = useToast()
     const { hasPermission } = useAdminStore()
     const [databaseProducts, setDatabaseProducts] = useState<Product[]>([])
@@ -42,8 +44,8 @@ function HomePage() {
     const handleMigration = async () => {
         if (!hasPermission('write')) {
             toast({
-                title: "Access Denied",
-                description: "You need admin privileges to migrate data.",
+                title: t('accessDenied'),
+                description: t('needAdminPrivileges'),
                 variant: "destructive",
             })
             return
@@ -55,13 +57,13 @@ function HomePage() {
             await migrateProductsToDatabase()
             await loadProducts()
             toast({
-                title: "Migration Complete",
-                description: "Products have been migrated to the database successfully!",
+                title: t('migrationComplete'),
+                description: t('productsMigratedSuccessfully'),
             })
         } catch (error) {
             toast({
-                title: "Migration Failed",
-                description: "Failed to migrate products. Please try again.",
+                title: t('migrationFailed'),
+                description: t('failedToMigrateProducts'),
                 variant: "destructive",
             })
         } finally {
@@ -104,18 +106,18 @@ function HomePage() {
                         <div className="space-y-6">
                             <div className="space-y-4">
                                 <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                                    Fresh Groceries
-                                    <span className="block text-primary">Delivered Fast</span>
+                                    {t('freshGroceries')}
+                                    <span className="block text-primary">{t('deliveredFast')}</span>
                                 </h1>
                                 <p className="text-xl text-muted-foreground">
-                                    Get farm-fresh vegetables, fruits, and groceries delivered to your doorstep in Dar es Salaam. Quick, reliable, and always fresh.
+                                    {t('heroDescription')}
                                 </p>
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Button size="lg" className="text-lg px-8 py-6" asChild>
                                     <Link to="/products">
-                                        Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+                                        {t('shopNow')} <ArrowRight className="ml-2 h-5 w-5" />
                                     </Link>
                                 </Button>
                                 <Button 
@@ -125,17 +127,17 @@ function HomePage() {
                                     onClick={handleDownloadApp}
                                 >
                                     <Download className="mr-2 h-5 w-5" />
-                                    Download App
+                                    {t('downloadApp')}
                                 </Button>
                             </div>
 
                             {/* Features */}
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
                                 {[
-                                    { icon: Truck, text: 'Fast Delivery' },
-                                    { icon: Leaf, text: 'Farm Fresh' },
-                                    { icon: Clock, text: '30min Delivery' },
-                                    { icon: Shield, text: 'Quality Guaranteed' }
+                                    { icon: Truck, text: t('fastDelivery') },
+                                    { icon: Leaf, text: t('farmFresh') },
+                                    { icon: Clock, text: t('thirtyMinDelivery') },
+                                    { icon: Shield, text: t('qualityGuaranteed') }
                                 ].map((feature, index) => (
                                     <div key={index} className="flex items-center gap-2 text-sm">
                                         <feature.icon className="h-4 w-4 text-primary flex-shrink-0" />
@@ -158,14 +160,14 @@ function HomePage() {
                             <Card className="absolute -top-4 -left-4 w-24 h-24 shadow-lg">
                                 <CardContent className="p-3 text-center">
                                     <div className="text-2xl">🥬</div>
-                                    <div className="text-xs font-medium">Fresh Veggies</div>
+                                    <div className="text-xs font-medium">{t('farmFresh')}</div>
                                 </CardContent>
                             </Card>
 
                             <Card className="absolute -bottom-4 -right-4 w-24 h-24 shadow-lg">
                                 <CardContent className="p-3 text-center">
                                     <div className="text-2xl">🍎</div>
-                                    <div className="text-xs font-medium">Sweet Fruits</div>
+                                    <div className="text-xs font-medium">{t('farmFresh')}</div>
                                 </CardContent>
                             </Card>
                         </div>
@@ -177,14 +179,14 @@ function HomePage() {
             <section className="py-12">
                 <div className="container mx-auto px-4">
                     <div className="text-center space-y-4 mb-8">
-                        <h2 className="text-3xl font-bold">Featured Products</h2>
-                        <p className="text-muted-foreground">Handpicked fresh items just for you</p>
+                        <h2 className="text-3xl font-bold">{t('featuredProducts')}</h2>
+                        <p className="text-muted-foreground">{t('handpickedItems')}</p>
                     </div>
 
                     {loadingProducts ? (
                         <div className="text-center py-8">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                            <p className="text-muted-foreground">Loading products...</p>
+                            <p className="text-muted-foreground">{t('loadingProducts')}</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
@@ -200,9 +202,9 @@ function HomePage() {
             <section className="py-16 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold">How It Works</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold">{t('howItWorks')}</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Getting fresh groceries delivered has never been easier. Just 3 simple steps to freshness.
+                            {t('howItWorksDescription')}
                         </p>
                     </div>
 
@@ -211,22 +213,22 @@ function HomePage() {
                             {
                                 step: '01',
                                 icon: ShoppingCart,
-                                title: 'Browse & Select',
-                                description: 'Choose from our wide selection of fresh vegetables, fruits, and groceries. Filter by category or search for specific items.',
+                                title: t('browseSelect'),
+                                description: t('browseSelectDescription'),
                                 color: 'bg-primary/10 text-primary'
                             },
                             {
                                 step: '02',
                                 icon: Clock,
-                                title: 'Schedule Delivery',
-                                description: 'Pick your preferred delivery time slot. We offer same-day delivery across Dar es Salaam from 8 AM to 8 PM.',
+                                title: t('scheduleDelivery'),
+                                description: t('scheduleDeliveryDescription'),
                                 color: 'bg-accent/10 text-accent'
                             },
                             {
                                 step: '03',
                                 icon: CheckCircle,
-                                title: 'Receive Fresh',
-                                description: 'Our delivery team will bring your fresh groceries right to your doorstep. Quality guaranteed or your money back.',
+                                title: t('receiveFresh'),
+                                description: t('receiveFreshDescription'),
                                 color: 'bg-success/10 text-success'
                             }
                         ].map((item, index) => (
@@ -262,7 +264,7 @@ function HomePage() {
                     <div className="text-center mt-12">
                         <Button size="lg" asChild>
                             <Link to="/products">
-                                Start Shopping Now <ArrowRight className="ml-2 h-5 w-5" />
+                                {t('startShopping')} <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
                         </Button>
                     </div>
@@ -273,9 +275,9 @@ function HomePage() {
             <section className="py-16 bg-muted/30">
                 <div className="container mx-auto px-4">
                     <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold">Why Choose Fresh?</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold">{t('whyChooseFresh')}</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            We're not just another grocery delivery service. Here's what makes us different.
+                            {t('whyChooseFreshDescription')}
                         </p>
                     </div>
 
@@ -284,31 +286,31 @@ function HomePage() {
                             {[
                                 {
                                     icon: Leaf,
-                                    title: 'Farm-to-Door Freshness',
-                                    description: 'Direct partnerships with local farmers ensure you get the freshest produce, harvested within 24 hours of delivery.',
+                                    title: t('farmToDoor'),
+                                    description: t('farmToDoorDescription'),
                                     stat: '< 24hrs',
-                                    statLabel: 'from farm'
+                                    statLabel: t('farmFresh')
                                 },
                                 {
                                     icon: Clock,
-                                    title: 'Lightning Fast Delivery',
-                                    description: 'Average delivery time of just 30 minutes across Dar es Salaam. Same-day delivery available for all orders.',
+                                    title: t('lightningFast'),
+                                    description: t('lightningFastDescription'),
                                     stat: '30min',
-                                    statLabel: 'avg delivery'
+                                    statLabel: t('thirtyMinDelivery')
                                 },
                                 {
                                     icon: Shield,
-                                    title: 'Quality Guarantee',
-                                    description: 'Every item is hand-picked and quality-checked. Not satisfied? We\'ll replace it for free or give you a full refund.',
+                                    title: t('qualityGuarantee'),
+                                    description: t('qualityGuaranteeDescription'),
                                     stat: '100%',
-                                    statLabel: 'guarantee'
+                                    statLabel: t('qualityGuaranteed')
                                 },
                                 {
                                     icon: Users,
-                                    title: 'Trusted by Thousands',
-                                    description: 'Join over 10,000 satisfied customers who trust Fresh for their daily grocery needs across Tanzania.',
+                                    title: t('trustedByThousands'),
+                                    description: t('trustedByThousandsDescription'),
                                     stat: '10k+',
-                                    statLabel: 'customers'
+                                    statLabel: t('happyCustomers')
                                 }
                             ].map((feature, index) => (
                                 <div key={index} className="flex gap-4">
@@ -345,7 +347,7 @@ function HomePage() {
                                 <CardContent className="p-4">
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-primary">4.9★</div>
-                                        <div className="text-xs text-muted-foreground">Customer Rating</div>
+                                        <div className="text-xs text-muted-foreground">{t('customerRating')}</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -354,7 +356,7 @@ function HomePage() {
                                 <CardContent className="p-4">
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-success">98%</div>
-                                        <div className="text-xs text-muted-foreground">On-time Delivery</div>
+                                        <div className="text-xs text-muted-foreground">{t('onTimeDelivery')}</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -367,9 +369,9 @@ function HomePage() {
             <section className="py-16 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center space-y-4 mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold">What Our Customers Say</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold">{t('whatCustomersSay')}</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Don't just take our word for it. Here's what real customers have to say about Fresh.
+                            {t('whatCustomersSayDescription')}
                         </p>
                     </div>
 
@@ -381,7 +383,7 @@ function HomePage() {
                                 location: 'Mikocheni, Dar es Salaam',
                                 image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
                                 rating: 5,
-                                testimonial: 'Fresh has been a game-changer for our family. The vegetables are always crisp and the fruits are perfectly ripe. Delivery is so reliable - they\'ve never been late!',
+                                testimonial: t('customerSay1'),
                                 verified: true
                             },
                             {
@@ -390,7 +392,7 @@ function HomePage() {
                                 location: 'Masaki, Dar es Salaam',
                                 image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
                                 rating: 5,
-                                testimonial: 'As a restaurant owner, quality is everything. Fresh consistently delivers the highest quality produce. Their farm partnerships really show in the freshness.',
+                                testimonial: t('customerSay2'),
                                 verified: true
                             },
                             {
@@ -399,7 +401,7 @@ function HomePage() {
                                 location: 'Oyster Bay, Dar es Salaam',
                                 image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
                                 rating: 5,
-                                testimonial: 'Love that I can get organic produce delivered so quickly. The app is super easy to use and the customer service is excellent. Highly recommend!',
+                                testimonial: t('customerSay3'),
                                 verified: true
                             }
                         ].map((testimonial, index) => (
@@ -434,7 +436,7 @@ function HomePage() {
                                                     {testimonial.verified && (
                                                         <Badge variant="secondary" className="text-xs">
                                                             <CheckCircle className="h-3 w-3 mr-1" />
-                                                            Verified
+                                                            {t('verified')}
                                                         </Badge>
                                                     )}
                                                 </div>
@@ -452,10 +454,10 @@ function HomePage() {
                     <div className="mt-12 pt-8 border-t border-border">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                             {[
-                                { number: '10,000+', label: 'Happy Customers' },
-                                { number: '50,000+', label: 'Orders Delivered' },
-                                { number: '4.9/5', label: 'Average Rating' },
-                                { number: '98%', label: 'Customer Retention' }
+                                { number: '10,000+', label: t('happyCustomers') },
+                                { number: '50,000+', label: t('ordersDelivered') },
+                                { number: '4.9/5', label: t('averageRating') },
+                                { number: '98%', label: t('customerRetention') }
                             ].map((stat, index) => (
                                 <div key={index} className="space-y-2">
                                     <div className="text-2xl lg:text-3xl font-bold text-primary">{stat.number}</div>
@@ -471,21 +473,20 @@ function HomePage() {
             <section className="py-16 bg-primary text-primary-foreground">
                 <div className="container mx-auto px-4 text-center space-y-8">
                     <div className="space-y-4">
-                        <h2 className="text-3xl font-bold">Ready to Get Fresh?</h2>
+                        <h2 className="text-3xl font-bold">{t('readyToGetFresh')}</h2>
                         <p className="text-lg opacity-90 max-w-2xl mx-auto">
-                            Join thousands of satisfied customers who trust Fresh for their daily grocery needs.
-                            Fast delivery, guaranteed quality, unbeatable prices.
+                            {t('readyToGetFreshDescription')}
                         </p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
                             <Link to="/products">
-                                Start Shopping
+                                {t('startShoppingCTA')}
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-primary-foreground text-black hover:bg-primary-foreground/20 hover:text-primary-foreground">
-                            Learn More
+                            {t('learnMore')}
                         </Button>
                     </div>
                 </div>
@@ -536,40 +537,40 @@ function HomePage() {
                     <DialogHeader>
                         <DialogTitle className="text-center flex items-center justify-center gap-2">
                             <Download className="h-6 w-6 text-primary" />
-                            Install Fresh Web App
+                            {t('installWebApp')}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6 pt-4">
                         <div className="text-center space-y-2">
                             <p className="text-muted-foreground">
-                                Install our web app for the best shopping experience on your device.
+                                {t('webAppDescription')}
                             </p>
                         </div>
 
                         <div className="space-y-4">
                             {/* Web App Installation Instructions */}
                             <div className="bg-muted/50 rounded-lg p-4">
-                                <h3 className="font-medium mb-2">How to Install:</h3>
+                                <h3 className="font-medium mb-2">{t('howToInstall')}:</h3>
                                 <ol className="text-sm space-y-2 list-decimal list-inside">
-                                    <li>Click the share button in your browser</li>
-                                    <li>Select "Add to Home Screen"</li>
-                                    <li>Open the app from your home screen</li>
+                                    <li>{t('installStep1')}</li>
+                                    <li>{t('installStep2')}</li>
+                                    <li>{t('installStep3')}</li>
                                 </ol>
                             </div>
 
                             <div className="text-center py-4">
                                 <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
                                     <Smartphone className="h-4 w-4 text-primary" />
-                                    <span className="text-sm font-medium">Works on all devices!</span>
+                                    <span className="text-sm font-medium">{t('worksOnAllDevices')}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="border-t pt-4">
                             <div className="text-center space-y-2">
-                                <p className="text-sm font-medium">📱 Native apps coming soon!</p>
+                                <p className="text-sm font-medium">{t('nativeAppsComing')}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    We're working on dedicated mobile apps for iOS and Android.
+                                    {t('nativeAppsDescription')}
                                 </p>
                             </div>
                         </div>
@@ -580,4 +581,4 @@ function HomePage() {
     )
 }
 
-export default HomePage 
+export default HomePage

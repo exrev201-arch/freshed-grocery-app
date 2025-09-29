@@ -12,10 +12,12 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart-store';
 import ClickPesaCheckout from '@/components/checkout/ClickPesaCheckout';
 import Header from '@/components/layout/Header';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CheckoutPage() {
     const navigate = useNavigate();
     const { items } = useCartStore();
+    const { t } = useLanguage();
 
     // Redirect if cart is empty
     if (items.length === 0) {
@@ -24,13 +26,13 @@ export default function CheckoutPage() {
                 <Header />
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center py-16">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-4">Kikapu Tupu</h1>
-                        <p className="text-gray-600 mb-8">Ongeza bidhaa kwanza kabla ya kumaliza ununuzi.</p>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('emptyCart')}</h1>
+                        <p className="text-gray-600 mb-8">{t('addItemsBeforeCheckout')}</p>
                         <Button 
                             onClick={() => navigate('/')} 
                             className="bg-emerald-600 hover:bg-emerald-700"
                         >
-                            Rudi Kwenye Maduka
+                            {t('returnToShop')}
                         </Button>
                     </div>
                 </div>
@@ -50,7 +52,7 @@ export default function CheckoutPage() {
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
                 >
                     <ArrowLeft className="h-4 w-4" />
-                    Rudi Kwenye Maduka
+                    {t('returnToShop')}
                 </Button>
             </div>
 

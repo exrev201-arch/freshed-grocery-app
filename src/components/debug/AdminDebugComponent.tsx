@@ -13,12 +13,14 @@ import { useAdminStore } from '@/store/admin-store';
 import { adminService } from '@/lib/admin-service';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, UserCheck, Settings, LogOut, Database } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function AdminDebugComponent() {
     const [email, setEmail] = useState('admin@fresh.co.tz');
     const [isLoading, setIsLoading] = useState(false);
     const { adminUser, isAdminAuthenticated, adminLogin, adminLogout, hasPermission } = useAdminStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     const handleAdminLogin = async () => {
         setIsLoading(true);
@@ -34,13 +36,13 @@ export function AdminDebugComponent() {
                 adminLogin(adminUserData);
                 
                 toast({
-                    title: "Admin Login Successful",
-                    description: `Welcome ${adminUserData.name}!`,
+                    title: t('adminLoginSuccessful'),
+                    description: `${t('welcome')} ${adminUserData.name}!`,
                 });
             } else {
                 toast({
-                    title: "Admin Not Found",
-                    description: "No admin user found with this email. Creating initial admin...",
+                    title: t('adminNotFound'),
+                    description: t('creatingInitialAdmin'),
                     variant: "destructive",
                 });
                 
@@ -50,8 +52,8 @@ export function AdminDebugComponent() {
         } catch (error) {
             console.error('Admin login error:', error);
             toast({
-                title: "Login Failed",
-                description: "Failed to login as admin. Check console for details.",
+                title: t('loginFailed'),
+                description: t('failedToLoginAsAdmin'),
                 variant: "destructive",
             });
         } finally {
@@ -71,14 +73,14 @@ export function AdminDebugComponent() {
             adminLogin(newAdmin);
             
             toast({
-                title: "Admin Created & Logged In",
-                description: "Initial admin user created successfully!",
+                title: t('adminCreatedLoggedIn'),
+                description: t('initialAdminCreated'),
             });
         } catch (error) {
             console.error('Error creating admin:', error);
             toast({
-                title: "Failed to Create Admin",
-                description: "Could not create initial admin user.",
+                title: t('failedToCreateAdmin'),
+                description: t('couldNotCreateInitialAdmin'),
                 variant: "destructive",
             });
         }
@@ -86,15 +88,15 @@ export function AdminDebugComponent() {
 
     const testPermissions = () => {
         const permissions = ['read', 'write', 'delete', 'admin'] as const;
-        console.log('=== Admin Permissions Test ===');
+        console.log(t('adminPermissionsTest'));
         permissions.forEach(permission => {
             const hasAccess = hasPermission(permission);
-            console.log(`${permission}: ${hasAccess ? '✅ Allowed' : '❌ Denied'}`);
+            console.log(`${permission}: ${hasAccess ? `✅ ${t('allowed')}` : `❌ ${t('denied')}`}`);
         });
         
         toast({
-            title: "Permission Test Complete",
-            description: "Check console for detailed permission results.",
+            title: t('permissionTestComplete'),
+            description: t('checkConsoleForResults'),
         });
     };
 
@@ -108,18 +110,18 @@ export function AdminDebugComponent() {
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-sm">
                         <Shield className="h-4 w-4" />
-                        Admin Debug Panel
+                        {t('adminDebugPanel')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     {/* Admin Status */}
                     <div className="flex items-center justify-between">
-                        <span className="text-sm">Admin Status:</span>
+                        <span className="text-sm">{t('adminStatus')}:</span>
                         <Badge variant={isAdminAuthenticated ? "default" : "secondary"}>
                             {isAdminAuthenticated ? (
-                                <><UserCheck className="h-3 w-3 mr-1" /> Admin Logged In</>
+                                <><UserCheck className="h-3 w-3 mr-1" /> {t('adminLoggedIn')}</>
                             ) : (
-                                <><Shield className="h-3 w-3 mr-1" /> Not Admin</>
+                                <><Shield className="h-3 w-3 mr-1" /> {t('notAdmin')}</>
                             )}
                         </Badge>
                     </div>
@@ -127,10 +129,10 @@ export function AdminDebugComponent() {
                     {/* Admin Info */}
                     {adminUser && (
                         <div className="p-2 bg-muted rounded text-xs">
-                            <div><strong>Name:</strong> {adminUser.name}</div>
-                            <div><strong>Email:</strong> {adminUser.email}</div>
-                            <div><strong>Role:</strong> {adminUser.role}</div>
-                            <div><strong>Status:</strong> {adminUser.is_active}</div>
+                            <div><strong>{t('name')}:</strong> {adminUser.name}</div>
+                            <div><strong>{t('email')}:</strong> {adminUser.email}</div>
+                            <div><strong>{t('role')}:</strong> {adminUser.role}</div>
+                            <div><strong>{t('status')}:</strong> {adminUser.is_active}</div>
                         </div>
                     )}
 
@@ -138,7 +140,7 @@ export function AdminDebugComponent() {
                     {!isAdminAuthenticated && (
                         <div className="space-y-2">
                             <div>
-                                <Label htmlFor="admin-email" className="text-xs">Admin Email</Label>
+                                <Label htmlFor="admin-email" className="text-xs">{t('adminEmail')}</Label>
                                 <Input
                                     id="admin-email"
                                     type="email"
@@ -154,7 +156,7 @@ export function AdminDebugComponent() {
                                 disabled={isLoading}
                                 className="w-full"
                             >
-                                {isLoading ? 'Logging In...' : 'Login as Admin'}
+                                {isLoading ? t('loggingIn') : t('loginAsAdmin')}
                             </Button>
                         </div>
                     )}
@@ -168,7 +170,7 @@ export function AdminDebugComponent() {
                                 className="text-xs"
                             >
                                 <Settings className="h-3 w-3 mr-1" />
-                                Dashboard
+                                {t('dashboard')}
                             </Button>
                             
                             <Button 
@@ -177,7 +179,7 @@ export function AdminDebugComponent() {
                                 onClick={testPermissions}
                                 className="text-xs"
                             >
-                                Test Perms
+                                {t('testPerms')}
                             </Button>
                             
                             <Button 
@@ -187,21 +189,21 @@ export function AdminDebugComponent() {
                                 className="col-span-2 text-xs"
                             >
                                 <LogOut className="h-3 w-3 mr-1" />
-                                Logout Admin
+                                {t('logoutAdmin')}
                             </Button>
                         </div>
                     )}
 
                     {/* Default Credentials */}
                     <div className="p-2 bg-blue-50 rounded text-xs">
-                        <div className="font-medium mb-1">Default Admin:</div>
-                        <div><strong>Email:</strong> admin@fresh.co.tz</div>
-                        <div><strong>Role:</strong> admin (full access)</div>
+                        <div className="font-medium mb-1">{t('defaultAdmin')}:</div>
+                        <div><strong>{t('email')}:</strong> admin@fresh.co.tz</div>
+                        <div><strong>{t('role')}:</strong> admin ({t('fullAccess')})</div>
                     </div>
 
                     {/* Instructions */}
                     <div className="text-xs text-muted-foreground">
-                        💡 Admin uses separate authentication from regular users
+                        💡 {t('adminUsesSeparateAuth')}
                     </div>
                 </CardContent>
             </Card>

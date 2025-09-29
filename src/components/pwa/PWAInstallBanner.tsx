@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { X, Download, Smartphone } from 'lucide-react';
 import { usePWA } from '@/hooks/use-pwa';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PWAInstallBannerProps {
   onDismiss?: () => void;
@@ -10,6 +11,7 @@ interface PWAInstallBannerProps {
 
 const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({ onDismiss }) => {
   const { promptInstall, showInstallBanner, isInstallable } = usePWA();
+  const { t } = useLanguage();
 
   if (!showInstallBanner || !isInstallable) {
     return null;
@@ -37,10 +39,10 @@ const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({ onDismiss }) => {
             
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm mb-1">
-                Install Fresh App
+                {t('installFreshApp')}
               </h3>
               <p className="text-xs text-muted-foreground mb-3">
-                Add to your home screen for quick access and offline shopping
+                {t('addToHomeScreen')}
               </p>
               
               <div className="flex gap-2">
@@ -50,7 +52,7 @@ const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({ onDismiss }) => {
                   className="text-xs h-8 px-3"
                 >
                   <Download className="h-3 w-3 mr-1" />
-                  Install
+                  {t('install')}
                 </Button>
                 <Button 
                   variant="ghost" 

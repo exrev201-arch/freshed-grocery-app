@@ -24,6 +24,8 @@ function CartSheet() {
         }).format(price)
     }
 
+    console.log('CartSheet rendering with language:', language);
+
     return (
         <Sheet open={isOpen} onOpenChange={toggleCart}>
             <SheetContent className="w-full sm:max-w-lg">

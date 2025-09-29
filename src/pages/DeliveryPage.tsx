@@ -20,6 +20,7 @@ import { getOrderDelivery, getOrdersByStatus } from '@/lib/delivery-service';
 import { OrderService } from '@/lib/order-service';
 import DeliveryPersonInterface from '@/components/delivery/DeliveryPersonInterface';
 import LiveDeliveryTracker from '@/components/delivery/LiveDeliveryTracker';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Order {
     _id: string;
@@ -54,6 +55,7 @@ const DeliveryPage: React.FC = () => {
     const { user } = useAuthStore();
     const { deliveryPerson, isDeliveryAuthenticated } = useDeliveryAuthStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     const [order, setOrder] = useState<Order | null>(null);
     const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo | null>(null);
@@ -78,8 +80,8 @@ const DeliveryPage: React.FC = () => {
             const isOwner = await OrderService.verifyOrderOwnership(orderId, user.uid);
             if (!isOwner) {
                 toast({
-                    title: "Kosa",
-                    description: "Agizo halipatikani au huna ruhusa ya kuliangalia.",
+                    title: t('error'),
+                    description: t('orderNotFoundOrNoPermission'),
                     variant: "destructive"
                 });
                 navigate('/');
@@ -92,8 +94,8 @@ const DeliveryPage: React.FC = () => {
 
             if (!foundOrder) {
                 toast({
-                    title: "Kosa",
-                    description: "Agizo halipatikani au huna ruhusa ya kuliangalia.",
+                    title: t('error'),
+                    description: t('orderNotFoundOrNoPermission'),
                     variant: "destructive"
                 });
                 navigate('/');
@@ -120,8 +122,8 @@ const DeliveryPage: React.FC = () => {
         } catch (error) {
             console.error('Error loading order/delivery info:', error);
             toast({
-                title: "Kosa",
-                description: "Imeshindwa kupakia taarifa za agizo.",
+                title: t('error'),
+                description: t('failedToLoadOrderInfo'),
                 variant: "destructive"
             });
         } finally {
@@ -137,7 +139,7 @@ const DeliveryPage: React.FC = () => {
                         <CardContent className="p-8">
                             <div className="flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                                <span className="ml-2">Inapakia...</span>
+                                <span className="ml-2">{t('loading')}...</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -153,13 +155,13 @@ const DeliveryPage: React.FC = () => {
                     <Card>
                         <CardContent className="p-8 text-center">
                             <AlertTriangle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                            <h2 className="text-xl font-semibold mb-2">Agizo Halipatikani</h2>
+                            <h2 className="text-xl font-semibold mb-2">{t('orderNotFound')}</h2>
                             <p className="text-muted-foreground mb-4">
-                                Agizo unalolitafuta halipatikani au huna ruhusa ya kuliangalia.
+                                {t('orderNotFoundOrNoPermission')}
                             </p>
                             <Button onClick={() => navigate('/')}>
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Rudi Nyumbani
+                                {t('back')}
                             </Button>
                         </CardContent>
                     </Card>
@@ -179,10 +181,10 @@ const DeliveryPage: React.FC = () => {
                         className="text-muted-foreground hover:text-foreground"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Rudi
+                        {t('back')}
                     </Button>
                     <Badge variant="outline">
-                        Agizo #{orderId?.slice(-8)}
+                        {t('order')} #{orderId?.slice(-8)}
                     </Badge>
                 </div>
 
@@ -191,7 +193,7 @@ const DeliveryPage: React.FC = () => {
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
                             <Package className="h-5 w-5" />
-                            <span>Maelezo ya Agizo</span>
+                            <span>{t('orderDetails')}</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -199,36 +201,36 @@ const DeliveryPage: React.FC = () => {
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2 text-sm">
                                     <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Mteja:</span>
+                                    <span className="font-medium">{t('customer')}:</span>
                                     <span>{user?.email}</span>
                                 </div>
                                 <div className="flex items-center space-x-2 text-sm">
                                     <Phone className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Simu:</span>
+                                    <span className="font-medium">{t('phone')}:</span>
                                     <span>{order.delivery_phone}</span>
                                 </div>
                                 <div className="flex items-start space-x-2 text-sm">
                                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                    <span className="font-medium">Anwani:</span>
+                                    <span className="font-medium">{t('orderConfirmationAddress')}:</span>
                                     <span className="flex-1">{order.delivery_address}</span>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center space-x-2 text-sm">
                                     <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Wakati:</span>
+                                    <span className="font-medium">{t('deliveryTime')}:</span>
                                     <span>
                                         {new Date(order.created_at).toLocaleString('sw-TZ')}
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-2 text-sm">
-                                    <span className="font-medium">Jumla:</span>
+                                    <span className="font-medium">{t('total')}:</span>
                                     <span className="font-bold text-green-600">
                                         TZS {order.total_amount.toLocaleString()}
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-2 text-sm">
-                                    <span className="font-medium">Hali:</span>
+                                    <span className="font-medium">{t('status')}:</span>
                                     <Badge className="capitalize">
                                         {order.status.replace('_', ' ')}
                                     </Badge>
@@ -239,7 +241,7 @@ const DeliveryPage: React.FC = () => {
                             <>
                                 <Separator />
                                 <div className="text-sm">
-                                    <span className="font-medium">Maelezo:</span>
+                                    <span className="font-medium">{t('deliveryNotes')}:</span>
                                     <p className="text-muted-foreground mt-1">{order.delivery_notes}</p>
                                 </div>
                             </>
@@ -256,7 +258,7 @@ const DeliveryPage: React.FC = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="text-center text-green-600">
-                                            Mfumo wa Msafirishaji
+                                            {t('deliveryPersonSystem')}
                                         </CardTitle>
                                     </CardHeader>
                                 </Card>
@@ -272,7 +274,7 @@ const DeliveryPage: React.FC = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="text-center">
-                                            Ufuatiliaji wa Uongozi
+                                            {t('liveTracking')}
                                         </CardTitle>
                                     </CardHeader>
                                 </Card>
@@ -288,9 +290,9 @@ const DeliveryPage: React.FC = () => {
                     <Card>
                         <CardContent className="p-8 text-center">
                             <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="font-semibold mb-2">Bado Haujapewa Msafirishaji</h3>
+                            <h3 className="font-semibold mb-2">{t('notAssignedToDelivery')}</h3>
                             <p className="text-muted-foreground">
-                                Agizo lako bado halijapewa msafirishaji. Utapokezwa taarifa wakati msafirishaji atakakkabidhiwa agizo lako.
+                                {t('orderNotAssignedYet')}
                             </p>
                         </CardContent>
                     </Card>
@@ -300,7 +302,7 @@ const DeliveryPage: React.FC = () => {
                 <Card>
                     <CardContent className="p-4">
                         <div className="text-center text-sm text-muted-foreground">
-                            <p>Una swali? Wasiliana nasi kwa simu
+                            <p>{t('needHelpContact')} 
                                 <span className="font-medium text-foreground"> +255 123 456 789</span>
                             </p>
                         </div>

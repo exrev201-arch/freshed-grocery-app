@@ -27,6 +27,7 @@ import {
     Shield,
     LogOut
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AdminDashboard: React.FC = () => {
     const { toast } = useToast();
@@ -48,6 +49,7 @@ const AdminDashboard: React.FC = () => {
     const [showAddProduct, setShowAddProduct] = useState(false);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [migrationLoading, setMigrationLoading] = useState(false);
+    const { t } = useLanguage();
 
     const [productForm, setProductForm] = useState<ProductFormData>({
         name: '',

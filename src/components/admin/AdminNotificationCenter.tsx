@@ -15,6 +15,7 @@ import {
     Package,
     Users,
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdminNotification {
     id: string;
@@ -45,6 +46,7 @@ const AdminNotificationCenter: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
     const { hasPermission } = useAdminStore();
+    const { t } = useLanguage();
 
     // Sample notifications for demo
     useEffect(() => {
@@ -52,16 +54,16 @@ const AdminNotificationCenter: React.FC = () => {
             {
                 id: '1',
                 type: 'warning',
-                title: 'Low Stock Alert',
-                message: '5 products are running low on stock',
+                title: t('lowStockAlert'),
+                message: t('productsRunningLow'),
                 timestamp: Date.now() - 300000, // 5 minutes ago
                 read: false,
                 action: {
-                    label: 'View Products',
+                    label: t('viewProducts'),
                     onClick: () => {
                         toast({
-                            title: "Navigating to Products",
-                            description: "Showing low stock products",
+                            title: t('navigatingToProducts'),
+                            description: t('showingLowStockProducts'),
                         });
                     }
                 }
@@ -69,16 +71,16 @@ const AdminNotificationCenter: React.FC = () => {
             {
                 id: '2',
                 type: 'info',
-                title: 'New Orders',
-                message: '3 new orders received in the last hour',
+                title: t('newOrders'),
+                message: t('newOrdersReceived'),
                 timestamp: Date.now() - 900000, // 15 minutes ago
                 read: false,
                 action: {
-                    label: 'View Orders',
+                    label: t('viewOrders'),
                     onClick: () => {
                         toast({
-                            title: "Navigating to Orders",
-                            description: "Showing recent orders",
+                            title: t('navigatingToOrders'),
+                            description: t('showingRecentOrders'),
                         });
                     }
                 }
@@ -86,8 +88,8 @@ const AdminNotificationCenter: React.FC = () => {
             {
                 id: '3',
                 type: 'success',
-                title: 'System Update',
-                message: 'Admin dashboard successfully updated',
+                title: t('systemUpdate'),
+                message: t('adminDashboardUpdated'),
                 timestamp: Date.now() - 1800000, // 30 minutes ago
                 read: true
             }
@@ -98,8 +100,8 @@ const AdminNotificationCenter: React.FC = () => {
                 id: 'alert1',
                 type: 'low_stock',
                 severity: 'high',
-                title: 'Critical Stock Levels',
-                description: 'Multiple products below minimum threshold',
+                title: t('criticalStockLevels'),
+                description: t('multipleProductsBelowThreshold'),
                 count: 5,
                 timestamp: Date.now() - 600000
             },
@@ -107,8 +109,8 @@ const AdminNotificationCenter: React.FC = () => {
                 id: 'alert2',
                 type: 'pending_orders',
                 severity: 'medium',
-                title: 'Pending Orders',
-                description: 'Orders waiting for confirmation',
+                title: t('pendingOrders'),
+                description: t('ordersWaitingForConfirmation'),
                 count: 12,
                 timestamp: Date.now() - 1200000
             }
@@ -116,7 +118,7 @@ const AdminNotificationCenter: React.FC = () => {
 
         setNotifications(sampleNotifications);
         setAlerts(sampleAlerts);
-    }, [toast]);
+    }, [toast, t]);
 
     const markAsRead = (notificationId: string) => {
         setNotifications(prev => 
@@ -172,11 +174,11 @@ const AdminNotificationCenter: React.FC = () => {
         const hours = Math.floor(minutes / 60);
         
         if (hours > 0) {
-            return `${hours}h ago`;
+            return `${hours}h ${t('ago')}`;
         } else if (minutes > 0) {
-            return `${minutes}m ago`;
+            return `${minutes}m ${t('ago')}`;
         } else {
-            return 'Just now';
+            return t('justNow');
         }
     };
 
@@ -210,7 +212,7 @@ const AdminNotificationCenter: React.FC = () => {
                     <Card className="shadow-lg border-2">
                         <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg">Admin Notifications</CardTitle>
+                                <CardTitle className="text-lg">{t('adminNotifications')}</CardTitle>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -229,7 +231,7 @@ const AdminNotificationCenter: React.FC = () => {
                                             <div>
                                                 <h4 className="font-medium text-red-600 mb-2 flex items-center gap-2">
                                                     <AlertTriangle className="h-4 w-4" />
-                                                    Critical Alerts
+                                                    {t('criticalAlerts')}
                                                 </h4>
                                                 <div className="space-y-2">
                                                     {criticalAlerts.map((alert) => (
@@ -242,7 +244,7 @@ const AdminNotificationCenter: React.FC = () => {
                                                                         <p className="text-xs text-gray-600">{alert.description}</p>
                                                                         {alert.count && (
                                                                             <Badge variant="secondary" className="mt-1">
-                                                                                {alert.count} items
+                                                                                {alert.count} {t('items')}
                                                                             </Badge>
                                                                         )}
                                                                     </div>
@@ -263,11 +265,11 @@ const AdminNotificationCenter: React.FC = () => {
 
                                         {/* Regular Notifications */}
                                         <div>
-                                            <h4 className="font-medium text-gray-900 mb-2">Recent Activity</h4>
+                                            <h4 className="font-medium text-gray-900 mb-2">{t('recentActivity')}</h4>
                                             <div className="space-y-2">
                                                 {notifications.length === 0 ? (
                                                     <p className="text-sm text-gray-500 text-center py-4">
-                                                        No notifications
+                                                        {t('noNotifications')}
                                                     </p>
                                                 ) : (
                                                     notifications.map((notification) => (

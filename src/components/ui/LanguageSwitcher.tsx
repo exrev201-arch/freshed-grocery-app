@@ -7,9 +7,11 @@ export function LanguageSwitcher() {
 
   const toggleLanguage = () => {
     const newLanguage = language === 'en' ? 'sw' : 'en'
-    console.log('Toggling language from', language, 'to', newLanguage)
+    console.log('Desktop LanguageSwitcher: Toggling language from', language, 'to', newLanguage)
     setLanguage(newLanguage)
   }
+
+  console.log('Desktop LanguageSwitcher rendering with language:', language);
 
   return (
     <Button 
@@ -32,9 +34,11 @@ export function MobileLanguageSwitcher() {
 
   const toggleLanguage = () => {
     const newLanguage = language === 'en' ? 'sw' : 'en'
-    console.log('Toggling language from', language, 'to', newLanguage)
+    console.log('Mobile LanguageSwitcher: Toggling language from', language, 'to', newLanguage)
     setLanguage(newLanguage)
   }
+
+  console.log('Mobile LanguageSwitcher rendering with language:', language);
 
   return (
     <Button 

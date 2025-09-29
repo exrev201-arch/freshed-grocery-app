@@ -15,6 +15,7 @@ import { UserService } from '@/lib/user-service';
 import { mockProducts } from '@/lib/mock-data';
 import { Toaster } from '@/components/ui/toaster';
 import CustomerSupport from '@/components/support/CustomerSupport';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function ProductPage() {
     const { productId } = useParams<{ productId: string }>();
@@ -22,6 +23,7 @@ function ProductPage() {
     const { addItem, updateQuantity, items } = useCartStore();
     const { isAuthenticated, user } = useAuthStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
     
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
@@ -79,8 +81,8 @@ function ProductPage() {
         }
         
         toast({
-            title: "Added to cart!",
-            description: `${quantity} x ${product.name} added to your cart.`,
+            title: t('addedToCart'),
+            description: `${quantity} x ${product.name} ${t('addedToCartDescription')}`,
             duration: 2000,
         });
     };
@@ -88,8 +90,8 @@ function ProductPage() {
     const handleToggleFavorite = async () => {
         if (!product || !isAuthenticated || !user) {
             toast({
-                title: "Login Required",
-                description: "Please log in to save favorites.",
+                title: t('loginRequired'),
+                description: t('loginToAddToFavorites'),
                 variant: "destructive",
             });
             return;
@@ -104,8 +106,8 @@ function ProductPage() {
                     await UserService.removeFromFavorites(user.uid, favorite._id);
                     setIsFavorited(false);
                     toast({
-                        title: "Removed from favorites",
-                        description: `${product.name} has been removed from your favorites.`,
+                        title: t('removedFromFavorites'),
+                        description: `${product.name} ${t('removedFromFavoritesDescription')}`,
                     });
                 }
             } else {
@@ -117,14 +119,14 @@ function ProductPage() {
                 });
                 setIsFavorited(true);
                 toast({
-                    title: "Added to favorites!",
-                    description: `${product.name} has been added to your favorites.`,
+                    title: t('addedToFavorites'),
+                    description: `${product.name} ${t('addedToFavoritesDescription')}`,
                 });
             }
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to update favorites. Please try again.",
+                title: t('error'),
+                description: t('failedToUpdateFavorites'),
                 variant: "destructive",
             });
         } finally {
@@ -144,16 +146,16 @@ function ProductPage() {
                 // Fallback to copying URL
                 navigator.clipboard.writeText(window.location.href);
                 toast({
-                    title: "Link copied!",
-                    description: "Product link copied to clipboard.",
+                    title: t('linkCopied'),
+                    description: t('productLinkCopied'),
                 });
             }
         } else {
             // Fallback for browsers that don't support navigator.share
             navigator.clipboard.writeText(window.location.href);
             toast({
-                title: "Link copied!",
-                description: "Product link copied to clipboard.",
+                title: t('linkCopied'),
+                description: t('productLinkCopied'),
             });
         }
     };
@@ -177,8 +179,8 @@ function ProductPage() {
                 <Header />
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
-                        <Button onClick={() => navigate('/')}>Return to Home</Button>
+                        <h1 className="text-2xl font-bold mb-4">{t('productNotFound')}</h1>
+                        <Button onClick={() => navigate('/')}>{t('returnToHome')}</Button>
                     </div>
                 </div>
             </div>
@@ -199,7 +201,7 @@ function ProductPage() {
                         className="p-0 h-auto text-muted-foreground hover:text-primary"
                     >
                         <ArrowLeft className="h-4 w-4 mr-1" />
-                        Back to Products
+                        {t('backToProducts')}
                     </Button>
                     <span>/</span>
                     <span className="capitalize">{product.category}</span>
@@ -272,7 +274,7 @@ function ProductPage() {
                                         <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                                     ))}
                                 </div>
-                                <span className="text-sm text-muted-foreground">(25 reviews)</span>
+                                <span className="text-sm text-muted-foreground">(25 {t('reviews')})</span>
                             </div>
 
                             <div className="flex items-baseline gap-3 mb-4">
@@ -285,11 +287,11 @@ function ProductPage() {
                             <div className="flex items-center gap-2 mb-6">
                                 {product.inStock ? (
                                     <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                        ✓ In Stock
+                                        ✓ {t('inStock')}
                                     </Badge>
                                 ) : (
                                     <Badge variant="destructive">
-                                        Out of Stock
+                                        {t('outOfStock')}
                                     </Badge>
                                 )}
                             </div>
@@ -298,7 +300,7 @@ function ProductPage() {
                         {/* Quantity Selector & Add to Cart */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-sm font-medium">Quantity:</span>
+                                <span className="text-sm font-medium">{t('quantity')}:</span>
                                 <div className="flex items-center border rounded-lg">
                                     <Button
                                         variant="ghost"
@@ -326,7 +328,7 @@ function ProductPage() {
                                 disabled={!product.inStock}
                                 className="w-full"
                             >
-                                Add to Cart - {formatPrice(product.price * quantity)}
+                                {t('addToCart')} - {formatPrice(product.price * quantity)}
                             </Button>
                         </div>
 
@@ -334,15 +336,15 @@ function ProductPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t">
                             <div className="flex items-center gap-2 text-sm">
                                 <Truck className="h-4 w-4 text-primary" />
-                                <span>Fast Delivery</span>
+                                <span>{t('fastDelivery')}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <Clock className="h-4 w-4 text-primary" />
-                                <span>30min Delivery</span>
+                                <span>{t('thirtyMinDelivery')}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <Shield className="h-4 w-4 text-primary" />
-                                <span>Quality Guaranteed</span>
+                                <span>{t('qualityGuaranteed')}</span>
                             </div>
                         </div>
                     </div>
@@ -351,35 +353,35 @@ function ProductPage() {
                 {/* Product Details Tabs */}
                 <Tabs defaultValue="description" className="mb-12">
                     <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="description">Description</TabsTrigger>
-                        <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
-                        <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                        <TabsTrigger value="description">{t('description')}</TabsTrigger>
+                        <TabsTrigger value="nutrition">{t('nutrition')}</TabsTrigger>
+                        <TabsTrigger value="reviews">{t('reviews')}</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="description" className="mt-6">
                         <Card>
                             <CardContent className="p-6">
-                                <h3 className="text-lg font-semibold mb-3">About this product</h3>
+                                <h3 className="text-lg font-semibold mb-3">{t('aboutThisProduct')}</h3>
                                 <p className="text-muted-foreground leading-relaxed">
-                                    {product.description || `Fresh and high-quality ${product.name} sourced directly from local farms. Perfect for your daily cooking needs with guaranteed freshness and taste.`}
+                                    {product.description || `${t('freshAndHighQuality')} ${product.name} ${t('sourcedDirectly')}`}
                                 </p>
                                 <Separator className="my-4" />
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <span className="font-medium">Category:</span>
+                                        <span className="font-medium">{t('category')}:</span>
                                         <span className="ml-2 capitalize">{product.category}</span>
                                     </div>
                                     <div>
-                                        <span className="font-medium">Unit:</span>
+                                        <span className="font-medium">{t('unit')}:</span>
                                         <span className="ml-2">{product.unit}</span>
                                     </div>
                                     <div>
-                                        <span className="font-medium">Origin:</span>
-                                        <span className="ml-2">Local Farms, Tanzania</span>
+                                        <span className="font-medium">{t('origin')}:</span>
+                                        <span className="ml-2">{t('localFarms')}</span>
                                     </div>
                                     <div>
-                                        <span className="font-medium">Freshness:</span>
-                                        <span className="ml-2">Harvested Daily</span>
+                                        <span className="font-medium">{t('freshness')}:</span>
+                                        <span className="ml-2">{t('harvestedDaily')}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -389,31 +391,31 @@ function ProductPage() {
                     <TabsContent value="nutrition" className="mt-6">
                         <Card>
                             <CardContent className="p-6">
-                                <h3 className="text-lg font-semibold mb-3">Nutritional Information</h3>
-                                <p className="text-muted-foreground mb-4">Per 100g serving</p>
+                                <h3 className="text-lg font-semibold mb-3">{t('nutritionalInformation')}</h3>
+                                <p className="text-muted-foreground mb-4">{t('per100gServing')}</p>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="flex justify-between">
-                                        <span>Calories</span>
+                                        <span>{t('calories')}</span>
                                         <span className="font-medium">25 kcal</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Protein</span>
+                                        <span>{t('protein')}</span>
                                         <span className="font-medium">2g</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Carbohydrates</span>
+                                        <span>{t('carbohydrates')}</span>
                                         <span className="font-medium">5g</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Fiber</span>
+                                        <span>{t('fiber')}</span>
                                         <span className="font-medium">3g</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Fat</span>
+                                        <span>{t('fat')}</span>
                                         <span className="font-medium">0.2g</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Vitamin C</span>
+                                        <span>{t('vitaminC')}</span>
                                         <span className="font-medium">15mg</span>
                                     </div>
                                 </div>
@@ -425,8 +427,8 @@ function ProductPage() {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-lg font-semibold">Customer Reviews</h3>
-                                    <Button variant="outline" size="sm">Write Review</Button>
+                                    <h3 className="text-lg font-semibold">{t('customerReviews')}</h3>
+                                    <Button variant="outline" size="sm">{t('writeReview')}</Button>
                                 </div>
                                 <div className="space-y-4">
                                     {[1, 2, 3].map((review) => (
@@ -438,10 +440,10 @@ function ProductPage() {
                                                     ))}
                                                 </div>
                                                 <span className="font-medium text-sm">John D.</span>
-                                                <span className="text-xs text-muted-foreground">2 days ago</span>
+                                                <span className="text-xs text-muted-foreground">2 {t('daysAgo')}</span>
                                             </div>
                                             <p className="text-sm text-muted-foreground">
-                                                Great quality and very fresh. Delivered quickly and packaging was excellent.
+                                                {t('greatQuality')}
                                             </p>
                                         </div>
                                     ))}
@@ -454,7 +456,7 @@ function ProductPage() {
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
                     <div>
-                        <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+                        <h2 className="text-2xl font-bold mb-6">{t('relatedProducts')}</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {relatedProducts.map((relatedProduct) => (
                                 <ProductCard key={relatedProduct.id} product={relatedProduct} />

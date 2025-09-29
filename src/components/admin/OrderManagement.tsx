@@ -23,6 +23,7 @@ import {
 } from '@/lib/delivery-service';
 import { table } from '@/lib/backend-service';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Use table API for database operations
 
@@ -61,6 +62,7 @@ const OrderManagement: React.FC = () => {
         phone: '+255 123 456 789'
     });
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     const statuses: OrderStatus[] = [
         'pending',
@@ -88,8 +90,8 @@ const OrderManagement: React.FC = () => {
         } catch (error) {
             console.error('Error loading orders:', error);
             toast({
-                title: "Error",
-                description: "Failed to load orders. Please try again.",
+                title: t('error'),
+                description: t('failedToLoadOrders'),
                 variant: "destructive"
             });
         } finally {
@@ -116,8 +118,8 @@ const OrderManagement: React.FC = () => {
             const success = await updateOrderStatus(orderId, newStatus, 'admin', notes);
             if (success) {
                 toast({
-                    title: "Success",
-                    description: `Order status updated to ${newStatus.replace('_', ' ')}`,
+                    title: t('success'),
+                    description: `${t('orderStatusUpdatedTo')} ${newStatus.replace('_', ' ')}`,
                 });
                 loadOrders(); // Refresh orders
                 if (selectedOrder?._id === orderId) {
@@ -128,8 +130,8 @@ const OrderManagement: React.FC = () => {
             }
         } catch (error) {
             toast({
-                title: "Error",
-                description: "Failed to update order status. Please try again.",
+                title: t('error'),
+                description: t('failedToUpdateOrderStatus'),
                 variant: "destructive"
             });
         }
@@ -145,8 +147,8 @@ const OrderManagement: React.FC = () => {
             );
             if (success) {
                 toast({
-                    title: "Success",
-                    description: "Delivery person assigned successfully",
+                    title: t('success'),
+                    description: t('deliveryPersonAssigned'),
                 });
                 loadOrders();
             } else {
@@ -155,8 +157,8 @@ const OrderManagement: React.FC = () => {
         } catch (error) {
             console.error('Delivery assignment error:', error);
             toast({
-                title: "Error",
-                description: "Failed to assign delivery person. Please try again.",
+                title: t('error'),
+                description: t('failedToAssignDeliveryPerson'),
                 variant: "destructive"
             });
         }
@@ -183,10 +185,10 @@ const OrderManagement: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Order Management</h2>
+                <h2 className="text-2xl font-bold">{t('orderManagement')}</h2>
                 <Button onClick={loadOrders} variant="outline" size="sm">
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
+                    {t('refresh')}
                 </Button>
             </div>
 
@@ -207,7 +209,7 @@ const OrderManagement: React.FC = () => {
                 {loading ? (
                     <div className="flex items-center justify-center p-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                        <span className="ml-2">Loading orders...</span>
+                        <span className="ml-2">{t('loadingOrders')}</span>
                     </div>
                 ) : (
                     statuses.map((status) => (
@@ -216,7 +218,7 @@ const OrderManagement: React.FC = () => {
                                 <Card>
                                     <CardContent className="p-8 text-center text-muted-foreground">
                                         <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                        <p>No {formatStatus(status).toLowerCase()} orders</p>
+                                        <p>{t('noStatusOrders').replace('{status}', formatStatus(status).toLowerCase())}</p>
                                     </CardContent>
                                 </Card>
                             ) : (
@@ -226,7 +228,7 @@ const OrderManagement: React.FC = () => {
                                             <CardHeader className="pb-3">
                                                 <div className="flex items-center justify-between">
                                                     <CardTitle className="text-lg">
-                                                        Order #{order._id.slice(-8)}
+                                                        {t('orderNumberLabel')} #{order._id.slice(-8)}
                                                     </CardTitle>
                                                     <Badge className={getStatusColor(order.status)}>
                                                         {formatStatus(order.status)}
@@ -236,19 +238,19 @@ const OrderManagement: React.FC = () => {
                                             <CardContent className="space-y-4">
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                                     <div>
-                                                        <span className="font-medium text-muted-foreground">Amount:</span>
+                                                        <span className="font-medium text-muted-foreground">{t('amount')}:</span>
                                                         <p className="font-semibold">TZS {order.total_amount.toLocaleString()}</p>
                                                     </div>
                                                     <div>
-                                                        <span className="font-medium text-muted-foreground">Payment:</span>
-                                                        <p>{order.payment_method === 'cash_on_delivery' ? 'Cash on Delivery' : 'Mobile Money'}</p>
+                                                        <span className="font-medium text-muted-foreground">{t('payment')}:</span>
+                                                        <p>{order.payment_method === 'cash_on_delivery' ? t('cashOnDelivery') : t('mobileMoney')}</p>
                                                     </div>
                                                     <div>
-                                                        <span className="font-medium text-muted-foreground">Date:</span>
+                                                        <span className="font-medium text-muted-foreground">{t('date')}:</span>
                                                         <p>{new Date(order.created_at).toLocaleDateString()}</p>
                                                     </div>
                                                     <div>
-                                                        <span className="font-medium text-muted-foreground">Time:</span>
+                                                        <span className="font-medium text-muted-foreground">{t('time')}:</span>
                                                         <p>{new Date(order.created_at).toLocaleTimeString()}</p>
                                                     </div>
                                                 </div>
@@ -284,39 +286,39 @@ const OrderManagement: React.FC = () => {
                                                         <DialogTrigger asChild>
                                                             <Button variant="outline" size="sm">
                                                                 <Eye className="h-4 w-4 mr-2" />
-                                                                View Details
+                                                                {t('viewDetails')}
                                                             </Button>
                                                         </DialogTrigger>
                                                         <DialogContent className="max-w-2xl">
                                                             <DialogHeader>
-                                                                <DialogTitle>Order Details - #{order._id.slice(-8)}</DialogTitle>
+                                                                <DialogTitle>{t('orderDetails')} - #{order._id.slice(-8)}</DialogTitle>
                                                             </DialogHeader>
                                                             <div className="space-y-4">
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     <div>
-                                                                        <Label>Customer Phone</Label>
+                                                                        <Label>{t('customerPhone')}</Label>
                                                                         <p className="text-sm">{order.delivery_phone}</p>
                                                                     </div>
                                                                     <div>
-                                                                        <Label>Delivery Date</Label>
-                                                                        <p className="text-sm">{order.delivery_date} at {order.delivery_time}</p>
+                                                                        <Label>{t('deliveryDate')}</Label>
+                                                                        <p className="text-sm">{order.delivery_date} {t('at')} {order.delivery_time}</p>
                                                                     </div>
                                                                 </div>
 
                                                                 <div>
-                                                                    <Label>Delivery Address</Label>
+                                                                    <Label>{t('deliveryAddress')}</Label>
                                                                     <p className="text-sm">{order.delivery_address}</p>
                                                                 </div>
 
                                                                 <div>
-                                                                    <Label>Order Items</Label>
+                                                                    <Label>{t('orderItems')}</Label>
                                                                     <div className="border rounded-lg divide-y">
                                                                         {orderItems.map((item) => (
                                                                             <div key={item._id} className="p-3 flex justify-between">
                                                                                 <div>
                                                                                     <p className="font-medium">{item.product_name}</p>
                                                                                     <p className="text-sm text-muted-foreground">
-                                                                                        Qty: {item.quantity} × TZS {item.product_price.toLocaleString()}
+                                                                                        {t('qty')}: {item.quantity} × TZS {item.product_price.toLocaleString()}
                                                                                     </p>
                                                                                 </div>
                                                                                 <p className="font-semibold">TZS {item.subtotal.toLocaleString()}</p>
@@ -334,7 +336,7 @@ const OrderManagement: React.FC = () => {
                                                                 size="sm"
                                                                 onClick={() => handleStatusUpdate(order._id, 'confirmed')}
                                                             >
-                                                                Confirm Order
+                                                                {t('confirmOrder')}
                                                             </Button>
                                                         )}
                                                         {status === 'confirmed' && (
@@ -342,7 +344,7 @@ const OrderManagement: React.FC = () => {
                                                                 size="sm"
                                                                 onClick={() => handleStatusUpdate(order._id, 'preparing')}
                                                             >
-                                                                Start Preparing
+                                                                {t('startPreparing')}
                                                             </Button>
                                                         )}
                                                         {status === 'preparing' && (
@@ -350,7 +352,7 @@ const OrderManagement: React.FC = () => {
                                                                 size="sm"
                                                                 onClick={() => handleStatusUpdate(order._id, 'ready_for_pickup')}
                                                             >
-                                                                Ready for Pickup
+                                                                {t('readyForPickup')}
                                                             </Button>
                                                         )}
                                                         {status === 'ready_for_pickup' && (
@@ -359,7 +361,7 @@ const OrderManagement: React.FC = () => {
                                                                 onClick={() => handleAssignDelivery(order._id)}
                                                             >
                                                                 <Truck className="h-4 w-4 mr-1" />
-                                                                Assign Delivery
+                                                                {t('assignDelivery')}
                                                             </Button>
                                                         )}
                                                         {(status === 'out_for_delivery') && (
@@ -369,7 +371,7 @@ const OrderManagement: React.FC = () => {
                                                                 className="bg-green-600 hover:bg-green-700"
                                                             >
                                                                 <CheckCircle className="h-4 w-4 mr-1" />
-                                                                Mark Delivered
+                                                                {t('markDelivered')}
                                                             </Button>
                                                         )}
                                                     </div>

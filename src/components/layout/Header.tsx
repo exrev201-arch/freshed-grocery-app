@@ -29,7 +29,7 @@ function Header() {
     const { getTotalItems, toggleCart } = useCartStore()
     const { isAuthenticated, user } = useAuthStore()
     const { isAdminAuthenticated } = useAdminStore()
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const location = useLocation()
     const navigate = useNavigate()
 
@@ -87,7 +87,7 @@ function Header() {
     }
 
     // Popular search terms
-    const popularSearches = ['vegetables', 'fruits', 'dairy', 'meat', 'beverages', 'snacks']
+    const popularSearches = [t('categoryVegetables'), t('categoryFruits'), t('categoryDairy'), t('categoryMeat'), t('categoryBeverages'), t('categorySnacks')]
 
     // Get search history from localStorage
     const getSearchHistory = () => {
@@ -112,8 +112,8 @@ function Header() {
     // Determine navigation based on current page
     const isOnProductsPage = location.pathname === '/products'
     const navItem = isOnProductsPage 
-        ? { to: '/', text: 'Home', icon: Home }
-        : { to: '/products', text: 'Products', icon: Package }
+        ? { to: '/', text: t('home'), icon: Home }
+        : { to: '/products', text: t('products'), icon: Package }
 
     // Handle search functionality
     const handleSearch = (query: string) => {
@@ -231,7 +231,7 @@ function Header() {
                         <form onSubmit={handleDesktopSearch} className="relative w-full">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                             <Input 
-                                placeholder="Search for products..." 
+                                placeholder={t('searchPlaceholder')} 
                                 className="pl-10 pr-4"
                                 value={searchQuery}
                                 onChange={(e) => handleSearchInputChange(e.target.value)}
@@ -254,7 +254,7 @@ function Header() {
                                                     {allHistory.length > 0 && (
                                                         <>
                                                             <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                                Recent Searches
+                                                                {t('recentSearches')}
                                                             </div>
                                                             {allHistory.slice(0, 5).map((item: string, index: number) => (
                                                                 <button
@@ -269,7 +269,7 @@ function Header() {
                                                         </>
                                                     )}
                                                     <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                        Popular Searches
+                                                        {t('popularSearches')}
                                                     </div>
                                                     {popularSearches.slice(0, 4).map((item: string, index: number) => (
                                                         <button
@@ -288,7 +288,7 @@ function Header() {
                                         if (!hasHistory && !hasPopular && !hasProducts) {
                                             return (
                                                 <div className="p-4 text-center text-sm text-muted-foreground">
-                                                    No suggestions found
+                                                    {t('noSuggestions')}
                                                 </div>
                                             )
                                         }
@@ -298,7 +298,7 @@ function Header() {
                                                 {hasProducts && (
                                                     <>
                                                         <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                            Products
+                                                            {t('products')}
                                                         </div>
                                                         {products.map((item: string, index: number) => (
                                                             <button
@@ -315,7 +315,7 @@ function Header() {
                                                 {hasHistory && (
                                                     <>
                                                         <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                            Recent Searches
+                                                            {t('recentSearches')}
                                                         </div>
                                                         {history.map((item: string, index: number) => (
                                                             <button
@@ -332,7 +332,7 @@ function Header() {
                                                 {hasPopular && (
                                                     <>
                                                         <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide mt-2">
-                                                            Popular Searches
+                                                            {t('popularSearches')}
                                                         </div>
                                                         {popular.map((item: string, index: number) => (
                                                             <button
@@ -364,7 +364,7 @@ function Header() {
                         {!isAdminAuthenticated && (
                             <Link to="/admin/login" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
                                 <Shield className="h-4 w-4" />
-                                Admin
+                                {t('admin')}
                             </Link>
                         )}
                         
@@ -372,7 +372,7 @@ function Header() {
                         {isAdminAuthenticated && (
                             <Link to="/admin" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
                                 <Shield className="h-4 w-4" />
-                                Admin
+                                {t('admin')}
                             </Link>
                         )}
                     </div>
@@ -435,7 +435,7 @@ function Header() {
                                 {isAdminAuthenticated && (
                                     <Link to="/admin" className="flex flex-col items-center space-y-1">
                                         <Shield className="h-5 w-5" />
-                                        <span className="text-xs">Admin</span>
+                                        <span className="text-xs">{t('admin')}</span>
                                     </Link>
                                 )}
                             </div>
@@ -453,7 +453,7 @@ function Header() {
                                 >
                                     <User className="h-5 w-5" />
                                     <span className="text-xs">
-                                        {isAuthenticated ? user?.name || 'Profile' : 'Login'}
+                                        {isAuthenticated ? user?.name || t('profile') : t('login')}
                                     </span>
                                 </Button>
                                 
@@ -471,7 +471,7 @@ function Header() {
                                             </Badge>
                                         )}
                                     </div>
-                                    <span className="text-xs">Cart</span>
+                                    <span className="text-xs">{t('cart')}</span>
                                 </Button>
                             </div>
                         </div>
@@ -490,7 +490,8 @@ function Header() {
                 onClose={() => setShowUserProfile(false)} 
             />
             
-            <CartSheet />
+            {/* Pass language as a key to force re-render when language changes */}
+            <CartSheet key={language} />
         </>
     )
 }

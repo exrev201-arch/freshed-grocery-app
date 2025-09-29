@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { OrderService, Order, OrderItem } from '@/lib/order-service';
 import { useAuthStore } from '@/store/auth-store';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function OrderConfirmationPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const { t } = useLanguage();
 
     const [order, setOrder] = useState<Order | null>(null);
     const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
@@ -45,52 +47,52 @@ export default function OrderConfirmationPage() {
         switch (status) {
             case 'pending':
                 return {
-                    label: 'Inasubiri Uthibitisho',
+                    label: t('orderPending'),
                     color: 'text-yellow-600',
                     bgColor: 'bg-yellow-50',
-                    description: 'Agizo lako limepokewa na linangojea uthibitisho'
+                    description: t('orderPendingDescription')
                 };
             case 'confirmed':
                 return {
-                    label: 'Limethibitishwa',
+                    label: t('orderConfirmedStatus'),
                     color: 'text-blue-600',
                     bgColor: 'bg-blue-50',
-                    description: 'Agizo lako limethibitishwa na linatengenezwa'
+                    description: t('orderConfirmedDescription')
                 };
             case 'preparing':
                 return {
-                    label: 'Linaandaliwa',
+                    label: t('orderPreparing'),
                     color: 'text-purple-600',
                     bgColor: 'bg-purple-50',
-                    description: 'Bidhaa zako zinaandaliwa kwa ajili ya utolewaji'
+                    description: t('orderPreparingDescription')
                 };
             case 'out_for_delivery':
                 return {
-                    label: 'Njiani',
+                    label: t('orderOutForDelivery'),
                     color: 'text-orange-600',
                     bgColor: 'bg-orange-50',
-                    description: 'Bidhaa zako ziko njiani za kufika kwako'
+                    description: t('orderOutForDeliveryDescription')
                 };
             case 'delivered':
                 return {
-                    label: 'Zimefikishwa',
+                    label: t('orderDelivered'),
                     color: 'text-green-600',
                     bgColor: 'bg-green-50',
-                    description: 'Bidhaa zako zimefikishwa kikamilifu'
+                    description: t('orderDeliveredDescription')
                 };
             case 'cancelled':
                 return {
-                    label: 'Limeghairiwa',
+                    label: t('orderCancelled'),
                     color: 'text-red-600',
                     bgColor: 'bg-red-50',
-                    description: 'Agizo hili limeghairiwa'
+                    description: t('orderCancelledDescription')
                 };
             default:
                 return {
                     label: status,
                     color: 'text-gray-600',
                     bgColor: 'bg-gray-50',
-                    description: 'Hali ya agizo'
+                    description: t('orderStatus')
                 };
         }
     };
@@ -100,7 +102,7 @@ export default function OrderConfirmationPage() {
             <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Inapakia taarifa za agizo...</p>
+                    <p className="text-gray-600">{t('loadingOrderInfo')}</p>
                 </div>
             </div>
         );
@@ -110,8 +112,8 @@ export default function OrderConfirmationPage() {
         return (
             <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
                 <div className="text-center">
-                    <p className="text-gray-600 mb-4">Agizo halikupatikana</p>
-                    <Button onClick={() => navigate('/')}>Rudi Mwanzoni</Button>
+                    <p className="text-gray-600 mb-4">{t('orderNotFound')}</p>
+                    <Button onClick={() => navigate('/')}>{t('returnToHome')}</Button>
                 </div>
             </div>
         );
@@ -127,10 +129,10 @@ export default function OrderConfirmationPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
                         <CheckCircle className="w-8 h-8 text-emerald-600" />
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Hongera!</h1>
-                    <p className="text-gray-600">Agizo lako limekamilika na limetumwa</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('congratulations')}</h1>
+                    <p className="text-gray-600">{t('orderCompleted')}</p>
                     <p className="text-sm text-gray-500 mt-2">
-                        Nambari ya agizo: <span className="font-mono font-medium">#{order._id.slice(-8).toUpperCase()}</span>
+                        {t('orderNumber')}: <span className="font-mono font-medium">#{order._id.slice(-8).toUpperCase()}</span>
                     </p>
                 </div>
 
@@ -139,7 +141,7 @@ export default function OrderConfirmationPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Package className="h-5 w-5 text-emerald-600" />
-                            Hali ya Agizo
+                            {t('orderStatus')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -159,14 +161,14 @@ export default function OrderConfirmationPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Truck className="h-5 w-5 text-emerald-600" />
-                            Taarifa za Utolewaji
+                            {t('deliveryInformation')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <div className="flex items-start gap-3">
                             <MapPin className="h-4 w-4 text-gray-500 mt-1 shrink-0" />
                             <div>
-                                <div className="font-medium">Anwani</div>
+                                <div className="font-medium">{t('orderConfirmationAddress')}</div>
                                 <div className="text-sm text-gray-600">{order.delivery_address}</div>
                             </div>
                         </div>
@@ -174,7 +176,7 @@ export default function OrderConfirmationPage() {
                         <div className="flex items-center gap-3">
                             <Phone className="h-4 w-4 text-gray-500 shrink-0" />
                             <div>
-                                <div className="font-medium">Simu</div>
+                                <div className="font-medium">{t('orderConfirmationPhone')}</div>
                                 <div className="text-sm text-gray-600">{order.delivery_phone}</div>
                             </div>
                         </div>
@@ -182,7 +184,7 @@ export default function OrderConfirmationPage() {
                         <div className="flex items-center gap-3">
                             <Clock className="h-4 w-4 text-gray-500 shrink-0" />
                             <div>
-                                <div className="font-medium">Tarehe na Muda</div>
+                                <div className="font-medium">{t('dateAndTime')}</div>
                                 <div className="text-sm text-gray-600">
                                     {new Date(order.delivery_date).toLocaleDateString('sw-TZ', {
                                         weekday: 'long',
@@ -196,7 +198,7 @@ export default function OrderConfirmationPage() {
 
                         {order.delivery_notes && (
                             <div className="bg-gray-50 p-3 rounded-lg">
-                                <div className="font-medium mb-1">Maelezo ya Ziada</div>
+                                <div className="font-medium mb-1">{t('additionalNotes')}</div>
                                 <div className="text-sm text-gray-600">{order.delivery_notes}</div>
                             </div>
                         )}
@@ -206,7 +208,7 @@ export default function OrderConfirmationPage() {
                 {/* Order Items */}
                 <Card className="mb-6">
                     <CardHeader>
-                        <CardTitle>Bidhaa Zilizoagizwa</CardTitle>
+                        <CardTitle>{t('orderedItems')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
@@ -229,16 +231,16 @@ export default function OrderConfirmationPage() {
 
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span>Jumla ya Bidhaa</span>
+                                <span>{t('productTotal')}</span>
                                 <span>TZS {(order.total_amount - 5000).toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Ada ya Utolewaji</span>
+                                <span>{t('deliveryFee')}</span>
                                 <span>TZS 5,000</span>
                             </div>
                             <Separator />
                             <div className="flex justify-between font-bold text-lg">
-                                <span>Jumla</span>
+                                <span>{t('total')}</span>
                                 <span className="text-emerald-600">TZS {order.total_amount.toLocaleString()}</span>
                             </div>
                         </div>
@@ -248,17 +250,17 @@ export default function OrderConfirmationPage() {
                 {/* Payment Information */}
                 <Card className="mb-8">
                     <CardHeader>
-                        <CardTitle>Taarifa za Malipo</CardTitle>
+                        <CardTitle>{t('paymentInformation')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <div className="font-medium text-blue-800 mb-1">
-                                {order.payment_method === 'cash_on_delivery' ? 'Malipo Wakati wa Utolewaji' : 'Pesa za Simu'}
+                                {order.payment_method === 'cash_on_delivery' ? t('cashOnDelivery') : t('mobileMoney')}
                             </div>
                             <div className="text-sm text-blue-700">
                                 {order.payment_method === 'cash_on_delivery'
-                                    ? 'Lipa kwa pesa taslimu wakati bidhaa zikifika'
-                                    : 'Utapokea ujumbe wa malipo kwa simu yako'
+                                    ? t('payOnDelivery')
+                                    : t('paymentMessage')
                                 }
                             </div>
                         </div>
@@ -272,30 +274,30 @@ export default function OrderConfirmationPage() {
                         onClick={() => navigate('/')}
                         className="w-full sm:w-auto"
                     >
-                        Endelea Kununua
+                        {t('continueShopping')}
                     </Button>
                     <Button
                         onClick={() => navigate(`/delivery/${orderId}`)}
                         className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
                     >
-                        Fuatilia Uongozi
+                        {t('trackOrder')}
                     </Button>
                     <Button
                         onClick={() => navigate('/profile')}
                         className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
                     >
-                        Angalia Historia ya Agizo
+                        {t('viewOrderHistory')}
                     </Button>
                 </div>
 
                 {/* Contact Information */}
                 <div className="text-center mt-8 p-4 bg-white rounded-lg border">
-                    <h3 className="font-semibold mb-2">Unahitaji Msaada?</h3>
+                    <h3 className="font-semibold mb-2">{t('needHelp')}</h3>
                     <p className="text-sm text-gray-600 mb-2">
-                        Wasiliana nasi kwa maswali yoyote kuhusu agizo lako
+                        {t('contactUsForQuestions')}
                     </p>
                     <p className="text-sm font-medium text-emerald-600">
-                        Simu: +255 XXX XXX XXX | Barua pepe: msaada@fresh.co.tz
+                        {t('phone')}: +255 XXX XXX XXX | {t('contactEmail')}: msaada@fresh.co.tz
                     </p>
                 </div>
             </div>

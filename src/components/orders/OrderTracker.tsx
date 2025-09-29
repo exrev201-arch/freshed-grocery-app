@@ -22,6 +22,7 @@ import { getOrderDelivery, updateDeliveryLocation } from '@/lib/delivery-service
 import { useAuthStore } from '@/store/auth-store';
 import { useToast } from '@/hooks/use-toast';
 import LiveDeliveryTracker from '@/components/delivery/LiveDeliveryTracker';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrderTrackerProps {
     orderId: string;
@@ -59,6 +60,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const { user } = useAuthStore();
     const { toast } = useToast();
+    const { t } = useLanguage();
 
     useEffect(() => {
         loadTrackingData();
@@ -143,8 +145,8 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
     const handleSubmitFeedback = async () => {
         if (!user?.uid || rating === 0) {
             toast({
-                title: "Tatizo",
-                description: "Tafadhali chagua ukadiriaji kabla ya kutuma maoni.",
+                title: t('issue'),
+                description: t('pleaseSelectRatingBeforeSubmittingFeedback'),
                 variant: "destructive"
             });
             return;
@@ -156,8 +158,8 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
 
             if (success) {
                 toast({
-                    title: "Asante!",
-                    description: "Maoni yako yamepokewa. Tunashukuru kwa mrejesho wako!"
+                    title: t('thankYou'),
+                    description: t('feedbackReceivedThankYou')
                 });
                 setFeedbackOpen(false);
                 loadTrackingData(); // Refresh to show submitted feedback
@@ -166,8 +168,8 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
             }
         } catch (error) {
             toast({
-                title: "Kosa",
-                description: "Kuna tatizo la kiufundi. Tafadhali jaribu tena.",
+                title: t('error'),
+                description: t('technicalIssuePleaseTryAgain'),
                 variant: "destructive"
             });
         }
@@ -179,7 +181,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 <CardContent className="p-6">
                     <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                        <span className="ml-2">Inapakia...</span>
+                        <span className="ml-2">{t('loading')}</span>
                     </div>
                 </CardContent>
             </Card>
@@ -190,7 +192,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                    <span>Ufuatiliaji wa Agizo</span>
+                    <span>{t('orderTracking')}</span>
                     <Badge className={getStatusColor(orderStatus)}>
                         {formatStatus(orderStatus)}
                     </Badge>
@@ -200,7 +202,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 {/* Order Progress */}
                 <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                        <span>Maendeleo ya Agizo</span>
+                        <span>{t('orderProgress')}</span>
                         <span>{getStatusProgress(orderStatus)}%</span>
                     </div>
                     <Progress
@@ -212,21 +214,21 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 {/* Order Details */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                        <span className="font-medium">Namba ya Agizo:</span>
+                        <span className="font-medium">{t('orderNumberLabel')}:</span>
                         <p className="text-muted-foreground">#{orderId.slice(-8)}</p>
                     </div>
                     <div>
-                        <span className="font-medium">Jumla:</span>
+                        <span className="font-medium">{t('total')}:</span>
                         <p className="text-muted-foreground">TZS {totalAmount.toLocaleString()}</p>
                     </div>
                     <div>
-                        <span className="font-medium">Tarehe:</span>
+                        <span className="font-medium">{t('date')}:</span>
                         <p className="text-muted-foreground">
                             {new Date(orderDate).toLocaleDateString('sw-TZ')}
                         </p>
                     </div>
                     <div>
-                        <span className="font-medium">Wakati:</span>
+                        <span className="font-medium">{t('time')}:</span>
                         <p className="text-muted-foreground">
                             {new Date(orderDate).toLocaleTimeString('sw-TZ', {
                                 hour: '2-digit',
@@ -240,15 +242,15 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
 
                 {/* Status Timeline */}
                 <div className="space-y-4">
-                    <h4 className="font-medium">Mzunguko wa Agizo</h4>
+                    <h4 className="font-medium">{t('orderTimeline')}</h4>
                     <div className="space-y-3">
                         {[
-                            { status: 'pending', label: 'Agizo Limepokewa', time: new Date(orderDate) },
-                            { status: 'confirmed', label: 'Agizo Limethibitishwa' },
-                            { status: 'preparing', label: 'Inaandaliwa' },
-                            { status: 'ready_for_pickup', label: 'Iko Tayari kwa Kuchukua' },
-                            { status: 'out_for_delivery', label: 'Inasafirishwa' },
-                            { status: 'delivered', label: 'Imefikishwa' }
+                            { status: 'pending', label: t('orderReceived'), time: new Date(orderDate) },
+                            { status: 'confirmed', label: t('orderConfirmed') },
+                            { status: 'preparing', label: t('preparing') },
+                            { status: 'ready_for_pickup', label: t('readyForPickup') },
+                            { status: 'out_for_delivery', label: t('outForDelivery') },
+                            { status: 'delivered', label: t('delivered') }
                         ].map((step, index) => (
                             <div key={step.status} className="flex items-center space-x-3">
                                 <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getStatusProgress(orderStatus) >= ((index + 1) * 16.67)
@@ -283,7 +285,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                             <div className="flex items-center justify-between">
                                 <h4 className="font-medium flex items-center">
                                     <Navigation className="h-4 w-4 mr-2 text-green-600" />
-                                    Ufuatiliaji wa Moja kwa Moja
+                                    {t('liveTracking')}
                                 </h4>
                                 <Badge variant="secondary" className="text-xs">
                                     GPS Tracking
@@ -302,7 +304,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                     <>
                         <Separator />
                         <div className="space-y-4">
-                            <h4 className="font-medium">Maelezo ya Uongozi</h4>
+                            <h4 className="font-medium">{t('deliveryInformation')}</h4>
                             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                                 <div className="flex items-center space-x-2">
                                     <Truck className="h-4 w-4 text-green-600" />
@@ -328,11 +330,11 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                     <>
                         <Separator />
                         <div className="space-y-3">
-                            <h4 className="font-medium">Ukadiriaji wa Huduma</h4>
+                            <h4 className="font-medium">{t('serviceRating')}</h4>
                             {trackingData?.customer_rating ? (
                                 <div className="bg-green-50 p-4 rounded-lg">
                                     <div className="flex items-center space-x-2 mb-2">
-                                        <span className="text-sm font-medium">Umepewa:</span>
+                                        <span className="text-sm font-medium">{t('youRated')}:</span>
                                         <div className="flex">
                                             {[1, 2, 3, 4, 5].map((star) => (
                                                 <Star
@@ -356,16 +358,16 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                                     <DialogTrigger asChild>
                                         <Button variant="outline" className="w-full">
                                             <Star className="h-4 w-4 mr-2" />
-                                            Toa Ukadiriaji
+                                            {t('rateService')}
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>Kadiria Huduma ya Uongozi</DialogTitle>
+                                            <DialogTitle>{t('rateDeliveryService')}</DialogTitle>
                                         </DialogHeader>
                                         <div className="space-y-4">
                                             <div>
-                                                <Label>Ukadiriaji (1-5 nyota)</Label>
+                                                <Label>{t('rating1to5Stars')}</Label>
                                                 <div className="flex space-x-1 mt-2">
                                                     {[1, 2, 3, 4, 5].map((star) => (
                                                         <button
@@ -384,10 +386,10 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                                                 </div>
                                             </div>
                                             <div>
-                                                <Label htmlFor="feedback">Maoni (si lazima)</Label>
+                                                <Label htmlFor="feedback">{t('feedbackOptional')}</Label>
                                                 <Textarea
                                                     id="feedback"
-                                                    placeholder="Tuambie jinsi huduma ilivyokuwa..."
+                                                    placeholder={t('tellUsAboutService')}
                                                     value={feedback}
                                                     onChange={(e) => setFeedback(e.target.value)}
                                                     className="mt-2"
@@ -398,7 +400,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                                                 className="w-full bg-green-600 hover:bg-green-700"
                                                 disabled={rating === 0}
                                             >
-                                                Tuma Ukadiriaji
+                                                {t('submitRating')}
                                             </Button>
                                         </div>
                                     </DialogContent>

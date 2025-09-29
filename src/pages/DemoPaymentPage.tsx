@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { databaseService } from '@/lib/database-service';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PaymentMethod {
   id: string;
@@ -43,6 +44,7 @@ const DemoPaymentPage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
   
   // Get URL parameters
   const orderId = searchParams.get('orderId');
@@ -62,32 +64,32 @@ const DemoPaymentPage: React.FC = () => {
       name: 'M-Pesa',
       description: 'Pay with Vodacom M-Pesa',
       icon: Smartphone,
-      fee: 'Hakuna malipo ya ziada',
-      processingTime: '1-2 dakika'
+      fee: t('noExtraFees'),
+      processingTime: t('oneToTwoMinutes')
     },
     {
       id: 'airtel_money',
       name: 'Airtel Money',
       description: 'Pay with Airtel Money',
       icon: Wallet,
-      fee: 'Hakuna malipo ya ziada',
-      processingTime: '1-2 dakika'
+      fee: t('noExtraFees'),
+      processingTime: t('oneToTwoMinutes')
     },
     {
       id: 'tigo_pesa',
       name: 'Tigo Pesa',
       description: 'Pay with Tigo Pesa',
       icon: Smartphone,
-      fee: 'Hakuna malipo ya ziada',
-      processingTime: '1-2 dakika'
+      fee: t('noExtraFees'),
+      processingTime: t('oneToTwoMinutes')
     },
     {
       id: 'card',
       name: 'Credit/Debit Card',
       description: 'Visa, Mastercard',
       icon: CreditCard,
-      fee: 'Ada ya 2.5%',
-      processingTime: 'Papo hapo'
+      fee: t('cardFee'),
+      processingTime: t('instant')
     }
   ];
 
@@ -95,13 +97,13 @@ const DemoPaymentPage: React.FC = () => {
   useEffect(() => {
     if (!orderId || !amount || !paymentRef) {
       toast({
-        title: 'Invalid Payment Link',
-        description: 'Required payment parameters are missing.',
+        title: t('invalidPaymentLink'),
+        description: t('requiredPaymentParametersMissing'),
         variant: 'destructive',
       });
       navigate('/');
     }
-  }, [orderId, amount, paymentRef, navigate, toast]);
+  }, [orderId, amount, paymentRef, navigate, toast, t]);
 
   const handleMethodSelect = (methodId: string) => {
     setSelectedMethod(methodId);
@@ -118,8 +120,8 @@ const DemoPaymentPage: React.FC = () => {
   const handlePayment = async () => {
     if (selectedMethod !== 'card' && !phoneNumber) {
       toast({
-        title: 'Phone Number Required',
-        description: 'Please enter your phone number to continue.',
+        title: t('phoneNumberRequired'),
+        description: t('enterPhoneNumberToContinue'),
         variant: 'destructive',
       });
       return;
@@ -148,7 +150,7 @@ const DemoPaymentPage: React.FC = () => {
             paymentReference: paymentRef,
             collectedAmount: amount.toString(),
             collectedCurrency: 'TZS',
-            message: 'Payment received (Demo)',
+            message: t('paymentReceivedDemo'),
             method: selectedMethod,
             phoneNumber: phoneNumber,
             demoMode: true
@@ -165,15 +167,15 @@ const DemoPaymentPage: React.FC = () => {
       setPaymentStep(4);
       
       toast({
-        title: 'Payment Successful! 🎉',
-        description: 'Your payment has been processed successfully.',
+        title: t('paymentSuccessful'),
+        description: t('paymentProcessedSuccessfully'),
       });
 
     } catch (error) {
       console.error('Demo payment processing error:', error);
       toast({
-        title: 'Payment Failed',
-        description: 'Something went wrong. Please try again.',
+        title: t('paymentFailed'),
+        description: t('somethingWentWrong'),
         variant: 'destructive',
       });
       setPaymentStep(2);
@@ -203,14 +205,14 @@ const DemoPaymentPage: React.FC = () => {
             </div>
             <div className="ml-3">
               <h1 className="text-xl font-bold">ClickPesa</h1>
-              <p className="text-sm text-muted-foreground">Secure Payment</p>
+              <p className="text-sm text-muted-foreground">{t('securePayment')}</p>
             </div>
           </div>
           
           <Alert className="mb-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-sm">
-              <strong>Demo Mode:</strong> This is a simulated payment experience. No real money will be charged.
+              <strong>{t('demoMode')}:</strong> {t('simulatedPaymentExperience')}
             </AlertDescription>
           </Alert>
         </div>
@@ -218,14 +220,14 @@ const DemoPaymentPage: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-center">
-              Complete Payment
+              {t('completePayment')}
             </CardTitle>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
                 TZS {amount.toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">
-                Order #{paymentRef}
+                {t('order')} #{paymentRef}
               </div>
             </div>
           </CardHeader>
@@ -235,7 +237,7 @@ const DemoPaymentPage: React.FC = () => {
               <>
                 <div>
                   <Label className="text-base font-medium mb-3 block">
-                    Select Payment Method
+                    {t('selectPaymentMethod')}
                   </Label>
                   <RadioGroup value={selectedMethod} onValueChange={handleMethodSelect}>
                     <div className="space-y-3">
@@ -263,7 +265,7 @@ const DemoPaymentPage: React.FC = () => {
                 </div>
 
                 <Button onClick={handleContinue} className="w-full bg-green-600 hover:bg-green-700">
-                  Continue with {selectedMethodInfo?.name}
+                  {t('continueWith')} {selectedMethodInfo?.name}
                 </Button>
               </>
             )}
@@ -276,14 +278,14 @@ const DemoPaymentPage: React.FC = () => {
                     <span className="font-medium">{selectedMethodInfo?.name}</span>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Fee: {selectedMethodInfo?.fee}
+                    {t('fee')}: {selectedMethodInfo?.fee}
                   </div>
                 </div>
 
                 {selectedMethod !== 'card' && (
                   <div>
                     <Label htmlFor="phone" className="text-base font-medium">
-                      Phone Number
+                      {t('phoneNumber')}
                     </Label>
                     <div className="flex mt-2">
                       <div className="flex items-center px-3 bg-muted border border-r-0 rounded-l-md">
@@ -293,14 +295,14 @@ const DemoPaymentPage: React.FC = () => {
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="123 456 789"
+                        placeholder={t('phoneNumberPlaceholder')}
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         className="rounded-l-none"
                       />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Enter your {selectedMethodInfo?.name} number
+                      {t('enterYour')} {selectedMethodInfo?.name} {t('number')}
                     </p>
                   </div>
                 )}
@@ -309,7 +311,7 @@ const DemoPaymentPage: React.FC = () => {
                   <Alert>
                     <CreditCard className="h-4 w-4" />
                     <AlertDescription>
-                      In demo mode, card payment is automatically approved. Click continue to proceed.
+                      {t('cardPaymentDemo')}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -317,10 +319,10 @@ const DemoPaymentPage: React.FC = () => {
                 <div className="flex gap-3">
                   <Button variant="outline" onClick={() => setPaymentStep(1)} className="flex-1">
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back
+                    {t('back')}
                   </Button>
                   <Button onClick={handleContinue} className="flex-1 bg-green-600 hover:bg-green-700">
-                    Pay TZS {amount.toLocaleString()}
+                    {t('pay')} TZS {amount.toLocaleString()}
                   </Button>
                 </div>
               </>
@@ -329,13 +331,13 @@ const DemoPaymentPage: React.FC = () => {
             {paymentStep === 3 && (
               <div className="text-center py-8">
                 <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-green-600" />
-                <h3 className="text-lg font-semibold mb-2">Processing Payment...</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('processingPayment')}...</h3>
                 <p className="text-muted-foreground mb-4">
-                  Please wait while we process your {selectedMethodInfo?.name} payment.
+                  {t('pleaseWaitWhileWeProcess')} {selectedMethodInfo?.name} {t('payment')}.
                 </p>
                 <div className="flex items-center justify-center text-sm text-muted-foreground">
                   <Clock className="h-4 w-4 mr-1" />
-                  Estimated time: {selectedMethodInfo?.processingTime}
+                  {t('estimatedTime')}: {selectedMethodInfo?.processingTime}
                 </div>
               </div>
             )}
@@ -343,34 +345,34 @@ const DemoPaymentPage: React.FC = () => {
             {paymentStep === 4 && (
               <div className="text-center py-8">
                 <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Payment Successful!</h3>
+                <h3 className="text-xl font-bold mb-2">{t('paymentSuccessful')}!</h3>
                 <p className="text-muted-foreground mb-6">
-                  Your payment of TZS {amount.toLocaleString()} has been processed successfully.
+                  {t('yourPaymentOf')} TZS {amount.toLocaleString()} {t('hasBeenProcessedSuccessfully')}.
                 </p>
                 
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span>Payment Reference:</span>
+                      <span>{t('paymentReference')}:</span>
                       <span className="font-medium">{paymentRef}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Method:</span>
+                      <span>{t('method')}:</span>
                       <span className="font-medium">{selectedMethodInfo?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Amount:</span>
+                      <span>{t('amount')}:</span>
                       <span className="font-medium">TZS {amount.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Status:</span>
-                      <Badge variant="default" className="bg-green-600">Success</Badge>
+                      <span>{t('status')}:</span>
+                      <Badge variant="default" className="bg-green-600">{t('success')}</Badge>
                     </div>
                   </div>
                 </div>
 
                 <Button onClick={handleBackToOrder} className="w-full bg-green-600 hover:bg-green-700">
-                  Back to Order Details
+                  {t('backToOrderDetails')}
                 </Button>
               </div>
             )}
@@ -380,7 +382,7 @@ const DemoPaymentPage: React.FC = () => {
         <div className="text-center mt-4">
           <div className="flex items-center justify-center text-xs text-muted-foreground">
             <Shield className="h-3 w-3 mr-1" />
-            Secured by ClickPesa • Demo Mode
+            {t('securedByClickPesa')} • {t('demoMode')}
           </div>
         </div>
       </div>

@@ -17,30 +17,31 @@ import {
 } from 'lucide-react'
 import { useCartStore } from '@/store/cart-store'
 import { useEnhancedPWA } from '@/hooks/use-enhanced-pwa'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const BOTTOM_NAV_ITEMS = [
   {
     icon: Home,
-    label: 'Home',
+    labelKey: 'homeLabel',
     path: '/',
     color: 'text-green-600'
   },
   {
     icon: ShoppingBag,
-    label: 'Products',
+    labelKey: 'productsLabel',
     path: '/products',
     color: 'text-blue-600'
   },
   {
     icon: ShoppingCart,
-    label: 'Cart',
+    labelKey: 'cartLabel',
     path: '/cart',
     color: 'text-orange-600',
     showBadge: true
   },
   {
     icon: User,
-    label: 'Profile',
+    labelKey: 'profileLabel',
     path: '/profile',
     color: 'text-purple-600'
   }
@@ -49,25 +50,25 @@ const BOTTOM_NAV_ITEMS = [
 const QUICK_ACTIONS = [
   {
     icon: Search,
-    label: 'Search',
+    labelKey: 'search',
     action: 'search',
     color: 'bg-blue-500'
   },
   {
     icon: Heart,
-    label: 'Favorites',
+    labelKey: 'favorites',
     action: 'favorites',
     color: 'bg-red-500'
   },
   {
     icon: Clock,
-    label: 'Recent',
+    labelKey: 'recent',
     action: 'recent',
     color: 'bg-yellow-500'
   },
   {
     icon: Settings,
-    label: 'Settings',
+    labelKey: 'settings',
     action: 'settings',
     color: 'bg-gray-500'
   }
@@ -78,6 +79,7 @@ export default function AppNavigation() {
   const location = useLocation()
   const { items } = useCartStore()
   const { isStandalone, enableVibration } = useEnhancedPWA()
+  const { t } = useLanguage()
   
   const [showQuickActions, setShowQuickActions] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -157,9 +159,9 @@ export default function AppNavigation() {
             
             <div className="flex-1 text-center">
               <h1 className="font-semibold text-lg">
-                {isProductsPage ? 'Products' : 
-                 isProductPage ? 'Product Details' : 
-                 'Fresh Grocery'}
+                {isProductsPage ? t('products') : 
+                 isProductPage ? t('product') : 
+                 t('home')}
               </h1>
             </div>
 
@@ -191,7 +193,7 @@ export default function AppNavigation() {
                         <div className={`p-2 rounded-lg ${action.color} text-white`}>
                           <Icon className="h-4 w-4" />
                         </div>
-                        <span className="text-xs">{action.label}</span>
+                        <span className="text-xs">{t(action.labelKey)}</span>
                       </Button>
                     )
                   })}
@@ -232,7 +234,7 @@ export default function AppNavigation() {
                   )}
                 </div>
                 <span className={`text-xs ${isActive ? 'font-medium' : ''}`}>
-                  {item.label}
+                  {t(item.labelKey)}
                 </span>
                 {isActive && (
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-green-600 rounded-full" />

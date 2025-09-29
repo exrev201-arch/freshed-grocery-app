@@ -39,6 +39,7 @@ import { clickPesaService } from '@/lib/clickpesa-service';
 import { databaseService } from '@/lib/database-service';
 import type { PaymentMethod, PaymentInitiationResponse } from '@/lib/clickpesa-service';
 import type { Order } from '@/types/database';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CheckoutStep {
   id: number;
@@ -69,6 +70,7 @@ const ClickPesaCheckout: React.FC = () => {
   const { items, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Component state
   const [currentStep, setCurrentStep] = useState(1);
@@ -100,26 +102,26 @@ const ClickPesaCheckout: React.FC = () => {
   const steps: CheckoutStep[] = [
     {
       id: 1,
-      title: 'Delivery Details',
-      description: 'Enter your delivery information',
+      title: t('deliveryDetails'),
+      description: t('enterDeliveryInformation'),
       completed: currentStep > 1,
     },
     {
       id: 2,
-      title: 'Payment Method',
-      description: 'Choose how you want to pay',
+      title: t('paymentMethod'),
+      description: t('choosePaymentMethod'),
       completed: currentStep > 2,
     },
     {
       id: 3,
-      title: 'Review & Confirm',
-      description: 'Review your order before payment',
+      title: t('reviewConfirm'),
+      description: t('reviewOrderBeforePayment'),
       completed: currentStep > 3,
     },
     {
       id: 4,
-      title: 'Payment',
-      description: 'Complete your payment',
+      title: t('payment'),
+      description: t('completePayment'),
       completed: false,
     },
   ];
@@ -142,47 +144,47 @@ const ClickPesaCheckout: React.FC = () => {
   const paymentMethods = [
     {
       id: 'tigo_pesa' as PaymentMethod,
-      name: 'Tigo Pesa',
-      description: 'Pay with Tigo Pesa (Instant)',
+      name: t('tigoPesa'),
+      description: t('payWithTigoPesa'),
       icon: Smartphone,
       popular: true,
-      fee: 'Hakuna malipo ya ziada',
+      fee: t('noAdditionalFees'),
       status: 'active',
     },
     {
       id: 'airtel_money' as PaymentMethod,
-      name: 'Airtel Money',
-      description: 'Pay with Airtel Money (Instant)',
+      name: t('airtelMoney'),
+      description: t('payWithAirtelMoney'),
       icon: Wallet,
       popular: true,
-      fee: 'Hakuna malipo ya ziada',
+      fee: t('noAdditionalFees'),
       status: 'active',
     },
     {
       id: 'mpesa' as PaymentMethod,
-      name: 'M-Pesa',
-      description: 'Pay with Vodacom M-Pesa',
+      name: t('mpesa'),
+      description: t('payWithMpesa'),
       icon: Smartphone,
       popular: false,
-      fee: 'Contact support to activate',
+      fee: t('contactSupportToActivate'),
       status: 'contact_required',
     },
     {
       id: 'card' as PaymentMethod,
-      name: 'Credit/Debit Card',
-      description: 'Visa, MasterCard (0-2 business days)',
+      name: t('creditDebitCard'),
+      description: t('visaMastercard'),
       icon: CreditCard,
       popular: false,
-      fee: 'Complete KYC to enable',
+      fee: t('completeKycToEnable'),
       status: 'kyc_required',
     },
     {
       id: 'cash_on_delivery' as PaymentMethod,
-      name: 'Cash on Delivery',
-      description: 'Pay when you receive your order',
+      name: t('cashOnDelivery'),
+      description: t('payWhenReceiveOrder'),
       icon: User,
       popular: false,
-      fee: 'Ada ya TZS 2,000',
+      fee: t('deliveryFeeTzs'),
       status: 'active',
     },
   ];
@@ -211,8 +213,8 @@ const ClickPesaCheckout: React.FC = () => {
       setCurrentStep(prev => Math.min(prev + 1, 4));
     } else {
       toast({
-        title: 'Missing Information',
-        description: 'Please fill in all required fields',
+        title: t('missingInformation'),
+        description: t('pleaseFillRequiredFields'),
         variant: 'destructive',
       });
     }
@@ -314,15 +316,15 @@ const ClickPesaCheckout: React.FC = () => {
           metadata: {
             deliveryInfo,
             cartItems: items.length,
-            paymentNote: 'Payment to be collected on delivery',
+            paymentNote: t('paymentToBeCollectedOnDelivery'),
           },
         };
 
         await databaseService.create('payments', paymentData);
 
         toast({
-          title: 'Order Placed Successfully!',
-          description: 'Your order has been placed. Pay when delivered.',
+          title: t('orderPlacedSuccessfully'),
+          description: t('yourOrderHasBeenPlaced'),
         });
         clearCart();
         
@@ -357,8 +359,8 @@ const ClickPesaCheckout: React.FC = () => {
     } catch (error) {
       console.error('Order creation failed:', error);
       toast({
-        title: 'Order Failed',
-        description: 'Failed to create order. Please try again.',
+        title: t('orderFailed'),
+        description: t('failedToCreateOrder'),
         variant: 'destructive',
       });
     } finally {
@@ -374,8 +376,8 @@ const ClickPesaCheckout: React.FC = () => {
       
       // Show success message
       toast({
-        title: 'Redirected to Payment',
-        description: 'Complete your payment in the new tab. We\'ll redirect you to track your order.',
+        title: t('redirectedToPayment'),
+        description: t('completePaymentInNewTab'),
       });
 
       // Clear cart after successful initiation
@@ -425,26 +427,26 @@ const ClickPesaCheckout: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5" />
-          Delivery Information
+          {t('deliveryInformation')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="address">Street Address *</Label>
+            <Label htmlFor="address">{t('streetAddress')} *</Label>
             <Textarea
               id="address"
-              placeholder="Enter your full address..."
+              placeholder={t('enterFullAddress')}
               value={deliveryInfo.address}
               onChange={(e) => setDeliveryInfo(prev => ({ ...prev, address: e.target.value }))}
               rows={3}
             />
           </div>
           <div>
-            <Label htmlFor="ward">Ward *</Label>
+            <Label htmlFor="ward">{t('ward')} *</Label>
             <Input
               id="ward"
-              placeholder="e.g., Mikocheni, Masaki"
+              placeholder={t('e.g., Mikocheni, Masaki')}
               value={deliveryInfo.ward}
               onChange={(e) => setDeliveryInfo(prev => ({ ...prev, ward: e.target.value }))}
             />
@@ -453,7 +455,7 @@ const ClickPesaCheckout: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="district">District</Label>
+            <Label htmlFor="district">{t('district')}</Label>
             <Input
               id="district"
               value={deliveryInfo.district}
@@ -461,7 +463,7 @@ const ClickPesaCheckout: React.FC = () => {
             />
           </div>
           <div>
-            <Label htmlFor="phone">Phone Number *</Label>
+            <Label htmlFor="phone">{t('phoneNumber')} *</Label>
             <Input
               id="phone"
               placeholder="+255 7XX XXX XXX"
@@ -473,7 +475,7 @@ const ClickPesaCheckout: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="deliveryDate">Delivery Date *</Label>
+            <Label htmlFor="deliveryDate">{t('deliveryDate')} *</Label>
             <Input
               id="deliveryDate"
               type="date"
@@ -483,7 +485,7 @@ const ClickPesaCheckout: React.FC = () => {
             />
           </div>
           <div>
-            <Label>Time Slot *</Label>
+            <Label>{t('timeSlot')} *</Label>
             <RadioGroup
               value={deliveryInfo.timeSlot}
               onValueChange={(value) => setDeliveryInfo(prev => ({ ...prev, timeSlot: value }))}
@@ -502,10 +504,10 @@ const ClickPesaCheckout: React.FC = () => {
         </div>
 
         <div>
-          <Label htmlFor="instructions">Delivery Instructions (Optional)</Label>
+          <Label htmlFor="instructions">{t('deliveryInstructions')} ({t('optional')})</Label>
           <Textarea
             id="instructions"
-            placeholder="Special instructions for delivery..."
+            placeholder={t('specialInstructionsForDelivery')}
             value={deliveryInfo.instructions}
             onChange={(e) => setDeliveryInfo(prev => ({ ...prev, instructions: e.target.value }))}
             rows={2}
@@ -520,7 +522,7 @@ const ClickPesaCheckout: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          Payment Method
+          {t('paymentMethod')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -555,16 +557,16 @@ const ClickPesaCheckout: React.FC = () => {
                           {method.name}
                         </span>
                         {method.popular && method.status === 'active' && (
-                          <Badge variant="secondary" className="text-xs">Popular</Badge>
+                          <Badge variant="secondary" className="text-xs">{t('popular')}</Badge>
                         )}
                         {method.status === 'contact_required' && (
                           <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
-                            Contact Required
+                            {t('contactRequired')}
                           </Badge>
                         )}
                         {method.status === 'kyc_required' && (
                           <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                            KYC Required
+                            {t('kycRequired')}
                           </Badge>
                         )}
                       </div>
@@ -586,7 +588,7 @@ const ClickPesaCheckout: React.FC = () => {
           <Alert className="mt-4">
             <Info className="h-4 w-4" />
             <AlertDescription>
-              You'll be redirected to {paymentMethods.find(m => m.id === paymentInfo.method)?.name} to complete your payment securely.
+              {t('youWillBeRedirectedTo')} {paymentMethods.find(m => m.id === paymentInfo.method)?.name} {t('toCompletePayment')}
             </AlertDescription>
           </Alert>
         )}
@@ -601,7 +603,7 @@ const ClickPesaCheckout: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            Order Summary
+            {t('orderSummary')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -612,7 +614,7 @@ const ClickPesaCheckout: React.FC = () => {
                   <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
                   <div>
                     <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                    <p className="text-sm text-muted-foreground">{t('qty')}: {item.quantity}</p>
                   </div>
                 </div>
                 <p className="font-medium">TZS {(item.price * item.quantity).toLocaleString()}</p>
@@ -624,20 +626,20 @@ const ClickPesaCheckout: React.FC = () => {
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>TZS {subtotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span>VAT (18%)</span>
+              <span>{t('vat')} (18%)</span>
               <span>TZS {taxAmount.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span>Delivery Fee</span>
-              <span>{deliveryFee === 0 ? 'FREE' : `TZS ${deliveryFee.toLocaleString()}`}</span>
+              <span>{t('deliveryFee')}</span>
+              <span>{deliveryFee === 0 ? t('free') : `TZS ${deliveryFee.toLocaleString()}`}</span>
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span>TZS {finalTotal.toLocaleString()}</span>
             </div>
           </div>
@@ -647,15 +649,15 @@ const ClickPesaCheckout: React.FC = () => {
       {/* Delivery Details */}
       <Card>
         <CardHeader>
-          <CardTitle>Delivery Details</CardTitle>
+          <CardTitle>{t('deliveryDetails')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p><strong>Address:</strong> {deliveryInfo.address}, {deliveryInfo.ward}</p>
-            <p><strong>Phone:</strong> {deliveryInfo.phone}</p>
-            <p><strong>Date & Time:</strong> {deliveryInfo.deliveryDate} - {deliveryInfo.timeSlot}</p>
+            <p><strong>{t('address')}:</strong> {deliveryInfo.address}, {deliveryInfo.ward}</p>
+            <p><strong>{t('phone')}:</strong> {deliveryInfo.phone}</p>
+            <p><strong>{t('dateAndTime')}:</strong> {deliveryInfo.deliveryDate} - {deliveryInfo.timeSlot}</p>
             {deliveryInfo.instructions && (
-              <p><strong>Instructions:</strong> {deliveryInfo.instructions}</p>
+              <p><strong>{t('instructions')}:</strong> {deliveryInfo.instructions}</p>
             )}
           </div>
         </CardContent>
@@ -664,7 +666,7 @@ const ClickPesaCheckout: React.FC = () => {
       {/* Payment Method */}
       <Card>
         <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
+          <CardTitle>{t('paymentMethod')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
@@ -687,8 +689,8 @@ const ClickPesaCheckout: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Checkout</h1>
-        <p className="text-muted-foreground">Complete your order securely with ClickPesa</p>
+        <h1 className="text-3xl font-bold mb-2">{t('checkout')}</h1>
+        <p className="text-muted-foreground">{t('completeYourOrderSecurely')}</p>
       </div>
 
       {renderStepIndicator()}
@@ -704,25 +706,25 @@ const ClickPesaCheckout: React.FC = () => {
         <div className="lg:col-span-1">
           <Card className="sticky top-6">
             <CardHeader>
-              <CardTitle>Order Total</CardTitle>
+              <CardTitle>{t('orderTotal')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span>Items ({items.length})</span>
+                  <span>{t('items')} ({items.length})</span>
                   <span>TZS {subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>VAT</span>
+                  <span>{t('vat')}</span>
                   <span>TZS {taxAmount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Delivery</span>
-                  <span>{deliveryFee === 0 ? 'FREE' : `TZS ${deliveryFee.toLocaleString()}`}</span>
+                  <span>{t('delivery')}</span>
+                  <span>{deliveryFee === 0 ? t('free') : `TZS ${deliveryFee.toLocaleString()}`}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
-                  <span>Total</span>
+                  <span>{t('total')}</span>
                   <span>TZS {finalTotal.toLocaleString()}</span>
                 </div>
               </div>
@@ -737,7 +739,7 @@ const ClickPesaCheckout: React.FC = () => {
                         className="w-full"
                         disabled={loading}
                       >
-                        Previous
+                        {t('previous')}
                       </Button>
                     )}
                     <Button
@@ -745,7 +747,7 @@ const ClickPesaCheckout: React.FC = () => {
                       className="w-full"
                       disabled={loading || !validateStep(currentStep)}
                     >
-                      Continue
+                      {t('continue')}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </>
@@ -760,12 +762,12 @@ const ClickPesaCheckout: React.FC = () => {
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
+                        {t('processing')}
                       </>
                     ) : (
                       <>
                         <Shield className="mr-2 h-4 w-4" />
-                        Place Order
+                        {t('placeOrder')}
                       </>
                     )}
                   </Button>
@@ -774,7 +776,7 @@ const ClickPesaCheckout: React.FC = () => {
 
               <div className="mt-4 text-xs text-muted-foreground text-center">
                 <Shield className="inline h-3 w-3 mr-1" />
-                Secured by ClickPesa
+                {t('securedByClickPesa')}
               </div>
             </CardContent>
           </Card>
@@ -785,7 +787,7 @@ const ClickPesaCheckout: React.FC = () => {
       <Dialog open={paymentDialog} onOpenChange={setPaymentDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center">Complete Payment</DialogTitle>
+            <DialogTitle className="text-center">{t('completePayment')}</DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
@@ -793,14 +795,14 @@ const ClickPesaCheckout: React.FC = () => {
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold">Order Created Successfully!</h3>
+              <h3 className="text-lg font-semibold">{t('orderCreatedSuccessfully')}</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Order #{createdOrder?.orderNumber}
+                {t('orderNumber')} #{createdOrder?.orderNumber}
               </p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm font-medium mb-2">Payment Amount</p>
+              <p className="text-sm font-medium mb-2">{t('paymentAmount')}</p>
               <p className="text-2xl font-bold text-green-600">
                 TZS {finalTotal.toLocaleString()}
               </p>
@@ -810,12 +812,12 @@ const ClickPesaCheckout: React.FC = () => {
               onClick={handlePaymentComplete}
               className="w-full bg-green-600 hover:bg-green-700"
             >
-              Continue to ClickPesa
+              {t('continueToClickPesa')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              You'll be redirected to ClickPesa's secure payment page
+              {t('youWillBeRedirectedToClickPesa')}
             </p>
           </div>
         </DialogContent>
