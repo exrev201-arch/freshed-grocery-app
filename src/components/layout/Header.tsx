@@ -385,7 +385,7 @@ function Header() {
                         <Button 
                             variant="ghost" 
                             size="icon"
-                            onClick={() => setShowUserProfile(true)}
+                            onClick={handleUserClick}
                             className="relative"
                         >
                             <User className="h-5 w-5" />
@@ -448,7 +448,7 @@ function Header() {
                                 <Button 
                                     variant="ghost" 
                                     size="sm"
-                                    onClick={() => setShowUserProfile(true)}
+                                    onClick={handleUserClick}
                                     className="flex flex-col items-center space-y-1"
                                 >
                                     <User className="h-5 w-5" />
