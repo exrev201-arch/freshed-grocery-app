@@ -230,9 +230,12 @@ const ClickPesaCheckout: React.FC = () => {
     console.log('🔍 Delivery info:', deliveryInfo);
     console.log('🔍 Cart items:', items);
     
+    // Handle both user object structures (auth store vs backend service)
+    const userId = user?.uid || (user && (user as any)._uid) || 'guest';
+    
     const orderData = {
       orderNumber: `FG${Date.now()}`,
-      userId: user?.uid || 'guest',
+      userId: userId,
       subtotal,
       taxAmount,
       shippingAmount: deliveryFee,
@@ -305,9 +308,12 @@ const ClickPesaCheckout: React.FC = () => {
       // For cash on delivery, complete immediately
       if (paymentInfo.method === 'cash_on_delivery') {
         // Create a payment record for cash on delivery
+        // Handle both user object structures (auth store vs backend service)
+        const userId = user?.uid || (user as any)?._uid || 'guest';
+        
         const paymentData = {
           orderId: order.id,
-          userId: order.userId,
+          userId: userId,
           amount: finalTotal,
           currency: 'TZS' as const,
           method: 'cash_on_delivery' as const,
