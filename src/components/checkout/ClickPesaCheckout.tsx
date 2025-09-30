@@ -136,9 +136,9 @@ const ClickPesaCheckout: React.FC = () => {
 
   // Time slots for delivery
   const timeSlots = [
-    '08:00 - 12:00',
-    '12:00 - 16:00',
-    '16:00 - 20:00',
+    t('timeSlot1'),
+    t('timeSlot2'),
+    t('timeSlot3'),
   ];
 
   // Payment methods ordered by your ClickPesa account availability
@@ -480,7 +480,7 @@ const ClickPesaCheckout: React.FC = () => {
             <Label htmlFor="phone">{t('phoneNumber')} *</Label>
             <Input
               id="phone"
-              placeholder="+255 7XX XXX XXX"
+              placeholder={t('phoneNumberPlaceholderSw')}
               value={deliveryInfo.phone}
               onChange={(e) => setDeliveryInfo(prev => ({ ...prev, phone: e.target.value }))}
             />

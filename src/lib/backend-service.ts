@@ -278,11 +278,17 @@ class AuthService {
     console.log(`📱 OTP sent to ${email}: ${code} (dev mode - check console)`);
     
     // In production, send actual email/SMS here
-    // For development, show in console
+    // For development, show in console and use toast notification
     if (process.env.NODE_ENV === 'development') {
+      // Show alert
       setTimeout(() => {
         alert(`Development Mode: Your OTP for ${email} is: ${code}`);
       }, 500);
+      
+      // Also log to console for easy access with styling
+      console.log(`%c📱 DEVELOPMENT MODE: Your OTP code for ${email} is: ${code}`, 'font-size: 16px; font-weight: bold; color: #2196F3;');
+      console.log('%c📋 You can also use the default test code: 123456 for any email', 'font-size: 14px; color: #666;');
+      console.log('%c📋 TIP: Check the browser console for OTP codes if you don\'t receive an email', 'font-size: 14px; color: #FF9800;');
     }
   }
 

@@ -6,12 +6,23 @@
 // Mock OTP for testing purposes
 const MOCK_OTP = '123456';
 
+// Show OTP in a more visible way during development
+if (process.env.NODE_ENV === 'development') {
+  console.log('%c🔐 DEVELOPMENT MODE: Default test OTP code is 123456 for any email', 'font-size: 16px; font-weight: bold; color: #4CAF50;');
+}
+
 // Debug auth service
 export const debugAuth = {
   // Mock sendOTP function for testing
   async sendOTP(email: string): Promise<void> {
     console.log('🔧 Debug Auth: Sending OTP to', email);
     console.log('🔧 Debug Auth: Mock OTP Code is:', MOCK_OTP);
+    
+    // In development mode, show a more visible message
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`%c📱 OTP Code for ${email}: ${MOCK_OTP}`, 'font-size: 18px; font-weight: bold; color: #2196F3; background: #E3F2FD; padding: 10px; border-radius: 5px;');
+      console.log('%c📋 You can also use this default test code for any email: 123456', 'font-size: 14px; color: #666;');
+    }
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));

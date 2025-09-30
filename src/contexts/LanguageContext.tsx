@@ -227,8 +227,9 @@ const translations = {
     signUp: 'Sign Up',
     fullName: 'Full Name',
     emailAddress: 'Email Address',
-    phoneNumber: 'Phone Number',
+    phoneNumber: 'Nambari ya Simu',
     phoneNumberPlaceholder: '+255 XXX XXX XXX',
+    phoneNumberPlaceholderSw: '+255 7XX XXX XXX',
     createPassword: 'Create a password',
     confirmPassword: 'Confirm Password',
     confirmYourPassword: 'Confirm your password',
@@ -370,6 +371,7 @@ const translations = {
     orderNumber: 'Order Number',
     orderConfirmationAddress: 'Address',
     orderConfirmationPhone: 'Phone',
+    phone: 'Phone',
     dateAndTime: 'Date and Time',
     additionalNotes: 'Additional Notes',
     orderedItems: 'Ordered Items',
@@ -877,6 +879,7 @@ const translations = {
     subtotal: 'Jumla ndogo',
     vat: 'Kodi (VAT)',
     deliveryFee: 'Ada ya Uwasilishaji',
+    deliveryInformation: 'Maelezo ya Uwasilishaji',
     free: 'BURE',
     total: 'Jumla',
     orderTotal: 'Jumla ya Oda',
@@ -890,6 +893,26 @@ const translations = {
     popular: 'Maarufu',
     contactRequired: 'Mawasiliano Yanahitajika',
     kycRequired: 'KYC Inahitajika',
+    
+    // Time slots
+    timeSlot1: '08:00 - 12:00',
+    timeSlot2: '12:00 - 16:00',
+    timeSlot3: '16:00 - 20:00',
+    
+    // Time slots in Swahili
+    timeSlot1Sw: '08:00 - 12:00',
+    timeSlot2Sw: '12:00 - 16:00',
+    timeSlot3Sw: '16:00 - 20:00',
+    
+    // Additional translations
+    orderConfirmationAddress: 'Anwani',
+    orderConfirmationPhone: 'Simu',
+    phone: 'Simu',
+    dateAndTime: 'Tarehe na Saa',
+    
+    // Login/Signup translations
+    verificationCodeSentTo: 'Tumetuma msimbo wa tarakimu 6 hadi',
+    forTestingUseCode: 'Kwa majaribio, unaweza kutumia',
   }
 };
 
