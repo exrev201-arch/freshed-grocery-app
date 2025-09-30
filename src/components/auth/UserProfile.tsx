@@ -57,6 +57,19 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
         }
     }, [isOpen, user]);
 
+    // Set up interval to refresh orders periodically
+    useEffect(() => {
+        if (!isOpen || !user) return;
+
+        const interval = setInterval(() => {
+            if (activeTab === 'orders') {
+                loadUserOrders();
+            }
+        }, 30000); // Refresh every 30 seconds
+
+        return () => clearInterval(interval);
+    }, [isOpen, user, activeTab]);
+
     const loadUserData = async () => {
         if (!user) return;
 
@@ -85,12 +98,22 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
             setFavorites(userFavorites);
 
             // Load orders
-            const userOrders = await OrderService.getUserOrders(user.uid);
-            setOrders(userOrders);
+            await loadUserOrders();
         } catch (error) {
             console.error('Error loading user data:', error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const loadUserOrders = async () => {
+        if (!user) return;
+
+        try {
+            const userOrders = await OrderService.getUserOrders(user.uid);
+            setOrders(userOrders);
+        } catch (error) {
+            console.error('Error loading user orders:', error);
         }
     };
 

@@ -799,7 +799,19 @@ const translations = {
     mixedNuts: 'Nuts Zilizochanganywa',
     mixedNutsDesc: 'Nuts za ubora wa juu, zinazofaa kwa kula kwa afya',
     driedFruitsMix: 'Mchanganyiko wa Matunda Yaliyokauka',
-    driedFruitsMixDesc: 'Matunda yaliyokauka asili, pasipo sukari iliyongezea'
+    driedFruitsMixDesc: 'Matunda yaliyokauka asili, pasipo sukari iliyongezea',
+    
+    // Units
+    'per kg': 'kwa kilo',
+    'per bunch': 'kwa bunchi',
+    'per dozen': 'kwa kumi na mbili',
+    'per liter': 'kwa lita',
+    'per tray (30 eggs)': 'kwa tray (mayai 30)',
+    'per 5kg bag': 'kwa mfuko wa kg 5',
+    'per 500ml': 'kwa ml 500',
+    'per bottle': 'kwa chupa',
+    'per 250g': 'kwa g 250',
+    'per 200g': 'kwa g 200',
   }
 };
 

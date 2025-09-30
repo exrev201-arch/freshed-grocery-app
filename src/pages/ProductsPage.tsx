@@ -93,8 +93,8 @@ function ProductsPage() {
 
     // Filter products based on search and category
     const filteredProducts = productsToShow.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesSearch = t(product.name).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            t(product.description).toLowerCase().includes(searchQuery.toLowerCase())
         const matchesCategory = selectedCategory === null || product.category === selectedCategory
         return matchesSearch && matchesCategory
     })
@@ -153,7 +153,7 @@ function ProductsPage() {
                     <p className="text-sm text-muted-foreground">
                         {t('showingProducts')} {filteredProducts.length} {t('ofProducts')} {productsToShow.length} {t('productsCount')}
                         {selectedCategory && (
-                            <span> {t('inCategory')} <span className="font-medium capitalize">{selectedCategory}</span></span>
+                            <span> {t('inCategory')} <span className="font-medium capitalize">{t(selectedCategory)}</span></span>
                         )}
                     </p>
                 </div>

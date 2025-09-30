@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { getOrderDelivery, updateDeliveryLocation } from '@/lib/delivery-service';
+import { OrderService } from '@/lib/order-service';
 import { useAuthStore } from '@/store/auth-store';
 import { useToast } from '@/hooks/use-toast';
 import LiveDeliveryTracker from '@/components/delivery/LiveDeliveryTracker';
@@ -53,6 +54,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
     orderDate,
     totalAmount
 }) => {
+    const [order, setOrder] = useState<{status: string} | null>(null);
     const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState(0);
@@ -63,8 +65,32 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
     const { t } = useLanguage();
 
     useEffect(() => {
+        loadOrderData();
         loadTrackingData();
     }, [orderId]);
+
+    // Set up interval to refresh order data periodically
+    useEffect(() => {
+        const interval = setInterval(() => {
+            loadOrderData();
+            loadTrackingData();
+        }, 30000); // Refresh every 30 seconds
+
+        return () => clearInterval(interval);
+    }, [orderId]);
+
+    const loadOrderData = async () => {
+        if (!user?.uid) return;
+
+        try {
+            const orderData = await OrderService.getOrder(orderId, user.uid);
+            if (orderData) {
+                setOrder(orderData);
+            }
+        } catch (error) {
+            console.error('Error loading order data:', error);
+        }
+    };
 
     const loadTrackingData = async () => {
         try {
@@ -92,6 +118,9 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
             setLoading(false);
         }
     };
+
+    // Use the live order status if available, otherwise use the prop
+    const currentOrderStatus = order?.status || orderStatus;
 
     const getStatusProgress = (status: string): number => {
         switch (status) {
@@ -193,8 +222,8 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
             <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                     <span>{t('orderTracking')}</span>
-                    <Badge className={getStatusColor(orderStatus)}>
-                        {formatStatus(orderStatus)}
+                    <Badge className={getStatusColor(currentOrderStatus)}>
+                        {formatStatus(currentOrderStatus)}
                     </Badge>
                 </CardTitle>
             </CardHeader>
@@ -203,10 +232,10 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
                         <span>{t('orderProgress')}</span>
-                        <span>{getStatusProgress(orderStatus)}%</span>
+                        <span>{getStatusProgress(currentOrderStatus)}%</span>
                     </div>
                     <Progress
-                        value={getStatusProgress(orderStatus)}
+                        value={getStatusProgress(currentOrderStatus)}
                         className="h-2"
                     />
                 </div>
@@ -253,14 +282,14 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                             { status: 'delivered', label: t('delivered') }
                         ].map((step, index) => (
                             <div key={step.status} className="flex items-center space-x-3">
-                                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getStatusProgress(orderStatus) >= ((index + 1) * 16.67)
+                                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getStatusProgress(currentOrderStatus) >= ((index + 1) * 16.67)
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-200 text-gray-400'
                                     }`}>
                                     {getStatusIcon(step.status)}
                                 </div>
                                 <div className="flex-1">
-                                    <p className={`text-sm font-medium ${getStatusProgress(orderStatus) >= ((index + 1) * 16.67)
+                                    <p className={`text-sm font-medium ${getStatusProgress(currentOrderStatus) >= ((index + 1) * 16.67)
                                         ? 'text-green-600'
                                         : 'text-gray-400'
                                         }`}>
@@ -278,7 +307,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 </div>
 
                 {/* Live Delivery Tracking */}
-                {(orderStatus === 'out_for_delivery' || orderStatus === 'delivered') && trackingData && (
+                {(currentOrderStatus === 'out_for_delivery' || currentOrderStatus === 'delivered') && trackingData && (
                     <>
                         <Separator />
                         <div className="space-y-4">
@@ -293,14 +322,14 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                             </div>
                             <LiveDeliveryTracker
                                 orderId={orderId}
-                                refreshInterval={orderStatus === 'out_for_delivery' ? 30000 : 0}
+                                refreshInterval={currentOrderStatus === 'out_for_delivery' ? 30000 : 0}
                             />
                         </div>
                     </>
                 )}
 
                 {/* Basic Delivery Information */}
-                {trackingData && orderStatus !== 'out_for_delivery' && orderStatus !== 'delivered' && (
+                {trackingData && currentOrderStatus !== 'out_for_delivery' && currentOrderStatus !== 'delivered' && (
                     <>
                         <Separator />
                         <div className="space-y-4">
@@ -326,7 +355,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                 )}
 
                 {/* Delivery Feedback */}
-                {orderStatus === 'delivered' && (
+                {currentOrderStatus === 'delivered' && (
                     <>
                         <Separator />
                         <div className="space-y-3">

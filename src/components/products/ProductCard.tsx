@@ -45,7 +45,7 @@ function ProductCard({ product }: ProductCardProps) {
         addItem(product)
         toast({
             title: t('addedToCart'),
-            description: `${t(product.id)} ${t('addedToCartDescription')}`,
+            description: `${t(product.name)} ${t('addedToCartDescription')}`,
             duration: 2000,
         })
     }
@@ -71,21 +71,21 @@ function ProductCard({ product }: ProductCardProps) {
                     setIsFavorited(false)
                     toast({
                         title: t('removedFromFavorites'),
-                        description: `${t(product.id)} ${t('removedFromFavoritesDescription')}`,
+                        description: `${t(product.name)} ${t('removedFromFavoritesDescription')}`,
                     })
                 }
             } else {
                 // Add to favorites
                 await UserService.addToFavorites({
                     product_id: product.id,
-                    product_name: t(product.id),
+                    product_name: t(product.name),
                     product_price: product.price,
                     product_category: product.category,
                 })
                 setIsFavorited(true)
                 toast({
                     title: t('addedToFavorites'),
-                    description: `${t(product.id)} ${t('addedToFavoritesDescription')}`,
+                    description: `${t(product.name)} ${t('addedToFavoritesDescription')}`,
                 })
             }
         } catch (error) {
@@ -105,7 +105,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <div className="aspect-square bg-muted overflow-hidden">
                     <img
                         src={product.image}
-                        alt={t(product.id)}
+                        alt={t(product.name)}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                 </div>
@@ -115,7 +115,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <div className="space-y-2">
                     <div className="flex items-start justify-between">
                         <Link to={`/product/${product.id}`} className="flex-1">
-                            <h3 className="font-medium leading-tight hover:text-primary transition-colors">{t(product.id)}</h3>
+                            <h3 className="font-medium leading-tight hover:text-primary transition-colors">{t(product.name)}</h3>
                         </Link>
                         <div className="flex items-center gap-1">
                             <button
@@ -142,11 +142,11 @@ function ProductCard({ product }: ProductCardProps) {
                         </div>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">{product.unit}</p>
+                    <p className="text-sm text-muted-foreground">{t(product.unit)}</p>
 
                     {product.description && (
                         <p className="text-xs text-muted-foreground line-clamp-2">
-                            {t(`${product.id}Desc`)}
+                            {t(product.description)}
                         </p>
                     )}
 

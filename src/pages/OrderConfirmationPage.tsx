@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, Package, Truck, Clock, MapPin, Phone } from 'lucide-react';
+import { CheckCircle, Package, Truck, Clock, MapPin, Phone, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -41,6 +41,17 @@ export default function OrderConfirmationPage() {
         };
 
         fetchOrderDetails();
+
+        // Set up interval to refresh order status
+        const interval = setInterval(() => {
+            if (orderId && user?.uid) {
+                OrderService.getOrderSecure(orderId, user.uid)
+                    .then(orderData => setOrder(orderData))
+                    .catch(error => console.error('Error refreshing order:', error));
+            }
+        }, 30000); // Refresh every 30 seconds
+
+        return () => clearInterval(interval);
     }, [orderId, user?.uid, navigate]);
 
     const getStatusInfo = (status: string) => {
@@ -280,6 +291,7 @@ export default function OrderConfirmationPage() {
                         onClick={() => navigate(`/delivery/${orderId}`)}
                         className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
                     >
+                        <Navigation className="h-4 w-4 mr-2" />
                         {t('trackOrder')}
                     </Button>
                     <Button
