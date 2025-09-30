@@ -913,6 +913,24 @@ const translations = {
     // Login/Signup translations
     verificationCodeSentTo: 'Tumetuma msimbo wa tarakimu 6 hadi',
     forTestingUseCode: 'Kwa majaribio, unaweza kutumia',
+    byContinuingYouAgree: 'Kwa kuendelea, unakubali sheria na masharti ya Fresh na sera ya faragha.',
+    
+    // User Profile translations
+    enterFullName: 'Tafadhali ingiza jina lako kamili.',
+    enterDeliveryAddress: 'Ingiza anwani yako ya Dar es Salaam',
+    saving: 'Inahifadhi...',
+    startShoppingButton: 'Anza Kununua',
+    browseProducts: 'Vinjari Bidhaa',
+    failedToRemoveFromFavorites: 'Imeshindwa kuondoa kutoka kwa vipendwa.',
+    loadingProfile: 'Inapakia wasifu...',
+    loadingOrders: 'Inapakia maagizo...',
+    loadingFavorites: 'Inapakia vipendwa...',
+    noOrdersYet: 'Hakuna maagizo bado',
+    orderHistoryWillAppearHere: 'Historia ya maagizo yako itaonekana hapa',
+    noFavoritesYet: 'Hakuna vipendwa bado',
+    productsYouFavoriteWillAppearHere: 'Bidhaa unazopenda zitaonekana hapa',
+    memberSince: 'Mwanachama tangu',
+    lastLogin: 'Kuingia kwa mwisho',
   }
 };
 
