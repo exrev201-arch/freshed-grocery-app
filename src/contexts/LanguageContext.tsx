@@ -115,9 +115,7 @@ const translations = {
     nativeAppsDescription: 'We\'re working on dedicated mobile apps for iOS and Android.',
     
     // PWA Install Banner translations
-    installFreshApp: 'Install Fresh App',
-    addToHomeScreen: 'Add to your home screen for quick access and offline shopping',
-    install: 'Install',
+
     
     // OrderTracker translations
     issue: 'Issue',
@@ -504,6 +502,13 @@ const translations = {
     paymentAmount: 'Payment Amount',
     continueToClickPesa: 'Continue to ClickPesa',
     youWillBeRedirectedToClickPesa: 'You will be redirected to ClickPesa\'s secure payment page',
+    checkout: 'Checkout',
+    completeYourOrderSecurely: 'Complete your order securely',
+    
+    // Download App Dialog translations,
+    
+    // PWA Install Banner translations
+
     
     // OrderManagement translations
     orderManagement: 'Order Management',
@@ -691,6 +696,17 @@ const translations = {
     cartLabel: 'Kikapu',
     profileLabel: 'Wasifu',
     
+    // ProductsPage translations
+    allProducts: 'Bidhaa Zote',
+    discoverGroceries: 'Gundua vyakula safi vinavyowasilishwa hadi mlango wako mwa Dar es Salaam',
+    showingProducts: 'Inaonyesha',
+    ofProducts: 'ya',
+    productsCount: 'bidhaa',
+    inCategory: 'katika',
+    noProductsFound: 'Hakuna bidhaa zilizopatikana',
+    noProductsFoundDescription: 'Jaribu kurekebisha utafutaji au vichujio vyako ili kupata kile unachotafuta.',
+    browseMore: 'Vinjari Zaidi',
+    
     // Category translations
     categories: 'Kategoria',
     categoryVegetables: 'Mboga Safi',
@@ -812,6 +828,68 @@ const translations = {
     'per bottle': 'kwa chupa',
     'per 250g': 'kwa g 250',
     'per 200g': 'kwa g 200',
+    
+    // Checkout Page translations
+    checkout: 'Maliza Ununuzi',
+    completeYourOrderSecurely: 'Kamilisha oda yako kwa usalama',
+    deliveryDetails: 'Maelezo ya Uwasilishaji',
+    enterDeliveryInformation: 'Ingiza maelezo yako ya uwasilishaji',
+    paymentMethod: 'Njia ya Malipo',
+    choosePaymentMethod: 'Chagua njia unayopendelea ya malipo',
+    reviewConfirm: 'Kagua & Thibitisha',
+    reviewOrderBeforePayment: 'Kagua oda yako kabla ya malipo',
+    payment: 'Malipo',
+    completePayment: 'Kamilisha malipo yako',
+    streetAddress: 'Anwani ya Mtaa',
+    enterFullAddress: 'Ingiza anwani yako kamili...',
+    ward: 'Kata',
+    'e.g., Mikocheni, Masaki': 'mfano, Mikocheni, Masaki',
+    district: 'Wilaya',
+    deliveryDate: 'Tarehe ya Uwasilishaji',
+    timeSlot: 'Muda wa Uwasilishaji',
+    deliveryInstructions: 'Maelezo ya Uwasilishaji',
+    optional: 'Hiari',
+    specialInstructionsForDelivery: 'Maelezo maalum kwa ajili ya uwasilishaji...',
+    tigoPesa: 'Tigo Pesa',
+    payWithTigoPesa: 'Lipa kwa Tigo Pesa (Papo hapo)',
+    noAdditionalFees: 'Hakuna ada za ziada',
+    airtelMoney: 'Airtel Money',
+    payWithAirtelMoney: 'Lipa kwa Airtel Money (Papo hapo)',
+    mpesa: 'M-Pesa',
+    payWithMpesa: 'Lipa kwa Vodacom M-Pesa',
+    contactSupportToActivate: 'Wasiliana na usaidizi ili kuamsha',
+    creditDebitCard: 'Kadi ya Mkopo/Debit',
+    visaMastercard: 'Visa, MasterCard (siku 0-2 za kazi)',
+    completeKycToEnable: 'Kamilisha KYC ili kuwezesha',
+    cashOnDelivery: 'Lipa Wakati wa Kupokea',
+    payWhenReceiveOrder: 'Lipa pesa unapopokea oda yako',
+    deliveryFeeTzs: 'Ada ya TZS 2,000',
+    paymentToBeCollectedOnDelivery: 'Malipo yatayakusanywa wakati wa uwasilishaji',
+    missingInformation: 'Habari Zinazokosekana',
+    pleaseFillRequiredFields: 'Tafadhali jaza sehemu zote zinazohitajika.',
+    processing: 'Inachakata...',
+    placeOrder: 'Weka Oda',
+    securedByClickPesa: 'Imehifadhiwa na ClickPesa',
+    previous: 'Iliyopita',
+    continue: 'Endelea',
+    orderSummary: 'Muhtasari wa Oda',
+    qty: 'Idadi',
+    subtotal: 'Jumla ndogo',
+    vat: 'Kodi (VAT)',
+    deliveryFee: 'Ada ya Uwasilishaji',
+    free: 'BURE',
+    total: 'Jumla',
+    orderTotal: 'Jumla ya Oda',
+    items: 'Vitu',
+    orderCreatedSuccessfully: 'Oda Imeundwa Kwa Mafanikio!',
+    paymentAmount: 'Kiasi cha Malipo',
+    continueToClickPesa: 'Endelea na ClickPesa',
+    youWillBeRedirectedToClickPesa: 'Utaelekezwa kwenye ukurasa salama wa malipo wa ClickPesa',
+    youWillBeRedirectedTo: 'Utaelekezwa kwenye',
+    toCompletePayment: 'kukamilisha malipo yako kwa usalama.',
+    popular: 'Maarufu',
+    contactRequired: 'Mawasiliano Yanahitajika',
+    kycRequired: 'KYC Inahitajika',
   }
 };
 
