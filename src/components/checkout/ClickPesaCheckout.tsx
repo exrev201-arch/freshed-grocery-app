@@ -35,7 +35,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
-import { clickPesaService } from '@/lib/clickpesa-service';
+// import { clickPesaService } from '@/lib/clickpesa-service';
+import axios from 'axios';
 import { databaseService } from '@/lib/database-service';
 import type { PaymentMethod, PaymentInitiationResponse } from '@/lib/clickpesa-service';
 import type { Order } from '@/types/database';
@@ -335,26 +336,34 @@ const ClickPesaCheckout: React.FC = () => {
         return;
       }
 
-      // Initiate ClickPesa payment
-      const paymentRequest = {
-        orderId: order.id,
-        amount: finalTotal,
-        currency: 'TZS' as const,
-        method: paymentInfo.method,
+      // Send order and payment to backend, get ClickPesa checkoutUrl
+      const backendOrderPayload = {
+        items: items.map(item => ({
+          productId: item.id,
+          productName: item.name,
+          productPrice: item.price,
+          quantity: item.quantity,
+          subtotal: item.price * item.quantity,
+        })),
+        totalAmount: finalTotal,
+        paymentMethod: paymentInfo.method,
+        deliveryAddress: deliveryInfo.address,
+        deliveryPhone: deliveryInfo.phone,
+        deliveryDate: deliveryInfo.deliveryDate,
+        deliveryTime: deliveryInfo.timeSlot,
         customerInfo: {
-          name: `${order.customerInfo.firstName} ${order.customerInfo.lastName}`,
-          email: order.customerInfo.email || 'customer@freshgrocery.co.tz',
-          phone: order.customerInfo.phoneNumber,
+          name: user?.name || '',
+          email: user?.email || '',
+          phone: deliveryInfo.phone,
         },
-        metadata: {
-          deliveryInfo,
-          cartItems: items.length,
-        },
+        // Add any other fields needed by backend
       };
-
-      const response = await clickPesaService.initiatePayment(paymentRequest);
-      setPaymentResponse(response);
-      setPaymentDialog(true);
+      const res = await axios.post('/api/orders', backendOrderPayload);
+      if (res.data && res.data.success && res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else {
+        throw new Error(res.data?.message || 'Failed to initiate payment');
+      }
 
     } catch (error) {
       console.error('Order creation failed:', error);

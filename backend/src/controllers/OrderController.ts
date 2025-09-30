@@ -8,18 +8,70 @@ const prisma = new PrismaClient();
 export class OrderController {
   async createOrder(req: AuthRequest, res: Response) {
     try {
-      // Implementation placeholder
-      res.status(501).json({
-        success: false,
-        error: 'Not implemented yet',
-        message: 'Order creation will be implemented when frontend is connected'
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ success: false, error: 'Unauthorized' });
+        return;
+      }
+
+      // Extract order and payment data from request body
+      const { items, totalAmount, paymentMethod, deliveryAddress, deliveryPhone, deliveryDate, deliveryTime, ...rest } = req.body;
+
+      // 1. Create order in DB (simplified, add more fields as needed)
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          totalAmount,
+          paymentMethod,
+          deliveryAddress,
+          deliveryPhone,
+          deliveryDate,
+          deliveryTime,
+          status: 'pending',
+          paymentStatus: 'pending',
+          ...rest,
+        },
+      });
+
+      // 2. Create order items in DB (optional, for completeness)
+      if (items && Array.isArray(items)) {
+        for (const item of items) {
+          await prisma.orderItem.create({
+            data: {
+              orderId: order.id,
+              productId: item.productId,
+              productName: item.productName,
+              productPrice: item.productPrice,
+              quantity: item.quantity,
+              subtotal: item.subtotal,
+            },
+          });
+        }
+      }
+
+      // 3. Initiate ClickPesa payment (call backend service)
+      const { initiateClickPesaPayment } = await import('../services/clickpesaService');
+      const clickpesaResponse = await initiateClickPesaPayment({
+        orderId: order.id,
+        amount: totalAmount,
+        phone: deliveryPhone,
+        // Add more fields as required by ClickPesa API
+        ...rest,
+      });
+
+      // 4. Return ClickPesa checkout URL to frontend
+      res.status(200).json({
+        success: true,
+        orderId: order.id,
+        checkoutUrl: clickpesaResponse?.checkout_url || clickpesaResponse?.url,
+        clickpesa: clickpesaResponse,
       });
     } catch (error: any) {
       logger.error('Error creating order', 'ORDER', { error: error.message });
       res.status(500).json({
         success: false,
         error: 'Failed to create order',
-        message: error.message
+        message: error.message,
       });
     }
   }
