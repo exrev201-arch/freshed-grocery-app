@@ -280,8 +280,16 @@ const ClickPesaCheckout: React.FC = () => {
     console.log('🔍 Order data to create:', orderData);
 
     // Use backend service instead of databaseService
+    console.log('🔍 Creating order with data:', orderData);
     const order = await table.addItem('orders', orderData);
     console.log('✅ Order created:', order);
+    
+    // Verify the order was saved correctly
+    const verifyResult = await table.getItems('orders', {
+      query: { _id: order._id },
+      limit: 1
+    });
+    console.log('🔍 Order verification result:', verifyResult);
 
     // Create order items using backend service
     for (const item of items) {
@@ -373,7 +381,9 @@ const ClickPesaCheckout: React.FC = () => {
       };
 
       // Initiate payment through ClickPesa service
+      console.log('🔍 Initiating ClickPesa payment with request:', paymentRequest);
       const paymentResponse = await clickPesaService.initiatePayment(paymentRequest);
+      console.log('✅ ClickPesa payment response:', paymentResponse);
       setPaymentResponse(paymentResponse);
 
       // Show success message

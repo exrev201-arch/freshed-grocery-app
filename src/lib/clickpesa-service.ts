@@ -222,16 +222,40 @@ class ClickPesaService {
       logger.info('Initiating ClickPesa payment for order', 'CLICKPESA', { orderId: request.orderId });
 
       // Get order details - using backend service to match order creation
+      console.log('🔍 Looking for order with ID:', request.orderId);
       const orderResult = await table.getItems('orders', {
         query: { _id: request.orderId },
         limit: 1
       });
       
-      if (!orderResult.items || orderResult.items.length === 0) {
-        throw new Error('Order not found');
-      }
+      console.log('🔍 Order search result:', orderResult);
       
-      const order = orderResult.items[0] as unknown as Order;
+      let order: Order;
+      
+      if (!orderResult.items || orderResult.items.length === 0) {
+        // Try alternative approach to find order
+        console.log('🔍 Trying alternative order search...');
+        const allOrders = await table.getItems('orders', {});
+        console.log('🔍 All orders:', allOrders.items);
+        
+        // Also try searching with id field instead of _id
+        console.log('🔍 Trying search with id field...');
+        const orderResultById = await table.getItems('orders', {
+          query: { id: request.orderId },
+          limit: 1
+        });
+        console.log('🔍 Order search result by id:', orderResultById);
+        
+        if (!orderResultById.items || orderResultById.items.length === 0) {
+          throw new Error(`Order not found with ID: ${request.orderId}`);
+        }
+        
+        order = orderResultById.items[0] as unknown as Order;
+        console.log('✅ Found order by id:', order);
+      } else {
+        order = orderResult.items[0] as unknown as Order;
+        console.log('✅ Found order by _id:', order);
+      }
 
       const paymentId = uuidv4();
       const paymentReference = `CP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -241,7 +265,7 @@ class ClickPesaService {
         console.log('🧪 Running in ClickPesa Demo Mode');
         
         // Create a demo payment URL
-        const demoCheckoutUrl = `${window.location.origin}/demo-payment?orderId=${order.id}&amount=${request.amount}&paymentRef=${paymentReference}`;
+        const demoCheckoutUrl = `${window.location.origin}/demo-payment?orderId=${(order as any)._id || order.id}&amount=${request.amount}&paymentRef=${paymentReference}`;
         
         // Create payment record
         const paymentData = {
@@ -441,10 +465,13 @@ class ClickPesaService {
       console.log('🔔 Received ClickPesa webhook:', payload);
 
       // Find payment by order reference
+      console.log('🔍 Looking for order with orderNumber:', payload.orderReference);
       const orderResult = await table.getItems('orders', {
         query: { orderNumber: payload.orderReference },
         limit: 1
       });
+      
+      console.log('🔍 Order search result for webhook:', orderResult);
       
       if (!orderResult.items || orderResult.items.length === 0) {
         console.error('❌ Order not found for webhook:', payload.orderReference);
@@ -459,10 +486,13 @@ class ClickPesaService {
       }
 
       // Find payment record
+      console.log('🔍 Looking for payment with orderId:', (order as any)._id || order.id);
       const paymentResult = await table.getItems('payments', {
         query: { orderId: (order as any)._id || order.id, provider: 'clickpesa' },
         limit: 1
       });
+      
+      console.log('🔍 Payment search result:', paymentResult);
       
       if (!paymentResult.items || paymentResult.items.length === 0) {
         console.error('❌ Payment not found for order:', (order as any)._id || order.id);
@@ -472,7 +502,7 @@ class ClickPesaService {
       const payment = paymentResult.items[0] as unknown as Payment & { _id: string };
 
       if (!payment) {
-        console.error('❌ Payment not found for order:', order.id);
+        console.error('❌ Payment not found for order:', (order as any)._id || order.id);
         return;
       }
 
@@ -671,7 +701,13 @@ class ClickPesaService {
    */
   async checkPaymentStatus(paymentId: string): Promise<Payment | null> {
     try {
-      const payment = await databaseService.findById<Payment>('payments', paymentId);
+      // Use backend service instead of databaseService for consistency
+      const paymentResult = await table.getItems('payments', {
+        query: { _id: paymentId },
+        limit: 1
+      });
+      
+      const payment = paymentResult.items?.[0] as unknown as Payment;
       if (!payment) {
         return null;
       }
@@ -737,15 +773,29 @@ class ClickPesaService {
           return payment;
       }
 
-      // Update payment record
-      const updatedPayment = await databaseService.update<Payment>('payments', payment.id, paymentUpdates);
+      // Update payment record using backend service
+      await table.updateItem('payments', {
+        _id: (payment as any)._id || payment.id,
+        _uid: payment.userId,
+        ...paymentUpdates
+      });
 
       // Update order if needed
       if (Object.keys(orderUpdates).length > 0 && payment.orderId) {
-        await databaseService.update<Order>('orders', payment.orderId, orderUpdates);
+        await table.updateItem('orders', {
+          _id: payment.orderId,
+          _uid: payment.userId,
+          ...orderUpdates
+        });
       }
 
-      return updatedPayment;
+      // Return updated payment by fetching it again
+      const updatedPaymentResult = await table.getItems('payments', {
+        query: { _id: paymentId },
+        limit: 1
+      });
+      
+      return updatedPaymentResult.items?.[0] as unknown as Payment;
     } catch (error) {
       console.error('❌ Failed to check payment status:', error);
       return null;
@@ -757,7 +807,13 @@ class ClickPesaService {
    */
   async refundPayment(paymentId: string, amount?: number): Promise<boolean> {
     try {
-      const payment = await databaseService.findById<Payment>('payments', paymentId);
+      // Use backend service instead of databaseService for consistency
+      const paymentResult = await table.getItems('payments', {
+        query: { _id: paymentId },
+        limit: 1
+      });
+      
+      const payment = paymentResult.items?.[0] as unknown as Payment;
       if (!payment || payment.status !== 'completed') {
         throw new Error('Payment cannot be refunded');
       }
@@ -771,8 +827,10 @@ class ClickPesaService {
         originalAmount: payment.amount,
       });
 
-      // Update payment status
-      await databaseService.update<Payment>('payments', paymentId, {
+      // Update payment status using backend service
+      await table.updateItem('payments', {
+        _id: (payment as any)._id || payment.id,
+        _uid: payment.userId,
         status: 'refunded',
         refundedAt: new Date(),
       });
@@ -789,18 +847,13 @@ class ClickPesaService {
    */
   async getPaymentStats(dateFrom?: Date, dateTo?: Date) {
     try {
-      const filters: any = { provider: 'clickpesa' };
-      
-      if (dateFrom) {
-        // Add date filtering logic
-      }
-
-      const paymentsResult = await databaseService.findMany<Payment>('payments', {
-        filters,
+      // Use backend service instead of databaseService for consistency
+      const paymentsResult = await table.getItems('payments', {
+        query: { provider: 'clickpesa' },
         limit: 1000,
       });
 
-      const payments = paymentsResult.items;
+      const payments = paymentsResult.items as unknown as Payment[];
 
       const stats = {
         total: payments.length,
