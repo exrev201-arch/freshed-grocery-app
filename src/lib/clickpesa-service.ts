@@ -15,6 +15,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { databaseService } from './database-service';
+import { table } from './backend-service';
 import { logger } from './logger';
 import type { Payment, Order, OrderItem } from '@/types/database';
 
@@ -220,11 +221,17 @@ class ClickPesaService {
     try {
       logger.info('Initiating ClickPesa payment for order', 'CLICKPESA', { orderId: request.orderId });
 
-      // Get order details
-      const order = await databaseService.findById<Order>('orders', request.orderId);
-      if (!order) {
+      // Get order details - using backend service to match order creation
+      const orderResult = await table.getItems('orders', {
+        query: { _id: request.orderId },
+        limit: 1
+      });
+      
+      if (!orderResult.items || orderResult.items.length === 0) {
         throw new Error('Order not found');
       }
+      
+      const order = orderResult.items[0] as unknown as Order;
 
       const paymentId = uuidv4();
       const paymentReference = `CP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -256,7 +263,11 @@ class ClickPesaService {
           },
         };
 
-        const payment = await databaseService.create<Payment>('payments', paymentData);
+        const paymentItem = await table.addItem('payments', paymentData);
+        const payment = {
+          id: paymentItem._id,
+          ...paymentItem
+        } as unknown as Payment;
 
         console.log('✅ Demo ClickPesa payment initiated:', {
           paymentId: payment.id,
@@ -324,7 +335,11 @@ class ClickPesaService {
           },
         };
 
-        const payment = await databaseService.create<Payment>('payments', paymentData);
+        const paymentItem = await table.addItem('payments', paymentData);
+        const payment = {
+          id: paymentItem._id,
+          ...paymentItem
+        } as unknown as Payment;
 
         console.log('✅ ClickPesa USSD-PUSH payment initiated:', {
           paymentId: payment.id,
@@ -342,8 +357,9 @@ class ClickPesaService {
 
       // For card payments, fallback to hosted checkout
       // Get order items
-      const orderItemsResult = await databaseService.findMany<OrderItem>('order_items', {
-        filters: { orderId: request.orderId },
+      const orderItemsResult = await table.getItems('order_items', {
+        query: { orderId: request.orderId },
+        limit: 100
       });
 
       // Convert order items to ClickPesa format
@@ -391,7 +407,11 @@ class ClickPesaService {
         },
       };
 
-      const payment = await databaseService.create<Payment>('payments', paymentData);
+      const paymentItem = await table.addItem('payments', paymentData);
+      const payment = {
+        id: paymentItem._id,
+        ...paymentItem
+      } as unknown as Payment;
 
       console.log('✅ ClickPesa payment initiated:', {
         paymentId: payment.id,
@@ -421,9 +441,17 @@ class ClickPesaService {
       console.log('🔔 Received ClickPesa webhook:', payload);
 
       // Find payment by order reference
-      const order = await databaseService.findOne<Order>('orders', {
-        orderNumber: payload.orderReference,
+      const orderResult = await table.getItems('orders', {
+        query: { orderNumber: payload.orderReference },
+        limit: 1
       });
+      
+      if (!orderResult.items || orderResult.items.length === 0) {
+        console.error('❌ Order not found for webhook:', payload.orderReference);
+        return;
+      }
+      
+      const order = orderResult.items[0] as unknown as Order;
 
       if (!order) {
         console.error('❌ Order not found for webhook:', payload.orderReference);
@@ -431,10 +459,17 @@ class ClickPesaService {
       }
 
       // Find payment record
-      const payment = await databaseService.findOne<Payment>('payments', {
-        orderId: order.id,
-        provider: 'clickpesa',
+      const paymentResult = await table.getItems('payments', {
+        query: { orderId: (order as any)._id || order.id, provider: 'clickpesa' },
+        limit: 1
       });
+      
+      if (!paymentResult.items || paymentResult.items.length === 0) {
+        console.error('❌ Payment not found for order:', (order as any)._id || order.id);
+        return;
+      }
+      
+      const payment = paymentResult.items[0] as unknown as Payment & { _id: string };
 
       if (!payment) {
         console.error('❌ Payment not found for order:', order.id);
@@ -488,11 +523,19 @@ class ClickPesaService {
       }
 
       // Update payment record
-      await databaseService.update<Payment>('payments', payment.id, paymentUpdates);
+      await table.updateItem('payments', {
+        _id: payment._id,
+        _uid: payment.userId, // Assuming userId is the _uid
+        ...paymentUpdates
+      });
 
       // Update order if needed
       if (Object.keys(orderUpdates).length > 0) {
-        await databaseService.update<Order>('orders', order.id, orderUpdates);
+        await table.updateItem('orders', {
+          _id: (order as any)._id || order.id,
+          _uid: order.userId, // Assuming userId is the _uid
+          ...orderUpdates
+        });
       }
 
       // Send notifications (implement based on your notification service)
