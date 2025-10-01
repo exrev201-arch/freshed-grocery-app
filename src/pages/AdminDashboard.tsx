@@ -15,6 +15,8 @@ import { mockProducts } from '@/lib/mock-data';
 import EnhancedOrderManagement from '@/components/admin/EnhancedOrderManagement';
 import AdminNotificationCenter from '@/components/admin/AdminNotificationCenter';
 import ClickPesaAdminPanel from '@/components/admin/ClickPesaAdminPanel';
+import OrderDebugComponent from '@/components/debug/OrderDebugComponent';
+import MarkOrderAsDelivered from '@/components/debug/MarkOrderAsDelivered';
 import { useNavigate } from 'react-router-dom';
 import {
     Package,
@@ -535,6 +537,8 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="orders" className="space-y-4">
                         <EnhancedOrderManagement />
+                        <MarkOrderAsDelivered />
+                        <OrderDebugComponent />
                     </TabsContent>
 
                     <TabsContent value="products" className="space-y-4">

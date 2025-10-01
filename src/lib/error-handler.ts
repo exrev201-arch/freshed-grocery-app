@@ -3,6 +3,9 @@
  * Provides consistent error handling, logging, and user feedback
  */
 
+import { useToast } from '@/hooks/use-toast';
+import { useAuthStore } from '@/store/auth-store';
+
 // Error types
 export type ErrorType = 
   | 'NETWORK_ERROR'
@@ -14,12 +17,12 @@ export type ErrorType =
   | 'UNKNOWN_ERROR';
 
 export interface AppError {
-  type: ErrorType;
-  message: string;
-  code?: string;
-  details?: unknown;
-  timestamp: number;
-  userId?: string;
+    type: ErrorType;
+    message: string;
+    code?: string;
+    details?: unknown;
+    timestamp: number;
+    userId?: string;
 }
 
 // Error messages for different types
@@ -207,9 +210,6 @@ export const handlePermissionError = (message?: string, userId?: string) => {
 };
 
 // React hook for error handling
-import { useToast } from '@/hooks/use-toast';
-import { useAuthStore } from '@/store/auth-store';
-
 export const useErrorHandler = () => {
   const { toast } = useToast();
   const { user } = useAuthStore();

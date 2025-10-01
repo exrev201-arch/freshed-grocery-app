@@ -3,87 +3,69 @@
  * Centralized configuration for admin operations
  */
 
-// Database Table IDs (updated to use new backend)
+// Admin configuration and constants
 export const ADMIN_TABLES = {
-  PRODUCTS: 'products',
-  ADMIN_USERS: 'admin_users', 
-  ORDERS: 'orders',
-  ORDER_ITEMS: 'order_items',
-  USER_PROFILES: 'user_profiles',
-  USER_FAVORITES: 'user_favorites',
-  DELIVERY_TRACKING: 'delivery_tracking'
-} as const;
+    PRODUCTS: 'products',
+    ADMIN_USERS: 'admin_users',
+    ORDERS: 'orders',
+    DELIVERY_TRACKING: 'delivery_tracking'
+};
 
-// Admin Role Permissions
-export const ADMIN_PERMISSIONS = {
-  SUPER_ADMIN: {
-    read: true,
-    write: true,
-    delete: true,
-    admin: true,
-    bulk_operations: true,
-    system_config: true
-  },
-  ADMIN: {
-    read: true,
-    write: true,
-    delete: true,
-    admin: true,
-    bulk_operations: true,
-    system_config: false
-  },
-  MANAGER: {
-    read: true,
-    write: true,
-    delete: false,
-    admin: false,
-    bulk_operations: true,
-    system_config: false
-  },
-  EMPLOYEE: {
-    read: true,
-    write: false,
-    delete: false,
-    admin: false,
-    bulk_operations: false,
-    system_config: false
-  }
-} as const;
-
-// Query Limits
 export const QUERY_LIMITS = {
-  PRODUCTS_PER_PAGE: 50,
-  ORDERS_PER_PAGE: 25,
-  ADMIN_USERS_PER_PAGE: 20,
-  MAX_QUERY_LIMIT: 100,
-  DEFAULT_LIMIT: 50
+    PRODUCTS_PER_PAGE: 50,
+    ADMIN_USERS_PER_PAGE: 50,
+    MAX_QUERY_LIMIT: 1000
+};
+
+export const ADMIN_ROLES = {
+    ADMIN: 'admin',
+    EMPLOYEE: 'employee',
+    VIEWER: 'viewer'
+};
+
+export const ADMIN_PERMISSIONS = {
+    admin: ['read', 'write', 'delete', 'admin'],
+    employee: ['read', 'write'],
+    viewer: ['read']
+};
+
+// Revenue calculation configuration
+export const REVENUE_CALCULATION = {
+    // Only orders with these statuses will be counted in revenue calculations
+    // According to project specification, only 'delivered' orders should be counted
+    COMPLETED_ORDER_STATUSES: ['delivered'] as string[],
+    
+    // Alternative configuration if we want to count other completed statuses
+    // COMPLETED_ORDER_STATUSES: ['delivered', 'ready_for_pickup'] as string[],
+};
+
+// Error Messages
+export const ADMIN_ERROR_MESSAGES = {
+    UNAUTHORIZED: 'You are not authorized to perform this action',
+    INVALID_ROLE: 'Invalid admin role specified',
+    PRODUCT_NOT_FOUND: 'Product not found',
+    ADMIN_NOT_FOUND: 'Admin user not found',
+    PERMISSION_DENIED: 'Permission denied',
+    INVALID_INPUT: 'Invalid input data',
+    VALIDATION_FAILED: 'Validation failed. Please check your input',
+    DATABASE_ERROR: 'Database operation failed. Please try again',
+    NETWORK_ERROR: 'Network error. Please check your connection',
+    BULK_OPERATION_FAILED: 'Bulk operation failed for some items'
 } as const;
 
-// Product Categories
-export const PRODUCT_CATEGORIES = [
-  'vegetables',
-  'fruits', 
-  'herbs',
-  'dairy',
-  'grains',
-  'meat',
-  'beverages',
-  'snacks',
-  'household',
-  'other'
-] as const;
+// Success Messages  
+export const ADMIN_SUCCESS_MESSAGES = {
+    PRODUCT_CREATED: 'Product created successfully',
+    PRODUCT_UPDATED: 'Product updated successfully',
+    PRODUCT_DELETED: 'Product deleted successfully',
+    ADMIN_CREATED: 'Admin user created successfully',
+    ADMIN_UPDATED: 'Admin user updated successfully',
+    ORDER_STATUS_UPDATED: 'Order status updated successfully',
+    BULK_OPERATION_SUCCESS: 'Bulk operation completed successfully'
+} as const;
 
-// Order Status Values
-export const ORDER_STATUSES = [
-  'pending',
-  'confirmed', 
-  'preparing',
-  'ready_for_pickup',
-  'out_for_delivery',
-  'delivered',
-  'cancelled',
-  'refunded'
-] as const;
+export type AdminRole = keyof typeof ADMIN_PERMISSIONS;
+export type AdminAction = typeof ADMIN_ACTIONS[keyof typeof ADMIN_ACTIONS];
 
 // Admin Action Types (for audit logging)
 export const ADMIN_ACTIONS = {
@@ -110,31 +92,3 @@ export const VALIDATION_LIMITS = {
   ADMIN_NAME_MIN: 2,
   ADMIN_NAME_MAX: 50
 } as const;
-
-// Error Messages
-export const ADMIN_ERROR_MESSAGES = {
-  UNAUTHORIZED: 'You are not authorized to perform this action',
-  INVALID_ROLE: 'Invalid admin role specified',
-  PRODUCT_NOT_FOUND: 'Product not found',
-  ADMIN_NOT_FOUND: 'Admin user not found',
-  VALIDATION_FAILED: 'Validation failed. Please check your input',
-  DATABASE_ERROR: 'Database operation failed. Please try again',
-  NETWORK_ERROR: 'Network error. Please check your connection',
-  BULK_OPERATION_FAILED: 'Bulk operation failed for some items'
-} as const;
-
-// Success Messages  
-export const ADMIN_SUCCESS_MESSAGES = {
-  PRODUCT_CREATED: 'Product created successfully',
-  PRODUCT_UPDATED: 'Product updated successfully',
-  PRODUCT_DELETED: 'Product deleted successfully',
-  ADMIN_CREATED: 'Admin user created successfully',
-  ADMIN_UPDATED: 'Admin user updated successfully',
-  ORDER_STATUS_UPDATED: 'Order status updated successfully',
-  BULK_OPERATION_SUCCESS: 'Bulk operation completed successfully'
-} as const;
-
-export type AdminRole = keyof typeof ADMIN_PERMISSIONS;
-export type AdminAction = typeof ADMIN_ACTIONS[keyof typeof ADMIN_ACTIONS];
-export type ProductCategory = typeof PRODUCT_CATEGORIES[number];
-export type OrderStatus = typeof ORDER_STATUSES[number];

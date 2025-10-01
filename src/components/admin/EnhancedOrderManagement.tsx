@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAdminStore } from '@/store/admin-store';
 import {
@@ -17,7 +18,8 @@ import {
     Search,
     Filter,
     Download,
-    ArrowUpDown
+    ArrowUpDown,
+    X
 } from 'lucide-react';
 import {
     updateOrderStatus,
@@ -66,8 +68,8 @@ const EnhancedOrderManagement: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [orderItems, setOrderItems] = useState<AdminOrderItem[]>([]);
     const [updateLoading, setUpdateLoading] = useState<string | null>(null);
-    const [, setOrderItems] = useState<AdminOrderItem[]>([]);
     
     const [filters, setFilters] = useState<OrderFilters>({
         status: 'all',
@@ -201,8 +203,8 @@ const EnhancedOrderManagement: React.FC = () => {
                 limit: 100
             });
             const allItems = result.items as unknown as AdminOrderItem[] || [];
-            const orderItems = allItems.filter(item => item.order_id === orderId);
-            setOrderItems(orderItems);
+            const filteredOrderItems = allItems.filter(item => item.order_id === orderId);
+            setOrderItems(filteredOrderItems);
         } catch (error) {
             console.error('Error loading order items:', error);
         }
@@ -616,6 +618,168 @@ const EnhancedOrderManagement: React.FC = () => {
                     ))
                 )}
             </div>
+            
+            {/* Order Details Modal */}
+            <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <div className="flex justify-between items-center">
+                            <DialogTitle>Order Details - #{selectedOrder?._id?.slice(-8)}</DialogTitle>
+                            <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(null)}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </DialogHeader>
+                    
+                    {selectedOrder && (
+                        <div className="space-y-6">
+                            {/* Order Summary */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Order Summary</CardTitle>
+                                </CardHeader>
+                                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-sm text-gray-600">Order ID</p>
+                                        <p className="font-medium">#{selectedOrder._id}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Status</p>
+                                        <Badge className={getStatusColor(selectedOrder.status)}>
+                                            {formatStatus(selectedOrder.status)}
+                                        </Badge>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Order Date</p>
+                                        <p className="font-medium">
+                                            {new Date(selectedOrder.created_at).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Total Amount</p>
+                                        <p className="font-bold text-lg">
+                                            TZS {(selectedOrder.total_amount || 0).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Payment Method</p>
+                                        <p className="font-medium capitalize">
+                                            {selectedOrder.payment_method?.replace('_', ' ') || 'N/A'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Delivery Date & Time</p>
+                                        <p className="font-medium">
+                                            {selectedOrder.delivery_date} at {selectedOrder.delivery_time}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            
+                            {/* Customer Information */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Customer Information</CardTitle>
+                                </CardHeader>
+                                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-sm text-gray-600">Delivery Address</p>
+                                        <p className="font-medium">{selectedOrder.delivery_address}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Contact Phone</p>
+                                        <p className="font-medium">{selectedOrder.delivery_phone}</p>
+                                    </div>
+                                    {selectedOrder.delivery_notes && (
+                                        <div className="md:col-span-2">
+                                            <p className="text-sm text-gray-600">Delivery Notes</p>
+                                            <p className="font-medium">{selectedOrder.delivery_notes}</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                            
+                            {/* Order Items */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Order Items</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {orderItems.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {orderItems.map((item) => (
+                                                <div key={item._id} className="flex justify-between items-center py-2 border-b">
+                                                    <div>
+                                                        <p className="font-medium">{item.product_name}</p>
+                                                        <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="font-medium">
+                                                            TZS {(item.product_price || 0).toLocaleString()}
+                                                        </p>
+                                                        <p className="text-sm text-gray-600">
+                                                            Total: TZS {(item.subtotal || 0).toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className="flex justify-between items-center pt-4 border-t">
+                                                <p className="font-semibold">Order Total</p>
+                                                <p className="font-bold text-lg">
+                                                    TZS {(selectedOrder.total_amount || 0).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-4">No items found for this order</p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                            
+                            {/* Order Actions */}
+                            <div className="flex flex-wrap gap-2">
+                                {hasPermission('write') && selectedOrder.status !== 'delivered' && (
+                                    <Select
+                                        value={selectedOrder.status}
+                                        onValueChange={(value) => handleStatusUpdate(selectedOrder._id, value as OrderStatus)}
+                                        disabled={updateLoading === selectedOrder._id}
+                                    >
+                                        <SelectTrigger className="w-40">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {statuses.map(status => (
+                                                <SelectItem key={status} value={status}>
+                                                    {formatStatus(status)}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                                
+                                {hasPermission('write') && selectedOrder.status === 'confirmed' && (
+                                    <Button onClick={() => handleAssignDelivery(selectedOrder._id)}>
+                                        Assign Delivery Person
+                                    </Button>
+                                )}
+                                
+                                {updateLoading === selectedOrder._id && (
+                                    <div className="flex items-center">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                                        Updating...
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                    
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+                            Close
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

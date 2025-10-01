@@ -17,7 +17,7 @@ interface LogEntry {
 }
 
 class ProductionLogger {
-    private isDevelopment = import.meta.env.DEV;
+    private isDevelopment = process.env.NODE_ENV === 'development';
     private logs: LogEntry[] = [];
     private maxLogs = 1000; // Keep last 1000 logs in memory
 

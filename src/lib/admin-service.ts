@@ -1,5 +1,5 @@
 import { table } from './backend-service';
-import { ADMIN_TABLES, QUERY_LIMITS, ADMIN_ERROR_MESSAGES, ADMIN_SUCCESS_MESSAGES, AdminRole } from './admin-config';
+import { ADMIN_TABLES, QUERY_LIMITS, ADMIN_ERROR_MESSAGES, ADMIN_SUCCESS_MESSAGES, REVENUE_CALCULATION } from './admin-config';
 import { validateProduct, validateAdminUser, ProductData, AdminUserData } from './validation';
 import { errorHandler, AppError } from './error-handler';
 import { logger } from './logger';
@@ -409,12 +409,28 @@ class AdminService {
                 table.getItems(ADMIN_TABLES.ORDERS, { limit: QUERY_LIMITS.MAX_QUERY_LIMIT }),
             ]);
 
+            console.log('🔍 Debug - All orders:', ordersResponse.items);
+
             const activeProducts = products.filter(p => p.is_active === 'active').length;
             const lowStockProducts = products.filter(p => p.stock_quantity <= 10).length;
             
-            // Only count revenue and orders from delivered orders (completed deliveries)
-            const deliveredOrders = ordersResponse.items.filter((order: any) => order.status === 'delivered');
-            const totalRevenue = deliveredOrders.reduce((sum, order: any) => sum + (order.total_amount || 0), 0);
+            // Only count revenue and orders from completed orders (as defined in configuration)
+            const completedOrders = ordersResponse.items.filter(
+                (order: any) => REVENUE_CALCULATION.COMPLETED_ORDER_STATUSES.includes(order.status)
+            );
+            const totalRevenue = completedOrders.reduce((sum, order: any) => sum + (order.total_amount || 0), 0);
+
+            console.log('🔍 Debug - Completed orders:', completedOrders);
+            console.log('🔍 Debug - Total revenue calculated:', totalRevenue);
+            
+            // Also get counts for other statuses for better visibility
+            const statusCounts: Record<string, number> = {};
+            ordersResponse.items.forEach((order: any) => {
+                const status = order.status || 'unknown';
+                statusCounts[status] = (statusCounts[status] || 0) + 1;
+            });
+            
+            console.log('🔍 Debug - Order status distribution:', statusCounts);
 
             // Get recent activity (last 10 orders)
             const recentActivity = ordersResponse.items
@@ -428,14 +444,18 @@ class AdminService {
                     timestamp: order.created_at
                 }));
 
-            return {
+            const stats = {
                 totalProducts: products.length,
                 activeProducts,
                 lowStockProducts,
-                totalOrders: deliveredOrders.length,
+                totalOrders: completedOrders.length,
                 totalRevenue,
                 recentActivity
             };
+
+            console.log('🔍 Debug - Dashboard stats:', stats);
+
+            return stats;
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
             throw errorHandler.handleError(error);
