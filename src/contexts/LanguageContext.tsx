@@ -228,7 +228,7 @@ const translations = {
     fullName: 'Full Name',
     emailAddress: 'Email Address',
     phoneNumber: 'Nambari ya Simu',
-    phoneNumberPlaceholder: '+255 XXX XXX XXX',
+    phoneNumberPlaceholder: '+255 7XX XXX XXX or +255 6XX XXX XXX',
     phoneNumberPlaceholderSw: '+255 7XX XXX XXX',
     createPassword: 'Create a password',
     confirmPassword: 'Confirm Password',
@@ -512,6 +512,8 @@ const translations = {
     checkYourPhoneForPaymentPrompt: 'Check your phone for a payment prompt. You will receive a USSD request to complete your payment.',
     continueToOrderConfirmation: 'Continue to Order Confirmation',
     youWillReceiveUSSDPrompt: 'You will receive a USSD prompt on your phone to complete the payment.',
+    
+    // Download App Dialog translations,
     
     // Download App Dialog translations,
     
@@ -914,9 +916,11 @@ const translations = {
     phone: 'Simu',
     dateAndTime: 'Tarehe na Saa',
     phoneNumber: 'Nambari ya Simu',
-    phoneNumberPlaceholderSw: '+255 7XX XXX XXX',
+    phoneNumberPlaceholderSw: '+255 7XX XXX XXX au +255 6XX XXX XXX',
     address: 'Anwani',
     instructions: 'Maelezo',
+    
+
     
     // Login/Signup translations
     verificationCodeSentTo: 'Tumetuma msimbo wa tarakimu 6 hadi',

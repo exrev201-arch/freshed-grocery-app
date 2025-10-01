@@ -327,9 +327,38 @@ class ClickPesaService {
 
       // For Mobile Money methods, use USSD-PUSH API
       if (['mpesa', 'airtel_money', 'tigo_pesa'].includes(request.method)) {
+        // Validate phone number
+        if (!request.customerInfo.phone) {
+          throw new Error('Phone number is required for mobile money payments');
+        }
+        
+        // Format phone number for ClickPesa API
+        let formattedPhoneNumber = request.customerInfo.phone;
+        
+        // Remove any spaces, dashes, or parentheses
+        formattedPhoneNumber = formattedPhoneNumber.replace(/[\s\-\(\)]/g, '');
+        
+        // Ensure it starts with +255 or 255
+        if (formattedPhoneNumber.startsWith('0')) {
+          formattedPhoneNumber = '+255' + formattedPhoneNumber.substring(1);
+        } else if (formattedPhoneNumber.startsWith('255')) {
+          formattedPhoneNumber = '+' + formattedPhoneNumber;
+        } else if (!formattedPhoneNumber.startsWith('+255')) {
+          formattedPhoneNumber = '+255' + formattedPhoneNumber;
+        }
+        
+        // Validate the formatted phone number for Tanzanian mobile networks
+        const phoneRegex = /^\+255[67][0-9]{8}$/;
+        if (!phoneRegex.test(formattedPhoneNumber)) {
+          throw new Error('Invalid phone number format. Please use format: +255 7XX XXX XXX or +255 6XX XXX XXX');
+        }
+        
+        console.log('🔍 Original phone number:', request.customerInfo.phone);
+        console.log('🔍 Formatted phone number:', formattedPhoneNumber);
+        
         // Step 1: Preview USSD-PUSH request
         const previewRequest: UssdPushPreviewRequest = {
-          mobile_number: request.customerInfo.phone,
+          mobile_number: formattedPhoneNumber,
           amount: request.amount,
           order_reference: order.orderNumber,
           currency: request.currency,

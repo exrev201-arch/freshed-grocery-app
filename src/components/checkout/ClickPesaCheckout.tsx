@@ -424,6 +424,11 @@ const ClickPesaCheckout: React.FC = () => {
       let errorMessage = t('failedToCreateOrder');
       if (error.message) {
         errorMessage = error.message;
+        
+        // Provide specific guidance for phone number issues
+        if (errorMessage.includes('phone')) {
+          errorMessage += ' ' + t('phoneNumberPlaceholderSw') + ' (+255 7XX XXX XXX or +255 6XX XXX XXX)';
+        }
       }
       
       toast({
