@@ -72,6 +72,7 @@ interface UssdPushPreviewRequest {
   first_name?: string;
   last_name?: string;
   email?: string;
+  merchant_id?: string;
 }
 
 interface UssdPushPreviewResponse {
@@ -93,6 +94,7 @@ interface UssdPushInitiateRequest {
   last_name?: string;
   email?: string;
   transaction_id: string; // From preview response
+  merchant_id?: string;
 }
 
 interface UssdPushInitiateResponse {
@@ -173,9 +175,23 @@ class ClickPesaService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${CLICKPESA_CONFIG.apiKey}`,
-        'X-Merchant-ID': CLICKPESA_CONFIG.merchantId,
       },
     });
+
+    // For browser environments, avoid CORS issues by not setting X-Merchant-ID header
+    // Merchant ID will be passed in request body where supported
+    // Only set header in non-browser environments
+    this.apiClient.interceptors.request.use(
+      (config) => {
+        if (typeof window === 'undefined') {
+          config.headers['X-Merchant-ID'] = CLICKPESA_CONFIG.merchantId;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
 
     // Add request interceptor for logging
     this.apiClient.interceptors.request.use(
@@ -183,6 +199,7 @@ class ClickPesaService {
         console.log('🔄 ClickPesa Request:', {
           method: config.method?.toUpperCase(),
           url: config.url,
+          headers: config.headers,
           data: config.data,
         });
         return config;
@@ -318,7 +335,9 @@ class ClickPesaService {
           currency: request.currency,
           first_name: request.customerInfo.name.split(' ')[0],
           last_name: request.customerInfo.name.split(' ').slice(1).join(' '),
-          email: request.customerInfo.email
+          email: request.customerInfo.email,
+          // Include merchant ID in request body if needed
+          merchant_id: CLICKPESA_CONFIG.merchantId
         };
 
         const previewResponse = await this.previewUssdPush(previewRequest);
@@ -450,9 +469,17 @@ class ClickPesaService {
         status: 'pending',
         expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initiate ClickPesa payment:', error);
-      throw new Error('Payment initiation failed. Please try again.');
+      
+      // Provide more specific error messages based on the error type
+      if (error.message && error.message.includes('network')) {
+        throw new Error('Unable to connect to payment provider. Please check your internet connection and try again.');
+      } else if (error.message && error.message.includes('preview')) {
+        throw new Error('Unable to initialize payment. Please verify your phone number is correct and try again.');
+      } else {
+        throw new Error(error.message || 'Payment initiation failed. Please try again.');
+      }
     }
   }
 
@@ -612,7 +639,15 @@ class ClickPesaService {
       return response.data;
     } catch (error: any) {
       console.error('❌ Failed to preview ClickPesa USSD-PUSH:', error);
-      throw new Error(error.response?.data?.message || 'Failed to preview USSD-PUSH request');
+      
+      // Handle CORS/network errors specifically
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        throw new Error('Unable to connect to payment provider. This may be due to network restrictions. Please try again or contact support.');
+      }
+      
+      // Handle other API errors
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to preview USSD-PUSH request';
+      throw new Error(errorMessage);
     }
   }
 
@@ -650,7 +685,15 @@ class ClickPesaService {
       return response.data;
     } catch (error: any) {
       console.error('❌ Failed to initiate ClickPesa USSD-PUSH:', error);
-      throw new Error(error.response?.data?.message || 'Failed to initiate USSD-PUSH request');
+      
+      // Handle CORS/network errors specifically
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        throw new Error('Unable to connect to payment provider. This may be due to network restrictions. Please try again or contact support.');
+      }
+      
+      // Handle other API errors
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to initiate USSD-PUSH request';
+      throw new Error(errorMessage);
     }
   }
 

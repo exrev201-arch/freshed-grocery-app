@@ -417,11 +417,18 @@ const ClickPesaCheckout: React.FC = () => {
           }
         }, 3000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Order creation failed:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = t('failedToCreateOrder');
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: t('orderFailed'),
-        description: t('failedToCreateOrder'),
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
