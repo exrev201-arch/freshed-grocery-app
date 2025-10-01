@@ -226,7 +226,7 @@ const DeliveryPage: React.FC = () => {
                                 <div className="flex items-center space-x-2 text-sm">
                                     <span className="font-medium">{t('total')}:</span>
                                     <span className="font-bold text-green-600">
-                                        TZS {order.total_amount.toLocaleString()}
+                                        TZS {(order.total_amount || 0).toLocaleString()}
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-2 text-sm">

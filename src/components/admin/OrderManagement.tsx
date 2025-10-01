@@ -239,7 +239,7 @@ const OrderManagement: React.FC = () => {
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                                     <div>
                                                         <span className="font-medium text-muted-foreground">{t('amount')}:</span>
-                                                        <p className="font-semibold">TZS {order.total_amount.toLocaleString()}</p>
+                                                        <p className="font-semibold">TZS {(order.total_amount || 0).toLocaleString()}</p>
                                                     </div>
                                                     <div>
                                                         <span className="font-medium text-muted-foreground">{t('payment')}:</span>

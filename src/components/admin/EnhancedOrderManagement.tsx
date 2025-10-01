@@ -173,8 +173,8 @@ const EnhancedOrderManagement: React.FC = () => {
             
             switch (filters.sortBy) {
                 case 'total_amount':
-                    aValue = a.total_amount;
-                    bValue = b.total_amount;
+                    aValue = a.total_amount || 0;
+                    bValue = b.total_amount || 0;
                     break;
                 case 'delivery_date':
                     aValue = new Date(a.delivery_date).getTime();
@@ -314,7 +314,7 @@ const EnhancedOrderManagement: React.FC = () => {
         const csvData = filteredOrders.map(order => ({
             'Order ID': order._id,
             'Status': formatStatus(order.status),
-            'Total Amount': order.total_amount,
+            'Total Amount': order.total_amount || 0,
             'Payment Method': order.payment_method,
             'Delivery Address': order.delivery_address,
             'Delivery Phone': order.delivery_phone,
@@ -529,10 +529,10 @@ const EnhancedOrderManagement: React.FC = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-semibold text-lg">
-                                            TZS {order.total_amount.toLocaleString()}
+                                            TZS {(order.total_amount || 0).toLocaleString()}
                                         </p>
                                         <p className="text-sm text-gray-600 capitalize">
-                                            {order.payment_method.replace('_', ' ')}
+                                            {order.payment_method?.replace('_', ' ') || 'N/A'}
                                         </p>
                                     </div>
                                 </div>

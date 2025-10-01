@@ -243,7 +243,7 @@ export default function OrderConfirmationPage() {
                         <div className="space-y-2">
                             <div className="flex justify-between">
                                 <span>{t('productTotal')}</span>
-                                <span>TZS {(order.total_amount - 5000).toLocaleString()}</span>
+                                <span>TZS {((order.total_amount || 0) - 5000).toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>{t('deliveryFee')}</span>
@@ -252,7 +252,7 @@ export default function OrderConfirmationPage() {
                             <Separator />
                             <div className="flex justify-between font-bold text-lg">
                                 <span>{t('total')}</span>
-                                <span className="text-emerald-600">TZS {order.total_amount.toLocaleString()}</span>
+                                <span className="text-emerald-600">TZS {(order.total_amount || 0).toLocaleString()}</span>
                             </div>
                         </div>
                     </CardContent>

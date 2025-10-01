@@ -248,7 +248,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
                     </div>
                     <div>
                         <span className="font-medium">{t('total')}:</span>
-                        <p className="text-muted-foreground">TZS {totalAmount.toLocaleString()}</p>
+                        <p className="text-muted-foreground">TZS {(totalAmount || 0).toLocaleString()}</p>
                     </div>
                     <div>
                         <span className="font-medium">{t('date')}:</span>
