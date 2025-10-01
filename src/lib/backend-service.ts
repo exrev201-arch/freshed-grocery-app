@@ -77,7 +77,10 @@ const saveTable = (tableId: string, items: TableItem[]): void => {
 const matchesQuery = (item: TableItem, query: Record<string, any>): boolean => {
   return Object.entries(query).every(([key, value]) => {
     if (value === undefined || value === null) return true;
-    return item[key] === value;
+    const itemValue = item[key];
+    const matches = itemValue === value;
+    console.log(`🔍 Query match check: item[${key}] (${itemValue}) === query[${key}] (${value}) = ${matches}`);
+    return matches;
   });
 };
 
@@ -110,7 +113,9 @@ class BackendService {
         updated_at: new Date().toISOString()
       };
       
-      // Remove _uid from data if it was provided to avoid duplication
+      // Important: Preserve the userId field if it exists in the data
+      // The userId field is used for querying user orders and should not be removed
+      // Only remove _uid from the final object to avoid duplication
       delete (newItem as any)._uid;
       
       console.log(`🔍 Generated item:`, newItem);

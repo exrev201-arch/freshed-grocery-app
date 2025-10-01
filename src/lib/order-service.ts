@@ -23,8 +23,9 @@ export interface CreateOrderData {
 
 export interface Order {
     _id: string;
-    _uid: string;
+    userId: string; // User ID for order ownership
     order_id?: string; // Custom order identifier
+    orderNumber: string; // Human-readable order number
     status: string;
     total_amount: number;
     payment_method: string;
@@ -35,17 +36,55 @@ export interface Order {
     delivery_time: string;
     created_at: number;
     updated_at: number;
+    // Customer information
+    customerInfo?: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+    };
+    // Delivery information
+    deliveryAddress?: {
+        street: string;
+        ward: string;
+        district: string;
+        region: string;
+        country: string;
+        instructions?: string;
+    };
+    // Payment information
+    paymentStatus?: string;
+    fulfillmentStatus?: string;
+    subtotal?: number;
+    taxAmount?: number;
+    shippingAmount?: number;
+    discountAmount?: number;
+    currency?: string;
+    deliveryDate?: string;
+    deliveryTimeSlot?: string;
+    deliveryMethod?: string;
+    source?: string;
+    // Add other TableItem properties that might be present
+    _uid?: string;
+    [key: string]: any;
 }
 
 export interface OrderItem {
     _id: string;
-    order_id: string;
-    product_id: string;
-    product_name: string;
-    product_price: number;
+    orderId: string; // Reference to order _id
+    productId: string;
+    productName: string;
+    productSku?: string;
+    productImage?: string;
     quantity: number;
-    subtotal: number;
+    unitPrice: number;
+    totalPrice: number;
+    quantityFulfilled: number;
+    quantityRefunded: number;
     created_at: number;
+    // Add other TableItem properties that might be present
+    _uid?: string;
+    [key: string]: any;
 }
 
 export class OrderService {
@@ -95,14 +134,18 @@ export class OrderService {
 
     static async getUserOrders(userId: string): Promise<Order[]> {
         try {
+            console.log(`🔍 getUserOrders called with userId: ${userId}`);
             const result = await table.getItems(ORDERS_TABLE_ID, {
-                query: { _uid: userId },
+                query: { userId: userId },
                 sort: 'created_at',
                 order: 'desc',
                 limit: 50
             });
+            
+            console.log(`🔍 Found ${result.items.length} orders for userId: ${userId}`);
+            console.log(`🔍 Order items:`, result.items);
 
-            return result.items as Order[];
+            return result.items as unknown as Order[];
         } catch (error) {
             console.error('Error fetching user orders:', error);
             throw error;
@@ -129,6 +172,7 @@ export class OrderService {
             await table.updateItem(ORDERS_TABLE_ID, {
                 _uid: userId,
                 _id: orderId,
+                userId: userId,
                 status: status,
                 updated_at: Date.now()
             });
@@ -142,17 +186,17 @@ export class OrderService {
         try {
             const result = await table.getItems(ORDERS_TABLE_ID, {
                 query: {
-                    _uid: userId,
+                    userId: userId,
                     _id: orderId
                 },
                 limit: 1
             });
 
-            const order = result.items.length > 0 ? result.items[0] as Order : null;
+            const order = result.items.length > 0 ? result.items[0] as unknown as Order : null;
             
             // Additional security check: verify order belongs to the user
-            if (order && order._uid !== userId) {
-                console.warn(`Unauthorized order access attempt: User ${userId} tried to access order ${orderId} belonging to ${order._uid}`);
+            if (order && order.userId !== userId) {
+                console.warn(`Unauthorized order access attempt: User ${userId} tried to access order ${orderId} belonging to ${order.userId}`);
                 return null;
             }
 
@@ -169,7 +213,7 @@ export class OrderService {
     static async verifyOrderOwnership(orderId: string, userId: string): Promise<boolean> {
         try {
             const order = await this.getOrder(orderId, userId);
-            return order !== null && order._uid === userId;
+            return order !== null && order.userId === userId;
         } catch (error) {
             console.error('Error verifying order ownership:', error);
             return false;
@@ -186,7 +230,7 @@ export class OrderService {
             throw new Error('Order not found or access denied');
         }
         
-        if (order._uid !== userId) {
+        if (order.userId !== userId) {
             throw new Error('Unauthorized: Order does not belong to this user');
         }
         

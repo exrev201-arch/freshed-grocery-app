@@ -14,6 +14,7 @@ import { migrateProductsToDatabase } from '@/lib/data-migration';
 import { mockProducts } from '@/lib/mock-data';
 import EnhancedOrderManagement from '@/components/admin/EnhancedOrderManagement';
 import AdminNotificationCenter from '@/components/admin/AdminNotificationCenter';
+import ClickPesaAdminPanel from '@/components/admin/ClickPesaAdminPanel';
 import { useNavigate } from 'react-router-dom';
 import {
     Package,
@@ -900,6 +901,9 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </CardContent>
                             </Card>
+                            
+                            {/* Add our new ClickPesa Admin Panel */}
+                            <ClickPesaAdminPanel />
                         </div>
                     </TabsContent>
 

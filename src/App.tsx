@@ -14,6 +14,10 @@ import AppNavigation from '@/components/pwa/AppNavigation';
 import PWAFeatureSummary from '@/components/pwa/PWAFeatureSummary';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 
+// Import test utilities for debugging
+import '@/lib/clickpesa-test-utils';
+import '@/lib/debug-orders';
+
 // Lazy load heavy pages for better performance
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProductPage = lazy(() => import("@/pages/ProductPage"));
@@ -24,6 +28,7 @@ const AdminLoginPage = lazy(() => import("@/pages/AdminLoginPage"));
 const DeliveryPage = lazy(() => import("@/pages/DeliveryPage"));
 const DemoPaymentPage = lazy(() => import("@/pages/DemoPaymentPage"));
 const OrderDebugComponent = lazy(() => import("@/components/debug/OrderDebugComponent"));
+const ClickPesaTestPage = lazy(() => import("@/pages/ClickPesaTestPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function App() {
@@ -66,6 +71,7 @@ function App() {
                                 } />
                                 <Route path="/demo-payment" element={<DemoPaymentPage />} />
                                 <Route path="/debug-orders" element={<OrderDebugComponent />} />
+                                <Route path="/clickpesa-test" element={<ClickPesaTestPage />} />
                                 <Route path="/admin/login" element={
                                     <AdminRouteGuard requireAdmin={false}>
                                         <Suspense fallback={<LoadingSpinner fullScreen text="Inapakia..." />}>

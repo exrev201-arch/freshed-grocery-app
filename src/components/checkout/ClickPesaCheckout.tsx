@@ -244,7 +244,6 @@ const ClickPesaCheckout: React.FC = () => {
     // Use the backend service (table) instead of databaseService to ensure consistency
     const orderData = {
       orderNumber: `FG${Date.now()}`,
-      userId: userId,
       subtotal,
       taxAmount,
       shippingAmount: deliveryFee,
@@ -273,7 +272,9 @@ const ClickPesaCheckout: React.FC = () => {
       deliveryMethod: 'standard',
       paymentMethod: paymentInfo.method,
       source: 'web',
-      // Pass the user ID to ensure it's preserved
+      // Store user ID in the order data for later retrieval
+      userId: userId,
+      // Pass the user ID to ensure it's preserved in backend service
       _uid: userId,
     };
 

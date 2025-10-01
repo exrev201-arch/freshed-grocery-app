@@ -102,6 +102,7 @@ export async function processOrder(orderId: string, adminUid: string): Promise<b
             await table.updateItem(ORDERS_TABLE_ID, {
                 _uid: orderResult.items[0]._uid,
                 _id: orderId,
+                userId: orderResult.items[0].userId || orderResult.items[0]._uid,
                 status: 'confirmed',
                 updated_at: Date.now()
             });
@@ -142,6 +143,7 @@ export async function updateOrderStatus(
             await table.updateItem(ORDERS_TABLE_ID, {
                 _uid: orderResult.items[0]._uid,
                 _id: orderId,
+                userId: orderResult.items[0].userId || orderResult.items[0]._uid,
                 status: newStatus,
                 updated_at: Date.now()
             });

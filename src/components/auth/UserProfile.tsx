@@ -110,7 +110,9 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
         if (!user) return;
 
         try {
+            console.log(`🔍 UserProfile loading orders for userId: ${user.uid}`);
             const userOrders = await OrderService.getUserOrders(user.uid);
+            console.log(`🔍 UserProfile loaded ${userOrders.length} orders:`, userOrders);
             setOrders(userOrders);
         } catch (error) {
             console.error('Error loading user orders:', error);

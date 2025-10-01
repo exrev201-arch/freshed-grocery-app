@@ -240,6 +240,8 @@ class ClickPesaService {
 
       // Get order details - using backend service to match order creation
       console.log('🔍 Looking for order with ID:', request.orderId);
+      
+      // Use the same approach as order creation - search by _id
       const orderResult = await table.getItems('orders', {
         query: { _id: request.orderId },
         limit: 1
@@ -247,32 +249,12 @@ class ClickPesaService {
       
       console.log('🔍 Order search result:', orderResult);
       
-      let order: Order;
-      
       if (!orderResult.items || orderResult.items.length === 0) {
-        // Try alternative approach to find order
-        console.log('🔍 Trying alternative order search...');
-        const allOrders = await table.getItems('orders', {});
-        console.log('🔍 All orders:', allOrders.items);
-        
-        // Also try searching with id field instead of _id
-        console.log('🔍 Trying search with id field...');
-        const orderResultById = await table.getItems('orders', {
-          query: { id: request.orderId },
-          limit: 1
-        });
-        console.log('🔍 Order search result by id:', orderResultById);
-        
-        if (!orderResultById.items || orderResultById.items.length === 0) {
-          throw new Error(`Order not found with ID: ${request.orderId}`);
-        }
-        
-        order = orderResultById.items[0] as unknown as Order;
-        console.log('✅ Found order by id:', order);
-      } else {
-        order = orderResult.items[0] as unknown as Order;
-        console.log('✅ Found order by _id:', order);
+        throw new Error(`Order not found with ID: ${request.orderId}`);
       }
+      
+      const order = orderResult.items[0] as unknown as Order;
+      console.log('✅ Found order by _id:', order);
 
       const paymentId = uuidv4();
       const paymentReference = `CP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -287,12 +269,12 @@ class ClickPesaService {
         // Create payment record
         const paymentData = {
           orderId: request.orderId,
-          userId: order.userId,
+          userId: order.userId, // Use userId for consistency
           amount: request.amount,
           currency: request.currency,
           method: request.method,
-          provider: 'clickpesa' as const,
-          status: 'pending' as const,
+          provider: 'clickpesa',
+          status: 'pending',
           externalReference: order.orderNumber,
           checkoutUrl: demoCheckoutUrl,
           clickPesaPaymentId: paymentId,
@@ -369,7 +351,9 @@ class ClickPesaService {
           merchant_id: CLICKPESA_CONFIG.merchantId
         };
 
+        console.log('🔍 Sending preview request to ClickPesa:', previewRequest);
         const previewResponse = await this.previewUssdPush(previewRequest);
+        console.log('✅ Preview response from ClickPesa:', previewResponse);
 
         if (!previewResponse.status) {
           throw new Error(previewResponse.message || 'Failed to preview USSD-PUSH request');
@@ -381,7 +365,9 @@ class ClickPesaService {
           transaction_id: previewResponse.data?.transaction_id || ''
         };
 
+        console.log('🔍 Sending initiate request to ClickPesa:', initiateRequest);
         const initiateResponse = await this.initiateUssdPush(initiateRequest);
+        console.log('✅ Initiate response from ClickPesa:', initiateResponse);
 
         if (!initiateResponse.status) {
           throw new Error(initiateResponse.message || 'Failed to initiate USSD-PUSH request');
@@ -390,12 +376,12 @@ class ClickPesaService {
         // Create payment record
         const paymentData = {
           orderId: request.orderId,
-          userId: order.userId,
+          userId: order.userId, // Use userId for consistency
           amount: request.amount,
           currency: request.currency,
           method: request.method,
-          provider: 'clickpesa' as const,
-          status: 'pending' as const,
+          provider: 'clickpesa',
+          status: 'pending',
           externalReference: order.orderNumber,
           externalTransactionId: initiateResponse.data?.payment_reference,
           clickPesaPaymentId: paymentId,
@@ -407,11 +393,13 @@ class ClickPesaService {
           },
         };
 
+        console.log('🔍 Creating payment record:', paymentData);
         const paymentItem = await table.addItem('payments', paymentData);
         const payment = {
           id: paymentItem._id,
           ...paymentItem
         } as unknown as Payment;
+        console.log('✅ Payment record created:', payment);
 
         console.log('✅ ClickPesa USSD-PUSH payment initiated:', {
           paymentId: payment.id,
@@ -451,11 +439,13 @@ class ClickPesaService {
         callbackURL: CLICKPESA_CONFIG.callbackUrl,
       };
 
+      console.log('🔍 Sending checkout request to ClickPesa:', checkoutRequest);
       // Call ClickPesa API
       const response: AxiosResponse<string> = await this.apiClient.post(
         '/webshop/generate-checkout-url',
         checkoutRequest
       );
+      console.log('✅ Checkout response from ClickPesa:', response);
 
       // ClickPesa returns the checkout URL directly as a string
       const checkoutUrl = response.data;
@@ -463,12 +453,12 @@ class ClickPesaService {
       // Create payment record
       const paymentData = {
         orderId: request.orderId,
-        userId: order.userId,
+        userId: order.userId, // Use userId for consistency
         amount: request.amount,
         currency: request.currency,
         method: request.method,
-        provider: 'clickpesa' as const,
-        status: 'pending' as const,
+        provider: 'clickpesa',
+        status: 'pending',
         externalReference: order.orderNumber,
         checkoutUrl,
         clickPesaPaymentId: paymentId,
@@ -479,11 +469,13 @@ class ClickPesaService {
         },
       };
 
+      console.log('🔍 Creating payment record:', paymentData);
       const paymentItem = await table.addItem('payments', paymentData);
       const payment = {
         id: paymentItem._id,
         ...paymentItem
       } as unknown as Payment;
+      console.log('✅ Payment record created:', payment);
 
       console.log('✅ ClickPesa payment initiated:', {
         paymentId: payment.id,
@@ -502,7 +494,9 @@ class ClickPesaService {
       console.error('❌ Failed to initiate ClickPesa payment:', error);
       
       // Provide more specific error messages based on the error type
-      if (error.message && error.message.includes('network')) {
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('Connection to payment provider timed out. Please check your internet connection and try again.');
+      } else if (error.message && error.message.includes('network')) {
         throw new Error('Unable to connect to payment provider. Please check your internet connection and try again.');
       } else if (error.message && error.message.includes('preview')) {
         throw new Error('Unable to initialize payment. Please verify your phone number is correct and try again.');
@@ -520,7 +514,7 @@ class ClickPesaService {
     try {
       console.log('🔔 Received ClickPesa webhook:', payload);
 
-      // Find payment by order reference
+      // Find order by orderNumber (which is the custom order ID we created)
       console.log('🔍 Looking for order with orderNumber:', payload.orderReference);
       const orderResult = await table.getItems('orders', {
         query: { orderNumber: payload.orderReference },
@@ -536,12 +530,7 @@ class ClickPesaService {
       
       const order = orderResult.items[0] as unknown as Order;
 
-      if (!order) {
-        console.error('❌ Order not found for webhook:', payload.orderReference);
-        return;
-      }
-
-      // Find payment record
+      // Find payment record by orderId and provider
       console.log('🔍 Looking for payment with orderId:', (order as any)._id || order.id);
       const paymentResult = await table.getItems('payments', {
         query: { orderId: (order as any)._id || order.id, provider: 'clickpesa' },
@@ -556,11 +545,6 @@ class ClickPesaService {
       }
       
       const payment = paymentResult.items[0] as unknown as Payment & { _id: string };
-
-      if (!payment) {
-        console.error('❌ Payment not found for order:', (order as any)._id || order.id);
-        return;
-      }
 
       // Update payment status based on webhook
       const paymentUpdates: Partial<Payment> = {
@@ -608,18 +592,19 @@ class ClickPesaService {
           return;
       }
 
-      // Update payment record
+      // Update payment record using backend service
       await table.updateItem('payments', {
         _id: payment._id,
-        _uid: payment.userId, // Assuming userId is the _uid
+        _uid: payment.userId,
         ...paymentUpdates
       });
 
-      // Update order if needed
+      // Update order if needed using backend service
       if (Object.keys(orderUpdates).length > 0) {
         await table.updateItem('orders', {
           _id: (order as any)._id || order.id,
-          _uid: order.userId, // Assuming userId is the _uid
+          _uid: order.userId,
+          userId: order.userId,
           ...orderUpdates
         });
       }
@@ -847,7 +832,7 @@ class ClickPesaService {
 
       // Update payment record using backend service
       await table.updateItem('payments', {
-        _id: (payment as any)._id || payment.id,
+        _id: (payment as any)._id || (payment as any).id,
         _uid: payment.userId,
         ...paymentUpdates
       });
@@ -857,6 +842,7 @@ class ClickPesaService {
         await table.updateItem('orders', {
           _id: payment.orderId,
           _uid: payment.userId,
+          userId: (payment as any).userId,
           ...orderUpdates
         });
       }
@@ -901,7 +887,7 @@ class ClickPesaService {
 
       // Update payment status using backend service
       await table.updateItem('payments', {
-        _id: (payment as any)._id || payment.id,
+        _id: (payment as any)._id || (payment as any).id,
         _uid: payment.userId,
         status: 'refunded',
         refundedAt: new Date(),
@@ -963,7 +949,7 @@ class ClickPesaService {
       const message = this.getPaymentNotificationMessage(status, order.orderNumber);
       
       console.log('📱 Sending payment notification:', {
-        orderId: order.id,
+        orderId: (order as any)._id || order.id,
         status,
         message,
         phone: order.customerInfo.phoneNumber,
@@ -1024,16 +1010,58 @@ class ClickPesaService {
    */
   async healthCheck(): Promise<{ status: string; message: string }> {
     try {
-      // In a real implementation, ping ClickPesa's health endpoint
-      return {
-        status: 'healthy',
-        message: 'ClickPesa service is operational',
-      };
-    } catch (error) {
-      return {
-        status: 'unhealthy',
-        message: 'ClickPesa service is not responding',
-      };
+      // In demo mode, return simulated health status
+      if (CLICKPESA_CONFIG.isDemoMode) {
+        return {
+          status: 'healthy',
+          message: 'ClickPesa service is operational (demo mode)',
+        };
+      }
+
+      // Make a real API call to check ClickPesa's health
+      // We'll use the collections health endpoint if available
+      const response = await this.apiClient.get('/health', {
+        timeout: 10000 // 10 second timeout for health check
+      });
+
+      // If we get a successful response, the service is healthy
+      if (response.status === 200) {
+        return {
+          status: 'healthy',
+          message: 'ClickPesa service is operational',
+        };
+      } else {
+        return {
+          status: 'unhealthy',
+          message: `ClickPesa service returned status ${response.status}`,
+        };
+      }
+    } catch (error: any) {
+      // Handle different types of errors
+      if (error.code === 'ECONNABORTED') {
+        return {
+          status: 'unhealthy',
+          message: 'ClickPesa service timeout - connection too slow',
+        };
+      } else if (error.response) {
+        // The request was made and the server responded with a status code
+        return {
+          status: 'unhealthy',
+          message: `ClickPesa service error: ${error.response.status} - ${error.response.statusText}`,
+        };
+      } else if (error.request) {
+        // The request was made but no response was received
+        return {
+          status: 'unhealthy',
+          message: 'ClickPesa service unreachable - network error',
+        };
+      } else {
+        // Something happened in setting up the request
+        return {
+          status: 'unhealthy',
+          message: `ClickPesa service configuration error: ${error.message}`,
+        };
+      }
     }
   }
 }

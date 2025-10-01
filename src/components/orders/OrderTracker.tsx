@@ -83,7 +83,9 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({
         if (!user?.uid) return;
 
         try {
+            console.log(`🔍 OrderTracker loading order data for orderId: ${orderId}, userId: ${user.uid}`);
             const orderData = await OrderService.getOrder(orderId, user.uid);
+            console.log(`🔍 OrderTracker loaded order data:`, orderData);
             if (orderData) {
                 setOrder(orderData);
             }
