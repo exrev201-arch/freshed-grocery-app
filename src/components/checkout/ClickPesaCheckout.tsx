@@ -38,6 +38,7 @@ import { useAuthStore } from '@/store/auth-store';
 // import { clickPesaService } from '@/lib/clickpesa-service';
 import axios from 'axios';
 import { databaseService } from '@/lib/database-service';
+import { table } from '@/lib/backend-service';
 import type { PaymentMethod, PaymentInitiationResponse } from '@/lib/clickpesa-service';
 import type { Order } from '@/types/database';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -225,7 +226,7 @@ const ClickPesaCheckout: React.FC = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const createOrder = async (): Promise<Order> => {
+  const createOrder = async (): Promise<any> => {
     console.log('🔍 Creating order with user data:', user);
     console.log('🔍 Delivery info:', deliveryInfo);
     console.log('🔍 Cart items:', items);
@@ -233,6 +234,7 @@ const ClickPesaCheckout: React.FC = () => {
     // Handle both user object structures (auth store vs backend service)
     const userId = user?.uid || (user && (user as any)._uid) || 'guest';
     
+    // Use the backend service (table) instead of databaseService to ensure consistency
     const orderData = {
       orderNumber: `FG${Date.now()}`,
       userId: userId,
@@ -241,10 +243,10 @@ const ClickPesaCheckout: React.FC = () => {
       shippingAmount: deliveryFee,
       discountAmount: 0,
       totalAmount: finalTotal,
-      currency: 'TZS' as const,
-      status: 'pending' as const,
-      paymentStatus: 'pending' as const,
-      fulfillmentStatus: 'pending' as const,
+      currency: 'TZS',
+      status: 'pending',
+      paymentStatus: 'pending',
+      fulfillmentStatus: 'pending',
       customerInfo: {
         firstName: user?.name?.split(' ')[0] || 'Guest',
         lastName: user?.name?.split(' ').slice(1).join(' ') || 'Customer',
@@ -259,22 +261,25 @@ const ClickPesaCheckout: React.FC = () => {
         country: 'Tanzania',
         instructions: deliveryInfo.instructions,
       },
-      deliveryDate: new Date(deliveryInfo.deliveryDate),
+      deliveryDate: deliveryInfo.deliveryDate, // Store as string
       deliveryTimeSlot: deliveryInfo.timeSlot,
-      deliveryMethod: 'standard' as const,
+      deliveryMethod: 'standard',
       paymentMethod: paymentInfo.method,
-      source: 'web' as const,
+      source: 'web',
+      // Pass the user ID to ensure it's preserved
+      _uid: userId,
     };
 
     console.log('🔍 Order data to create:', orderData);
 
-    const order = await databaseService.create<Order>('orders', orderData);
+    // Use backend service instead of databaseService
+    const order = await table.addItem('orders', orderData);
     console.log('✅ Order created:', order);
 
-    // Create order items
+    // Create order items using backend service
     for (const item of items) {
       const orderItemData = {
-        orderId: order.id,
+        orderId: order._id, // Use _id from backend service
         productId: item.id,
         productName: item.name,
         productSku: `SKU-${item.id}`,
@@ -284,10 +289,12 @@ const ClickPesaCheckout: React.FC = () => {
         totalPrice: item.price * item.quantity,
         quantityFulfilled: 0,
         quantityRefunded: 0,
+        // Pass the user ID to ensure it's preserved
+        _uid: userId,
       };
       
       console.log('🔍 Creating order item:', orderItemData);
-      await databaseService.create('order_items', orderItemData);
+      await table.addItem('order_items', orderItemData);
     }
 
     console.log('✅ All order items created');
@@ -309,25 +316,28 @@ const ClickPesaCheckout: React.FC = () => {
       if (paymentInfo.method === 'cash_on_delivery') {
         // Create a payment record for cash on delivery
         // Handle both user object structures (auth store vs backend service)
-        const userId = user?.uid || (user as any)?._uid || 'guest';
+        const userId = user?.uid || (user && (user as any)?._uid) || 'guest';
         
         const paymentData = {
-          orderId: order.id,
+          orderId: order._id, // Use _id from backend service
           userId: userId,
           amount: finalTotal,
-          currency: 'TZS' as const,
-          method: 'cash_on_delivery' as const,
-          provider: 'manual' as const,
-          status: 'pending' as const, // Will be completed when delivered
+          currency: 'TZS',
+          method: 'cash_on_delivery',
+          provider: 'manual',
+          status: 'pending', // Will be completed when delivered
           webhookReceived: false,
           metadata: {
             deliveryInfo,
             cartItems: items.length,
             paymentNote: t('paymentToBeCollectedOnDelivery'),
           },
+          // Pass the user ID to ensure it's preserved
+          _uid: userId,
         };
 
-        await databaseService.create('payments', paymentData);
+        // Use backend service instead of databaseService
+        await table.addItem('payments', paymentData);
 
         toast({
           title: t('orderPlacedSuccessfully'),
@@ -337,7 +347,7 @@ const ClickPesaCheckout: React.FC = () => {
         
         // Redirect to order confirmation after 2 seconds
         setTimeout(() => {
-          navigate(`/order-confirmation/${order.id}`);
+          navigate(`/order-confirmation/${order._id}`); // Use _id from backend service
         }, 2000);
         return;
       }

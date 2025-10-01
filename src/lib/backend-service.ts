@@ -97,18 +97,21 @@ const sortItems = (items: TableItem[], sortField?: string, order: 'asc' | 'desc'
 // Main backend service class
 class BackendService {
   // Add item to table
-  async addItem(tableId: string, data: Omit<TableItem, '_id' | '_uid'>): Promise<TableItem> {
+  async addItem(tableId: string, data: Omit<TableItem, '_id' | '_uid'> & { _uid?: string }): Promise<TableItem> {
     try {
       console.log(`📝 Adding item to ${tableId} with data:`, data);
       
       const items = loadTable(tableId);
       const newItem: TableItem = {
         _id: generateId(),
-        _uid: generateUid(),
+        _uid: data._uid || generateUid(), // Use provided _uid or generate new one
         ...data,
         created_at: data.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
+      
+      // Remove _uid from data if it was provided to avoid duplication
+      delete (newItem as any)._uid;
       
       console.log(`🔍 Generated item:`, newItem);
       
