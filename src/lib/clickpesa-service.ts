@@ -62,6 +62,66 @@ interface ClickPesaWebhookPayload {
   message: string; // e.g., 'Payment received'
 }
 
+// Add new interfaces for USSD-PUSH API
+interface UssdPushPreviewRequest {
+  mobile_number: string;
+  amount: number;
+  order_reference: string;
+  currency?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+}
+
+interface UssdPushPreviewResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    transaction_id: string;
+    charge: number;
+    currency: string;
+  };
+}
+
+interface UssdPushInitiateRequest {
+  mobile_number: string;
+  amount: number;
+  order_reference: string;
+  currency?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  transaction_id: string; // From preview response
+}
+
+interface UssdPushInitiateResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    payment_reference: string;
+    transaction_id: string;
+    status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED';
+  };
+}
+
+interface PaymentQueryRequest {
+  order_reference: string;
+}
+
+interface PaymentQueryResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    payment_reference: string;
+    order_reference: string;
+    amount: number;
+    currency: string;
+    status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+    mobile_number: string;
+    transaction_date: string;
+  };
+}
+
 // Payment Method Types
 type PaymentMethod = 'mpesa' | 'airtel_money' | 'tigo_pesa' | 'card' | 'cash_on_delivery';
 
@@ -153,8 +213,8 @@ class ClickPesaService {
   }
 
   /**
-   * Initiate payment using ClickPesa Hosted Integration
-   * Creates a checkout URL that customers can use to complete payment
+   * Initiate payment using ClickPesa Mobile Money Payment API (USSD-PUSH)
+   * Creates a payment request that sends USSD prompt to customer's phone
    */
   async initiatePayment(request: PaymentInitiationRequest): Promise<PaymentInitiationResponse> {
     try {
@@ -213,7 +273,74 @@ class ClickPesaService {
         };
       }
 
-      // Production ClickPesa integration
+      // For Mobile Money methods, use USSD-PUSH API
+      if (['mpesa', 'airtel_money', 'tigo_pesa'].includes(request.method)) {
+        // Step 1: Preview USSD-PUSH request
+        const previewRequest: UssdPushPreviewRequest = {
+          mobile_number: request.customerInfo.phone,
+          amount: request.amount,
+          order_reference: order.orderNumber,
+          currency: request.currency,
+          first_name: request.customerInfo.name.split(' ')[0],
+          last_name: request.customerInfo.name.split(' ').slice(1).join(' '),
+          email: request.customerInfo.email
+        };
+
+        const previewResponse = await this.previewUssdPush(previewRequest);
+
+        if (!previewResponse.status) {
+          throw new Error(previewResponse.message || 'Failed to preview USSD-PUSH request');
+        }
+
+        // Step 2: Initiate USSD-PUSH request
+        const initiateRequest: UssdPushInitiateRequest = {
+          ...previewRequest,
+          transaction_id: previewResponse.data?.transaction_id || ''
+        };
+
+        const initiateResponse = await this.initiateUssdPush(initiateRequest);
+
+        if (!initiateResponse.status) {
+          throw new Error(initiateResponse.message || 'Failed to initiate USSD-PUSH request');
+        }
+
+        // Create payment record
+        const paymentData = {
+          orderId: request.orderId,
+          userId: order.userId,
+          amount: request.amount,
+          currency: request.currency,
+          method: request.method,
+          provider: 'clickpesa' as const,
+          status: 'pending' as const,
+          externalReference: order.orderNumber,
+          externalTransactionId: initiateResponse.data?.payment_reference,
+          clickPesaPaymentId: paymentId,
+          webhookReceived: false,
+          metadata: {
+            customerInfo: request.customerInfo,
+            transactionId: initiateResponse.data?.transaction_id,
+            ...request.metadata,
+          },
+        };
+
+        const payment = await databaseService.create<Payment>('payments', paymentData);
+
+        console.log('✅ ClickPesa USSD-PUSH payment initiated:', {
+          paymentId: payment.id,
+          paymentReference: initiateResponse.data?.payment_reference,
+          orderNumber: order.orderNumber,
+        });
+
+        return {
+          paymentId: payment.id,
+          paymentReference: initiateResponse.data?.payment_reference || '',
+          status: 'pending',
+          expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
+        };
+      }
+
+      // For card payments, fallback to hosted checkout
       // Get order items
       const orderItemsResult = await databaseService.findMany<OrderItem>('order_items', {
         filters: { orderId: request.orderId },
@@ -379,6 +506,123 @@ class ClickPesaService {
   }
 
   /**
+   * Preview USSD-PUSH request to validate payment details
+   * Step 1 of ClickPesa Mobile Money Payment API
+   */
+  async previewUssdPush(request: UssdPushPreviewRequest): Promise<UssdPushPreviewResponse> {
+    try {
+      logger.info('Previewing ClickPesa USSD-PUSH request', 'CLICKPESA', request);
+
+      // Check if we're in demo mode
+      if (CLICKPESA_CONFIG.isDemoMode) {
+        console.log('🧪 Running in ClickPesa Demo Mode - Preview');
+        
+        // Simulate successful preview
+        return {
+          status: true,
+          message: 'Preview successful',
+          data: {
+            transaction_id: `txn_${Date.now()}`,
+            charge: 0,
+            currency: request.currency || 'TZS'
+          }
+        };
+      }
+
+      // Production ClickPesa integration
+      const response: AxiosResponse<UssdPushPreviewResponse> = await this.apiClient.post(
+        '/collection/ussd-push/preview',
+        request
+      );
+
+      console.log('✅ ClickPesa USSD-PUSH preview:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('❌ Failed to preview ClickPesa USSD-PUSH:', error);
+      throw new Error(error.response?.data?.message || 'Failed to preview USSD-PUSH request');
+    }
+  }
+
+  /**
+   * Initiate USSD-PUSH request to send payment prompt to customer
+   * Step 2 of ClickPesa Mobile Money Payment API
+   */
+  async initiateUssdPush(request: UssdPushInitiateRequest): Promise<UssdPushInitiateResponse> {
+    try {
+      logger.info('Initiating ClickPesa USSD-PUSH request', 'CLICKPESA', request);
+
+      // Check if we're in demo mode
+      if (CLICKPESA_CONFIG.isDemoMode) {
+        console.log('🧪 Running in ClickPesa Demo Mode - Initiate');
+        
+        // Simulate successful initiation
+        return {
+          status: true,
+          message: 'USSD-PUSH initiated successfully',
+          data: {
+            payment_reference: `pay_${Date.now()}`,
+            transaction_id: request.transaction_id,
+            status: 'PENDING'
+          }
+        };
+      }
+
+      // Production ClickPesa integration
+      const response: AxiosResponse<UssdPushInitiateResponse> = await this.apiClient.post(
+        '/collection/ussd-push/initiate',
+        request
+      );
+
+      console.log('✅ ClickPesa USSD-PUSH initiated:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('❌ Failed to initiate ClickPesa USSD-PUSH:', error);
+      throw new Error(error.response?.data?.message || 'Failed to initiate USSD-PUSH request');
+    }
+  }
+
+  /**
+   * Query payment status
+   * Step 3 of ClickPesa Mobile Money Payment API
+   */
+  async queryPaymentStatus(request: PaymentQueryRequest): Promise<PaymentQueryResponse> {
+    try {
+      logger.info('Querying ClickPesa payment status', 'CLICKPESA', request);
+
+      // Check if we're in demo mode
+      if (CLICKPESA_CONFIG.isDemoMode) {
+        console.log('🧪 Running in ClickPesa Demo Mode - Query Status');
+        
+        // Simulate successful query
+        return {
+          status: true,
+          message: 'Payment status retrieved',
+          data: {
+            payment_reference: `pay_${Date.now()}`,
+            order_reference: request.order_reference,
+            amount: 1000,
+            currency: 'TZS',
+            status: 'SUCCESS',
+            mobile_number: '+255XXXXXXXXX',
+            transaction_date: new Date().toISOString()
+          }
+        };
+      }
+
+      // Production ClickPesa integration
+      const response: AxiosResponse<PaymentQueryResponse> = await this.apiClient.get(
+        `/collection/payments/query?order_reference=${request.order_reference}`
+      );
+
+      console.log('✅ ClickPesa payment status:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('❌ Failed to query ClickPesa payment status:', error);
+      throw new Error(error.response?.data?.message || 'Failed to query payment status');
+    }
+  }
+
+  /**
    * Check payment status directly with ClickPesa
    * Useful for reconciliation and status verification
    */
@@ -389,11 +633,76 @@ class ClickPesaService {
         return null;
       }
 
-      // In a real implementation, you would call ClickPesa's status API
-      // For now, return the current payment status
-      console.log('🔍 Checking payment status:', paymentId);
-      
-      return payment;
+      // For demo mode, return the current payment status
+      if (CLICKPESA_CONFIG.isDemoMode) {
+        console.log('🔍 Checking payment status (demo mode):', paymentId);
+        return payment;
+      }
+
+      // Query payment status from ClickPesa
+      const queryRequest: PaymentQueryRequest = {
+        order_reference: payment.externalReference || ''
+      };
+
+      const queryResponse = await this.queryPaymentStatus(queryRequest);
+
+      if (!queryResponse.status) {
+        console.error('❌ Failed to query payment status:', queryResponse.message);
+        return payment; // Return existing payment data
+      }
+
+      // Update payment status based on ClickPesa response
+      const paymentUpdates: Partial<Payment> = {
+        clickPesaStatus: queryResponse.data?.status,
+        externalTransactionId: queryResponse.data?.payment_reference,
+      };
+
+      const orderUpdates: Partial<Order> = {};
+
+      switch (queryResponse.data?.status) {
+        case 'SUCCESS':
+          paymentUpdates.status = 'completed';
+          paymentUpdates.processedAt = new Date();
+          orderUpdates.paymentStatus = 'completed';
+          orderUpdates.status = 'confirmed';
+          console.log('✅ Payment successful for order:', payment.externalReference);
+          break;
+
+        case 'PROCESSING':
+          paymentUpdates.status = 'processing';
+          orderUpdates.paymentStatus = 'processing';
+          console.log('⏳ Payment processing for order:', payment.externalReference);
+          break;
+
+        case 'FAILED':
+          paymentUpdates.status = 'failed';
+          paymentUpdates.failedAt = new Date();
+          paymentUpdates.failureReason = 'Payment failed';
+          orderUpdates.paymentStatus = 'failed';
+          console.log('❌ Payment failed for order:', payment.externalReference);
+          break;
+
+        case 'CANCELLED':
+          paymentUpdates.status = 'cancelled';
+          orderUpdates.paymentStatus = 'failed';
+          orderUpdates.status = 'cancelled';
+          console.log('🚫 Payment cancelled for order:', payment.externalReference);
+          break;
+
+        default:
+          console.log('ℹ️ Payment status unchanged for order:', payment.externalReference);
+          return payment;
+      }
+
+      // Update payment record
+      const updatedPayment = await databaseService.update<Payment>('payments', payment.id, paymentUpdates);
+
+      // Update order if needed
+      if (Object.keys(orderUpdates).length > 0 && payment.orderId) {
+        await databaseService.update<Order>('orders', payment.orderId, orderUpdates);
+      }
+
+      return updatedPayment;
     } catch (error) {
       console.error('❌ Failed to check payment status:', error);
       return null;

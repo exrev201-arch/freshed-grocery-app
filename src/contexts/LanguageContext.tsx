@@ -507,6 +507,12 @@ const translations = {
     checkout: 'Checkout',
     completeYourOrderSecurely: 'Complete your order securely',
     
+    // New ClickPesa translations
+    paymentInitiated: 'Payment Initiated',
+    checkYourPhoneForPaymentPrompt: 'Check your phone for a payment prompt. You will receive a USSD request to complete your payment.',
+    continueToOrderConfirmation: 'Continue to Order Confirmation',
+    youWillReceiveUSSDPrompt: 'You will receive a USSD prompt on your phone to complete the payment.',
+    
     // Download App Dialog translations,
     
     // PWA Install Banner translations
@@ -666,6 +672,7 @@ const translations = {
     adminProtectedArea: 'Protected Area • Fresh Grocery Platform',
     protectedAdminArea: 'Protected admin area',
   },
+  
   sw: {
     // Cart translations
     cartTitle: 'Kikapu Chako',

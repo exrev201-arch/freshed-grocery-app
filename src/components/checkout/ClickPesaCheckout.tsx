@@ -35,7 +35,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
-// import { clickPesaService } from '@/lib/clickpesa-service';
+import { clickPesaService } from '@/lib/clickpesa-service';
 import axios from 'axios';
 import { databaseService } from '@/lib/database-service';
 import { table } from '@/lib/backend-service';
@@ -67,6 +67,13 @@ interface PaymentInfo {
   email?: string;
 }
 
+// Add type for backend service order
+type BackendOrder = {
+  _id: string;
+  orderNumber: string;
+  // ... other order properties
+} & Record<string, any>;
+
 const ClickPesaCheckout: React.FC = () => {
   const { toast } = useToast();
   const { items, clearCart } = useCartStore();
@@ -96,7 +103,7 @@ const ClickPesaCheckout: React.FC = () => {
   });
 
   // Order and payment state
-  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
+  const [createdOrder, setCreatedOrder] = useState<any | null>(null);
   const [paymentResponse, setPaymentResponse] = useState<PaymentInitiationResponse | null>(null);
   const [paymentDialog, setPaymentDialog] = useState(false);
 
@@ -352,40 +359,54 @@ const ClickPesaCheckout: React.FC = () => {
         return;
       }
 
-      // For other payment methods, send order and payment to backend
-      const backendOrderPayload = {
-        items: items.map(item => ({
-          productId: item.id,
-          productName: item.name,
-          productPrice: item.price,
-          quantity: item.quantity,
-          subtotal: item.price * item.quantity,
-        })),
-        totalAmount: finalTotal,
-        paymentMethod: paymentInfo.method,
-        deliveryAddress: deliveryInfo.address,
-        deliveryPhone: deliveryInfo.phone,
-        deliveryDate: deliveryInfo.deliveryDate,
-        deliveryTime: deliveryInfo.timeSlot,
+      // For other payment methods, initiate ClickPesa payment
+      const paymentRequest = {
+        orderId: order._id, // Use _id from backend service
+        amount: finalTotal,
+        currency: 'TZS' as const,
+        method: paymentInfo.method,
         customerInfo: {
           name: user?.name || '',
           email: user?.email || '',
           phone: deliveryInfo.phone,
         },
       };
-      
-      // In a real implementation, this would send to your backend
-      // For now, we'll simulate a successful payment
+
+      // Initiate payment through ClickPesa service
+      const paymentResponse = await clickPesaService.initiatePayment(paymentRequest);
+      setPaymentResponse(paymentResponse);
+
+      // Show success message
       toast({
         title: t('orderPlacedSuccessfully'),
         description: t('yourOrderHasBeenPlaced'),
       });
-      clearCart();
-      
-      // Redirect to order confirmation after 2 seconds
-      setTimeout(() => {
-        navigate(`/order-confirmation/${order.id}`);
-      }, 2000);
+
+      // For Mobile Money payments, show payment dialog
+      if (['mpesa', 'airtel_money', 'tigo_pesa'].includes(paymentInfo.method)) {
+        setPaymentDialog(true);
+      } 
+      // For card payments or other methods, redirect to checkout URL
+      else if (paymentResponse.checkoutUrl) {
+        // Open ClickPesa checkout in new tab
+        window.open(paymentResponse.checkoutUrl, '_blank');
+        
+        // Show success message
+        toast({
+          title: t('redirectedToPayment'),
+          description: t('completePaymentInNewTab'),
+        });
+
+        // Clear cart after successful initiation
+        clearCart();
+        
+        // Redirect to order confirmation after 3 seconds
+        setTimeout(() => {
+          if (createdOrder) {
+            navigate(`/order-confirmation/${order._id}`);
+          }
+        }, 3000);
+      }
     } catch (error) {
       console.error('Order creation failed:', error);
       toast({
@@ -400,26 +421,26 @@ const ClickPesaCheckout: React.FC = () => {
   };
 
   const handlePaymentComplete = () => {
-    if (paymentResponse?.checkoutUrl) {
-      // Open ClickPesa checkout in new tab
-      window.open(paymentResponse.checkoutUrl, '_blank');
-      
-      // Show success message
-      toast({
-        title: t('redirectedToPayment'),
-        description: t('completePaymentInNewTab'),
-      });
+    // For Mobile Money payments, just show instructions
+    toast({
+      title: t('paymentInitiated'),
+      description: t('checkYourPhoneForPaymentPrompt'),
+    });
 
-      // Clear cart after successful initiation
-      clearCart();
-      
-      // Redirect to order confirmation after 3 seconds
-      setTimeout(() => {
-        if (createdOrder) {
-          navigate(`/order-confirmation/${createdOrder.id}`);
-        }
-      }, 3000);
-    }
+    // Clear cart after successful initiation
+    clearCart();
+    
+    // Close payment dialog
+    setPaymentDialog(false);
+    
+    // Redirect to order confirmation after 2 seconds
+    setTimeout(() => {
+      if (createdOrder) {
+        // Handle both backend service (_id) and database types (id) formats
+        const orderId = createdOrder._id || createdOrder.id;
+        navigate(`/order-confirmation/${orderId}`);
+      }
+    }, 2000);
   };
 
   const renderStepIndicator = () => (
@@ -821,11 +842,11 @@ const ClickPesaCheckout: React.FC = () => {
           </DialogHeader>
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <Smartphone className="h-8 w-8 text-green-600" />
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold">{t('orderCreatedSuccessfully')}</h3>
+              <h3 className="text-lg font-semibold">{t('paymentInitiated')}</h3>
               <p className="text-sm text-muted-foreground mt-1">
                 {t('orderNumber')} #{createdOrder?.orderNumber}
               </p>
@@ -838,16 +859,23 @@ const ClickPesaCheckout: React.FC = () => {
               </p>
             </div>
 
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                {t('checkYourPhoneForPaymentPrompt')}
+              </AlertDescription>
+            </Alert>
+
             <Button
               onClick={handlePaymentComplete}
               className="w-full bg-green-600 hover:bg-green-700"
             >
-              {t('continueToClickPesa')}
+              {t('continueToOrderConfirmation')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              {t('youWillBeRedirectedToClickPesa')}
+              {t('youWillReceiveUSSDPrompt')}
             </p>
           </div>
         </DialogContent>
