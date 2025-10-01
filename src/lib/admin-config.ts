@@ -29,6 +29,20 @@ export const ADMIN_PERMISSIONS = {
     viewer: ['read']
 };
 
+// Product categories
+export const PRODUCT_CATEGORIES = [
+    'vegetables',
+    'fruits', 
+    'herbs',
+    'dairy',
+    'grains',
+    'meat',
+    'beverages',
+    'snacks',
+    'household',
+    'other'
+] as const;
+
 // Revenue calculation configuration
 export const REVENUE_CALCULATION = {
     // Only orders with these statuses will be counted in revenue calculations
@@ -66,6 +80,7 @@ export const ADMIN_SUCCESS_MESSAGES = {
 
 export type AdminRole = keyof typeof ADMIN_PERMISSIONS;
 export type AdminAction = typeof ADMIN_ACTIONS[keyof typeof ADMIN_ACTIONS];
+export type ProductCategory = typeof PRODUCT_CATEGORIES[number];
 
 // Admin Action Types (for audit logging)
 export const ADMIN_ACTIONS = {

@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { logger } from '@/lib/logger';
-import { AdminUser } from '@/lib/admin-service';
-import { ADMIN_PERMISSIONS, AdminRole } from '@/lib/admin-config';
+import { logger } from '../lib/logger';
+import { AdminUser } from '../lib/admin-service';
+import { ADMIN_PERMISSIONS, AdminRole } from '../lib/admin-config';
 
 interface AdminState {
     adminUser: AdminUser | null;
@@ -13,7 +13,7 @@ interface AdminState {
     adminLogout: () => void;
     updateAdminUser: (user: AdminUser) => void;
     updateLastActivity: () => void;
-    hasPermission: (permission: keyof typeof ADMIN_PERMISSIONS['ADMIN']) => boolean;
+    hasPermission: (permission: string) => boolean;
     hasSpecificPermission: (role: AdminRole, permission: string) => boolean;
     checkSession: () => boolean;
 }
@@ -59,7 +59,7 @@ export const useAdminStore = create<AdminState>()(
                 set({ adminUser: user });
             },
 
-            hasPermission: (permission: keyof typeof ADMIN_PERMISSIONS['ADMIN']) => {
+            hasPermission: (permission: string) => {
                 const { adminUser } = get();
                 
                 if (!adminUser || adminUser.is_active !== 'active') {
@@ -67,8 +67,8 @@ export const useAdminStore = create<AdminState>()(
                     return false;
                 }
 
-                // Normalize role to uppercase to match ADMIN_PERMISSIONS keys
-                const role = adminUser.role.toUpperCase() as AdminRole;
+                // Normalize role to lowercase to match ADMIN_PERMISSIONS keys
+                const role = adminUser.role.toLowerCase() as keyof typeof ADMIN_PERMISSIONS;
                 const permissions = ADMIN_PERMISSIONS[role];
                 
                 if (!permissions) {
@@ -76,10 +76,10 @@ export const useAdminStore = create<AdminState>()(
                     return false;
                 }
 
-                const hasAccess = permissions[permission] === true;
+                const hasAccess = permissions.includes(permission);
                 
                 if (!hasAccess) {
-                    console.warn(`🚫 Permission denied: ${adminUser.email} (${role}) lacks ${permission} permission`);
+                    console.warn(`🚫 Permission denied: ${adminUser.email} (${String(role)}) lacks ${String(permission)} permission`);
                 }
                 
                 return hasAccess;
@@ -116,12 +116,12 @@ export const useAdminStore = create<AdminState>()(
             },
 
             hasSpecificPermission: (role: AdminRole, permission: string) => {
-                // Normalize role to uppercase
-                const normalizedRole = role.toUpperCase() as AdminRole;
+                // Normalize role to lowercase
+                const normalizedRole = role.toLowerCase() as keyof typeof ADMIN_PERMISSIONS;
                 const permissions = ADMIN_PERMISSIONS[normalizedRole];
                 if (!permissions) return false;
                 
-                return permissions[permission as keyof typeof permissions] === true;
+                return permissions.includes(permission);
             }
         }),
         {

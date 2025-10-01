@@ -3,8 +3,8 @@
  * Provides consistent error handling, logging, and user feedback
  */
 
-import { useToast } from '@/hooks/use-toast';
-import { useAuthStore } from '@/store/auth-store';
+import { useToast } from '../hooks/use-toast';
+import { useAuthStore } from '../store/auth-store';
 
 // Error types
 export type ErrorType = 

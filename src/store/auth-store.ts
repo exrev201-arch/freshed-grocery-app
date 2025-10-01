@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { debugAuth, authDebugUtils } from '@/lib/debug-auth';
+import { debugAuth, authDebugUtils } from '../lib/debug-auth';
 import { logger } from '../lib/logger';
 
 interface User {
