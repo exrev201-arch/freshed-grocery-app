@@ -411,7 +411,10 @@ class AdminService {
 
             const activeProducts = products.filter(p => p.is_active === 'active').length;
             const lowStockProducts = products.filter(p => p.stock_quantity <= 10).length;
-            const totalRevenue = ordersResponse.items.reduce((sum, order: any) => sum + (order.total_amount || 0), 0);
+            
+            // Only count revenue and orders from delivered orders (completed deliveries)
+            const deliveredOrders = ordersResponse.items.filter((order: any) => order.status === 'delivered');
+            const totalRevenue = deliveredOrders.reduce((sum, order: any) => sum + (order.total_amount || 0), 0);
 
             // Get recent activity (last 10 orders)
             const recentActivity = ordersResponse.items
@@ -429,7 +432,7 @@ class AdminService {
                 totalProducts: products.length,
                 activeProducts,
                 lowStockProducts,
-                totalOrders: ordersResponse.items.length,
+                totalOrders: deliveredOrders.length,
                 totalRevenue,
                 recentActivity
             };
