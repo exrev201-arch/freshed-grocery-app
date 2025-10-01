@@ -17,24 +17,10 @@ import { useAuthStore } from '@/store/auth-store';
 import { useDeliveryAuthStore } from '@/store/delivery-auth-store';
 import { useToast } from '@/hooks/use-toast';
 import { getOrderDelivery, getOrdersByStatus } from '@/lib/delivery-service';
-import { OrderService } from '@/lib/order-service';
+import { OrderService, Order } from '@/lib/order-service';
 import DeliveryPersonInterface from '@/components/delivery/DeliveryPersonInterface';
 import LiveDeliveryTracker from '@/components/delivery/LiveDeliveryTracker';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-interface Order {
-    _id: string;
-    _uid: string;
-    status: string;
-    total_amount: number;
-    payment_method: string;
-    delivery_address: string;
-    delivery_phone: string;
-    delivery_notes: string;
-    delivery_date: string;
-    delivery_time: string;
-    created_at: number;
-}
 
 interface DeliveryInfo {
     _id: string;
