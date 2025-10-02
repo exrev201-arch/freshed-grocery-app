@@ -345,10 +345,10 @@ class ClickPesaService {
           mobile_number: formattedPhoneNumber,
           amount: request.amount,
           order_reference: order.orderNumber,
-          currency: request.currency,
-          first_name: request.customerInfo.name.split(' ')[0],
-          last_name: request.customerInfo.name.split(' ').slice(1).join(' '),
-          email: request.customerInfo.email,
+          currency: request.currency || 'TZS',
+          first_name: request.customerInfo.name.split(' ')[0] || 'Customer',
+          last_name: request.customerInfo.name.split(' ').slice(1).join(' ') || '',
+          email: request.customerInfo.email || 'customer@freshgrocery.co.tz',
           // Include merchant ID in request body if needed
           merchant_id: CLICKPESA_CONFIG.merchantId
         };
@@ -380,7 +380,7 @@ class ClickPesaService {
           orderId: request.orderId,
           userId: order.userId, // Use userId for consistency
           amount: request.amount,
-          currency: request.currency,
+          currency: request.currency || 'TZS',
           method: request.method,
           provider: 'clickpesa',
           status: 'pending',

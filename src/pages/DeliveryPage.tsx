@@ -188,17 +188,17 @@ const DeliveryPage: React.FC = () => {
                                 <div className="flex items-center space-x-2 text-sm">
                                     <User className="h-4 w-4 text-muted-foreground" />
                                     <span className="font-medium">{t('customer')}:</span>
-                                    <span>{user?.email}</span>
+                                    <span>{order.customerInfo?.email || user?.email || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center space-x-2 text-sm">
                                     <Phone className="h-4 w-4 text-muted-foreground" />
                                     <span className="font-medium">{t('phone')}:</span>
-                                    <span>{order.delivery_phone}</span>
+                                    <span>{order.customerInfo?.phoneNumber || order.delivery_phone || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-start space-x-2 text-sm">
                                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                                     <span className="font-medium">{t('orderConfirmationAddress')}:</span>
-                                    <span className="flex-1">{order.delivery_address}</span>
+                                    <span className="flex-1">{order.deliveryAddress?.street || order.delivery_address || 'N/A'}</span>
                                 </div>
                             </div>
                             <div className="space-y-2">

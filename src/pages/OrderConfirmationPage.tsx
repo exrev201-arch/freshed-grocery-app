@@ -180,7 +180,8 @@ export default function OrderConfirmationPage() {
                             <MapPin className="h-4 w-4 text-gray-500 mt-1 shrink-0" />
                             <div>
                                 <div className="font-medium">{t('orderConfirmationAddress')}</div>
-                                <div className="text-sm text-gray-600">{order.delivery_address}</div>
+                                <div className="text-sm text-gray-600">{order.deliveryAddress?.street || order.delivery_address || 'N/A'}</div>
+                                <div className="text-sm text-gray-600">{order.deliveryAddress?.ward || ''}</div>
                             </div>
                         </div>
 
@@ -188,7 +189,7 @@ export default function OrderConfirmationPage() {
                             <Phone className="h-4 w-4 text-gray-500 shrink-0" />
                             <div>
                                 <div className="font-medium">{t('orderConfirmationPhone')}</div>
-                                <div className="text-sm text-gray-600">{order.delivery_phone}</div>
+                                <div className="text-sm text-gray-600">{order.customerInfo?.phoneNumber || order.delivery_phone || 'N/A'}</div>
                             </div>
                         </div>
 
@@ -255,12 +256,12 @@ export default function OrderConfirmationPage() {
                           <div className="flex justify-between">
                             <span>{t('productTotal')}</span>
                             {/* Fix calculation: total_amount - delivery fee */}
-                            <span>TZS {((order.totalAmount || order.total_amount || 0) >= 5000 ? (order.totalAmount || order.total_amount || 0) - 5000 : (order.totalAmount || order.total_amount || 0)).toLocaleString()}</span>
+                            <span>TZS {((order.totalAmount || order.total_amount || 0) >= 5000 ? (order.totalAmount || order.total_amount || 0) - 3000 : (order.totalAmount || order.total_amount || 0) - 3000).toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between">
                             <span>{t('deliveryFee')}</span>
                             {/* Fix delivery fee display based on order total */}
-                            <span>TZS {(order.totalAmount || order.total_amount || 0) >= 5000 ? '0' : '5,000'}</span>
+                            <span>TZS {(order.totalAmount || order.total_amount || 0) >= 50000 ? '0' : '3,000'}</span>
                           </div>
                           <Separator />
                           <div className="flex justify-between font-bold text-lg">

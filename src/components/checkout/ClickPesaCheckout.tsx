@@ -243,7 +243,7 @@ const ClickPesaCheckout: React.FC = () => {
     
     // Calculate totals correctly
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = subtotal >= 50000 ? 0 : 5000; // Free delivery over 50,000 TZS
+    const deliveryFee = subtotal >= 50000 ? 0 : 3000; // Free delivery over 50,000 TZS
     const taxRate = 0.18; // 18% VAT in Tanzania
     const taxAmount = Math.round(subtotal * taxRate);
     const finalTotal = subtotal + deliveryFee + taxAmount;
@@ -382,8 +382,8 @@ const ClickPesaCheckout: React.FC = () => {
         currency: 'TZS' as const,
         method: paymentInfo.method,
         customerInfo: {
-          name: user?.name || '',
-          email: user?.email || '',
+          name: user?.name || `${order.customerInfo?.firstName || ''} ${order.customerInfo?.lastName || ''}`.trim() || 'Customer',
+          email: user?.email || order.customerInfo?.email || 'customer@freshgrocery.co.tz',
           phone: deliveryInfo.phone,
         },
       };
