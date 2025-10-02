@@ -198,7 +198,9 @@ const DeliveryPage: React.FC = () => {
                                 <div className="flex items-start space-x-2 text-sm">
                                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                                     <span className="font-medium">{t('orderConfirmationAddress')}:</span>
-                                    <span className="flex-1">{order.deliveryAddress?.street || order.delivery_address || 'N/A'}</span>
+                                    <span className="flex-1">
+                                        {order.deliveryAddressInfo?.street || order.delivery_address || 'N/A'}
+                                    </span>
                                 </div>
                             </div>
                             <div className="space-y-2">

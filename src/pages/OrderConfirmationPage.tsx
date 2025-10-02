@@ -180,8 +180,8 @@ export default function OrderConfirmationPage() {
                             <MapPin className="h-4 w-4 text-gray-500 mt-1 shrink-0" />
                             <div>
                                 <div className="font-medium">{t('orderConfirmationAddress')}</div>
-                                <div className="text-sm text-gray-600">{order.deliveryAddress?.street || order.delivery_address || 'N/A'}</div>
-                                <div className="text-sm text-gray-600">{order.deliveryAddress?.ward || ''}</div>
+                                <div className="text-sm text-gray-600">{order.deliveryAddressInfo?.street || order.delivery_address || 'N/A'}</div>
+                                <div className="text-sm text-gray-600">{order.deliveryAddressInfo?.ward || ''}</div>
                             </div>
                         </div>
 

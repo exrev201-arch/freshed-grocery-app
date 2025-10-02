@@ -227,9 +227,9 @@ const translations = {
     signUp: 'Sign Up',
     fullName: 'Full Name',
     emailAddress: 'Email Address',
-    phoneNumber: 'Nambari ya Simu',
+    phoneNumber: 'Phone Number',
     phoneNumberPlaceholder: '+255 7XX XXX XXX or +255 6XX XXX XXX',
-    phoneNumberPlaceholderSw: '+255 7XX XXX XXX',
+    phoneNumberPlaceholderSw: '+255 7XX XXX XXX or +255 6XX XXX XXX',
     createPassword: 'Create a password',
     confirmPassword: 'Confirm Password',
     confirmYourPassword: 'Confirm your password',
@@ -241,6 +241,11 @@ const translations = {
     verifyAndLogin: 'Verify & Login',
     backToEmail: 'Back to Email',
     byContinuingYouAgree: 'By continuing, you agree to Fresh\'s terms of service and privacy policy.',
+    sendOTP: 'Send OTP',
+    resendOTP: 'Resend OTP',
+    resendIn: 'Resend in',
+    sending: 'Sending...',
+    failedToSendOTP: 'Failed to send OTP. Please try again.',
     
     // Customer Support translations
     customerSupport: 'Customer Support',

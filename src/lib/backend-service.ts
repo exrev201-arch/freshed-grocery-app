@@ -300,15 +300,44 @@ class AuthService {
     }
   }
 
-  async verifyOTP(email: string, code: string): Promise<{ user: any }> {
-    const storedOtp = this.otpCodes.get(email);
+  async sendSMSOTP(phone: string): Promise<void> {
+    // Generate 6-digit OTP
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes
+    
+    this.otpCodes.set(phone, { code, expiresAt });
+    
+    // Store OTP in backend for persistence
+    await backendService.addItem(BACKEND_TABLES.OTP_CODES, {
+      phone,
+      code,
+      expires_at: expiresAt,
+      used: false
+    });
+    
+    // In development mode, show in console
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`%c📱 DEVELOPMENT MODE: Your OTP code for ${phone} is: ${code}`, 'font-size: 16px; font-weight: bold; color: #2196F3;');
+      console.log('%c📋 You can also use the default test code: 123456 for any phone', 'font-size: 14px; color: #666;');
+    }
+    
+    // TODO: Implement actual SMS sending
+    // For now, we'll just log it
+    console.log(`📱 SMS OTP would be sent to ${phone}: ${code}`);
+    
+    // In a real implementation, you would use the SMS service:
+    // await smsService.sendOTP(phone, code);
+  }
+
+  async verifyOTP(identifier: string, code: string): Promise<{ user: any }> {
+    const storedOtp = this.otpCodes.get(identifier);
     
     if (!storedOtp) {
-      throw new Error('No OTP found for this email');
+      throw new Error('No OTP found for this identifier');
     }
     
     if (Date.now() > storedOtp.expiresAt) {
-      this.otpCodes.delete(email);
+      this.otpCodes.delete(identifier);
       throw new Error('OTP has expired');
     }
     
@@ -317,11 +346,11 @@ class AuthService {
     }
     
     // OTP is valid, create/get user
-    this.otpCodes.delete(email);
+    this.otpCodes.delete(identifier);
     
     // Check if user exists in profiles
     const profiles = await backendService.getItems(BACKEND_TABLES.USER_PROFILES, {
-      query: { email }
+      query: { $or: [{ email: identifier }, { phone: identifier }] }
     });
     
     let user;
@@ -330,16 +359,16 @@ class AuthService {
     } else {
       // Create new user profile
       user = await backendService.addItem(BACKEND_TABLES.USER_PROFILES, {
-        email,
-        name: email.split('@')[0] || 'Fresh User',
-        phone: '',
+        email: identifier.includes('@') ? identifier : '',
+        phone: identifier.includes('@') ? '' : identifier,
+        name: identifier.split('@')[0] || 'Fresh User',
         address: '',
         preferences: '{}',
         is_active: true
       });
     }
     
-    console.log('✅ User authenticated:', user.email);
+    console.log('✅ User authenticated:', identifier);
     return { user };
   }
 
