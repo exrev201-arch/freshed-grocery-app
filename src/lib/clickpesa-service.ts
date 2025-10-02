@@ -314,14 +314,16 @@ class ClickPesaService {
           throw new Error('Phone number is required for mobile money payments');
         }
         
-        // Format phone number for ClickPesa API
+        // Enhanced phone number formatting for ClickPesa API
         let formattedPhoneNumber = request.customerInfo.phone;
+        
+        console.log('🔍 Original phone number:', request.customerInfo.phone);
         
         // Remove any spaces, dashes, or parentheses
         formattedPhoneNumber = formattedPhoneNumber.replace(/[\s\-\(\)]/g, '');
         
         // Handle different phone number formats for Tanzania
-        // Support both 06XX and 07XX formats
+        // Support both 06XX (Airtel) and 07XX (Vodacom/Tigo) formats
         if (formattedPhoneNumber.startsWith('0')) {
           formattedPhoneNumber = '+255' + formattedPhoneNumber.substring(1);
         } else if (formattedPhoneNumber.startsWith('255')) {
@@ -331,13 +333,19 @@ class ClickPesaService {
         }
         
         // Validate the formatted phone number for Tanzanian mobile networks
-        // Updated to support both 06XX (Airtel) and 07XX (Vodacom/Tigo) numbers
+        // Support both 06XX (Airtel) and 07XX (Vodacom/Tigo) numbers
         const phoneRegex = /^\+255[67][0-9]{8}$/;
         if (!phoneRegex.test(formattedPhoneNumber)) {
           throw new Error('Invalid phone number format. Please use format: +255 7XX XXX XXX or +255 6XX XXX XXX');
         }
         
-        console.log('🔍 Original phone number:', request.customerInfo.phone);
+        // Additional validation for Airtel numbers (06XX)
+        if (formattedPhoneNumber.startsWith('+2556')) {
+          console.log('📱 Detected Airtel number - ensuring proper format');
+          // Airtel numbers should be in format +2556XXXXXXXX
+          // Already validated by regex above
+        }
+        
         console.log('🔍 Formatted phone number:', formattedPhoneNumber);
         
         // Step 1: Preview USSD-PUSH request

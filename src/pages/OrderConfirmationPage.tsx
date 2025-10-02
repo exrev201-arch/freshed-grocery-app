@@ -8,6 +8,24 @@ import { OrderService, Order, OrderItem } from '@/lib/order-service';
 import { useAuthStore } from '@/store/auth-store';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+// Enhanced function to safely get order amount regardless of field name or data type
+const getOrderAmount = (order: any): number => {
+    // Try different possible field names for total amount
+    const possibleFields = ['total_amount', 'totalAmount', 'amount', 'price', 'total'];
+    
+    for (const field of possibleFields) {
+        if (order[field] !== undefined && order[field] !== null) {
+            // Handle string amounts by converting to number
+            const value = typeof order[field] === 'string' ? parseFloat(order[field]) : order[field];
+            if (!isNaN(value)) {
+                return value;
+            }
+        }
+    }
+    
+    return 0; // Default to 0 if no valid amount found
+};
+
 export default function OrderConfirmationPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
@@ -131,6 +149,9 @@ export default function OrderConfirmationPage() {
     }
 
     const statusInfo = getStatusInfo(order.status);
+    const orderAmount = getOrderAmount(order);
+    const deliveryFee = orderAmount >= 50000 ? 0 : 3000;
+    const productTotal = Math.max(0, orderAmount - deliveryFee);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50">
@@ -143,7 +164,7 @@ export default function OrderConfirmationPage() {
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('congratulations')}</h1>
                     <p className="text-gray-600">{t('orderCompleted')}</p>
                     <p className="text-sm text-gray-500 mt-2">
-                        {t('orderNumber')}: <span className="font-mono font-medium">#{order._id.slice(-8).toUpperCase()}</span>
+                        {t('orderNumber')}: <span className="font-mono font-medium">#{order._id?.slice(-8).toUpperCase() || 'N/A'}</span>
                     </p>
                 </div>
 
@@ -180,8 +201,12 @@ export default function OrderConfirmationPage() {
                             <MapPin className="h-4 w-4 text-gray-500 mt-1 shrink-0" />
                             <div>
                                 <div className="font-medium">{t('orderConfirmationAddress')}</div>
-                                <div className="text-sm text-gray-600">{order.deliveryAddressInfo?.street || order.delivery_address || 'N/A'}</div>
-                                <div className="text-sm text-gray-600">{order.deliveryAddressInfo?.ward || ''}</div>
+                                <div className="text-sm text-gray-600">
+                                    {order.deliveryAddressInfo?.street || order.delivery_address || order.deliveryAddress || 'N/A'}
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                    {order.deliveryAddressInfo?.ward || order.deliveryAddressInfo?.district || ''}
+                                </div>
                             </div>
                         </div>
 
@@ -189,7 +214,9 @@ export default function OrderConfirmationPage() {
                             <Phone className="h-4 w-4 text-gray-500 shrink-0" />
                             <div>
                                 <div className="font-medium">{t('orderConfirmationPhone')}</div>
-                                <div className="text-sm text-gray-600">{order.customerInfo?.phoneNumber || order.delivery_phone || 'N/A'}</div>
+                                <div className="text-sm text-gray-600">
+                                    {order.customerInfo?.phoneNumber || order.delivery_phone || order.deliveryPhone || 'N/A'}
+                                </div>
                             </div>
                         </div>
 
@@ -214,7 +241,7 @@ export default function OrderConfirmationPage() {
                                           day: 'numeric'
                                         })
                                       : t('dateNotSet'))}
-                                  {(order.deliveryTimeSlot || order.delivery_time) && ` - ${order.deliveryTimeSlot || order.delivery_time}`}
+                                  {(order.deliveryTimeSlot || order.delivery_time || order.deliveryTime) && ` - ${order.deliveryTimeSlot || order.delivery_time || order.deliveryTime}`}
                                 </div>
                             </div>
                         </div>
@@ -238,13 +265,13 @@ export default function OrderConfirmationPage() {
                             {orderItems.map((item) => (
                                 <div key={item._id} className="flex justify-between items-center">
                                     <div className="flex-1">
-                                        <div className="font-medium">{item.product_name}</div>
+                                        <div className="font-medium">{item.product_name || item.productName || 'Unknown Product'}</div>
                                         <div className="text-sm text-gray-500">
-                                            TZS {item.product_price.toLocaleString()} × {item.quantity}
+                                            TZS {(item.product_price || item.unitPrice || 0).toLocaleString()} × {item.quantity}
                                         </div>
                                     </div>
                                     <div className="font-medium">
-                                        TZS {item.subtotal.toLocaleString()}
+                                        TZS {(item.subtotal || item.totalPrice || (item.product_price || item.unitPrice || 0) * item.quantity).toLocaleString()}
                                     </div>
                                 </div>
                             ))}
@@ -255,18 +282,16 @@ export default function OrderConfirmationPage() {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span>{t('productTotal')}</span>
-                            {/* Fix calculation: total_amount - delivery fee */}
-                            <span>TZS {((order.totalAmount || order.total_amount || 0) >= 5000 ? (order.totalAmount || order.total_amount || 0) - 3000 : (order.totalAmount || order.total_amount || 0) - 3000).toLocaleString()}</span>
+                            <span>TZS {productTotal.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between">
                             <span>{t('deliveryFee')}</span>
-                            {/* Fix delivery fee display based on order total */}
-                            <span>TZS {(order.totalAmount || order.total_amount || 0) >= 50000 ? '0' : '3,000'}</span>
+                            <span>TZS {deliveryFee.toLocaleString()}</span>
                           </div>
                           <Separator />
                           <div className="flex justify-between font-bold text-lg">
                             <span>{t('total')}</span>
-                            <span className="text-emerald-600">TZS {(order.totalAmount || order.total_amount || 0).toLocaleString()}</span>
+                            <span className="text-emerald-600">TZS {orderAmount.toLocaleString()}</span>
                           </div>
                         </div>
                     </CardContent>
@@ -280,10 +305,10 @@ export default function OrderConfirmationPage() {
                     <CardContent>
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <div className="font-medium text-blue-800 mb-1">
-                                {order.payment_method === 'cash_on_delivery' ? t('cashOnDelivery') : t('mobileMoney')}
+                                {order.payment_method === 'cash_on_delivery' || order.paymentMethod === 'cash_on_delivery' ? t('cashOnDelivery') : t('mobileMoney')}
                             </div>
                             <div className="text-sm text-blue-700">
-                                {order.payment_method === 'cash_on_delivery'
+                                {order.payment_method === 'cash_on_delivery' || order.paymentMethod === 'cash_on_delivery'
                                     ? t('payOnDelivery')
                                     : t('paymentMessage')
                                 }

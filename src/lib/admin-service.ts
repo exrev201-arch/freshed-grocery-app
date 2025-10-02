@@ -418,7 +418,33 @@ class AdminService {
             const completedOrders = ordersResponse.items.filter(
                 (order: any) => REVENUE_CALCULATION.COMPLETED_ORDER_STATUSES.includes(order.status)
             );
-            const totalRevenue = completedOrders.reduce((sum, order: any) => sum + (order.total_amount || 0), 0);
+            
+            // Enhanced function to safely get order amount regardless of field name or data type
+            const getOrderAmount = (order: any): number => {
+                // Try different possible field names for total amount
+                const possibleFields = ['total_amount', 'totalAmount', 'amount', 'price', 'total'];
+                
+                for (const field of possibleFields) {
+                    if (order[field] !== undefined && order[field] !== null) {
+                        // Handle string amounts by converting to number
+                        const value = typeof order[field] === 'string' ? parseFloat(order[field]) : order[field];
+                        if (!isNaN(value)) {
+                            return value;
+                        }
+                    }
+                }
+                
+                return 0; // Default to 0 if no valid amount found
+            };
+            
+            // Calculate total revenue with enhanced logging
+            let totalRevenue = 0;
+            console.log('🔍 Debug - Analyzing completed orders for revenue:');
+            completedOrders.forEach((order: any, index: number) => {
+                const amount = getOrderAmount(order);
+                console.log(`🔍 Order ${index + 1} (${order._id}): status=${order.status}, amount=${amount}`);
+                totalRevenue += amount;
+            });
 
             console.log('🔍 Debug - Completed orders:', completedOrders);
             console.log('🔍 Debug - Total revenue calculated:', totalRevenue);
@@ -434,13 +460,13 @@ class AdminService {
 
             // Get recent activity (last 10 orders)
             const recentActivity = ordersResponse.items
-                .sort((a: any, b: any) => b.created_at - a.created_at)
+                .sort((a: any, b: any) => (b.created_at || 0) - (a.created_at || 0))
                 .slice(0, 10)
                 .map((order: any) => ({
                     type: 'order',
                     id: order._id,
                     status: order.status,
-                    amount: order.total_amount,
+                    amount: getOrderAmount(order),
                     timestamp: order.created_at
                 }));
 
