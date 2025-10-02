@@ -8,26 +8,12 @@ The application now supports sending OTP codes via SMS in addition to email. Thi
 
 ## Supported SMS Providers
 
-1. **Twilio** (Recommended)
-2. **Africa's Talking** (Alternative for African markets)
-3. **Generic SMS Provider** (Custom integration)
+1. **Africa's Talking** (Recommended for African markets)
+2. **Generic SMS Provider** (Custom integration)
 
 ## Setup Instructions
 
-### 1. Twilio Setup (Recommended)
-
-1. Sign up for a Twilio account at https://www.twilio.com/
-2. Purchase a phone number with SMS capabilities
-3. Get your Account SID and Auth Token from the Twilio Console
-4. Add the following environment variables to your `.env` file:
-
-```env
-VITE_TWILIO_ACCOUNT_SID=your_account_sid_here
-VITE_TWILIO_AUTH_TOKEN=your_auth_token_here
-VITE_TWILIO_PHONE_NUMBER=+255your_twilio_number_here
-```
-
-### 2. Africa's Talking Setup (Alternative)
+### 1. Africa's Talking Setup (Recommended)
 
 1. Sign up for an Africa's Talking account at https://africastalking.com/
 2. Create a new application
@@ -40,7 +26,7 @@ VITE_AFRICAS_TALKING_USERNAME=your_username_here
 VITE_AFRICAS_TALKING_PHONE_NUMBER=+255your_sender_number_here
 ```
 
-### 3. Generic SMS Provider Setup
+### 2. Generic SMS Provider Setup
 
 If you're using a different SMS provider, you can configure it using:
 
@@ -59,12 +45,7 @@ Add the following to your `.env` file:
 # SMS Configuration
 VITE_SMS_DEMO_MODE=false
 
-# Twilio (Primary)
-VITE_TWILIO_ACCOUNT_SID=
-VITE_TWILIO_AUTH_TOKEN=
-VITE_TWILIO_PHONE_NUMBER=
-
-# Africa's Talking (Alternative)
+# Africa's Talking (Primary)
 VITE_AFRICAS_TALKING_API_KEY=
 VITE_AFRICAS_TALKING_USERNAME=
 VITE_AFRICAS_TALKING_PHONE_NUMBER=
@@ -162,7 +143,6 @@ In development mode:
 ## Cost Considerations
 
 SMS messaging typically incurs costs:
-- Twilio: ~$0.0075 per message to Tanzania
 - Africa's Talking: Competitive rates for African countries
 - Local providers: Check local pricing
 

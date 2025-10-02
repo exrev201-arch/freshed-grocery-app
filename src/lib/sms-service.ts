@@ -5,9 +5,6 @@
  * Currently supports Twilio as the primary provider with fallback options
  */
 
-import { Twilio } from 'twilio';
-import { logger } from './logger';
-
 // SMS Configuration
 const SMS_CONFIG = {
   // Twilio configuration (primary provider)
@@ -38,23 +35,10 @@ interface SMSServiceInterface {
 }
 
 class SMSService implements SMSServiceInterface {
-  private twilioClient: Twilio | null = null;
-
   constructor() {
-    // Initialize Twilio client if credentials are provided
+    // Check if Twilio credentials are provided
     if (SMS_CONFIG.twilio.accountSid && SMS_CONFIG.twilio.authToken) {
-      try {
-        this.twilioClient = new Twilio(
-          SMS_CONFIG.twilio.accountSid,
-          SMS_CONFIG.twilio.authToken
-        );
-        console.log('✅ Twilio SMS service initialized');
-      } catch (error) {
-        console.warn('⚠️ Failed to initialize Twilio SMS service:', error);
-        this.twilioClient = null;
-      }
-    } else {
-      console.log('ℹ️ Twilio credentials not provided, SMS service will use demo mode');
+      console.log('ℹ️ Twilio credentials provided but Twilio SDK not installed. SMS service will use demo mode.');
     }
   }
 
@@ -83,23 +67,6 @@ class SMSService implements SMSServiceInterface {
         }
         
         return true;
-      }
-
-      // Try Twilio first (if configured)
-      if (this.twilioClient && SMS_CONFIG.twilio.phoneNumber) {
-        try {
-          const result = await this.twilioClient.messages.create({
-            body: message,
-            from: SMS_CONFIG.twilio.phoneNumber,
-            to: formattedPhone
-          });
-          
-          console.log('✅ SMS sent via Twilio:', result.sid);
-          return true;
-        } catch (twilioError) {
-          console.error('❌ Twilio SMS failed:', twilioError);
-          // Continue to fallback options
-        }
       }
 
       // Try Africa's Talking (if configured)
@@ -197,11 +164,10 @@ class SMSService implements SMSServiceInterface {
       }
 
       // Check if at least one provider is configured
-      const isTwilioConfigured = !!(SMS_CONFIG.twilio.accountSid && SMS_CONFIG.twilio.authToken);
       const isAfricaTalkingConfigured = !!(SMS_CONFIG.africasTalking.apiKey && SMS_CONFIG.africasTalking.username);
       const isGenericConfigured = !!(SMS_CONFIG.generic.apiUrl && SMS_CONFIG.generic.apiKey);
 
-      if (isTwilioConfigured || isAfricaTalkingConfigured || isGenericConfigured) {
+      if (isAfricaTalkingConfigured || isGenericConfigured) {
         return {
           status: 'healthy',
           message: 'SMS service is operational',
