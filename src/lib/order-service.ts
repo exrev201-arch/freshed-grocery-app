@@ -27,13 +27,21 @@ export interface Order {
     order_id?: string; // Custom order identifier
     orderNumber: string; // Human-readable order number
     status: string;
-    total_amount: number;
+    total_amount?: number;
+    totalAmount?: number; // Alternative field name
     payment_method: string;
+    paymentMethod?: string; // Alternative field name
     delivery_address: string;
+    deliveryAddress?: string; // Alternative field name
     delivery_phone: string;
+    deliveryPhone?: string; // Alternative field name
     delivery_notes: string;
+    deliveryNotes?: string; // Alternative field name
     delivery_date: string;
+    deliveryDate?: string; // Alternative field name
     delivery_time: string;
+    deliveryTime?: string; // Alternative field name
+    deliveryTimeSlot?: string; // Additional field
     created_at: number;
     updated_at: number;
     // Customer information
@@ -44,7 +52,7 @@ export interface Order {
         phoneNumber: string;
     };
     // Delivery information
-    deliveryAddress?: {
+    deliveryAddressInfo?: {
         street: string;
         ward: string;
         district: string;
@@ -60,9 +68,6 @@ export interface Order {
     shippingAmount?: number;
     discountAmount?: number;
     currency?: string;
-    deliveryDate?: string;
-    deliveryTimeSlot?: string;
-    deliveryMethod?: string;
     source?: string;
     // Add other TableItem properties that might be present
     _uid?: string;

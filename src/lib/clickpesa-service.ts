@@ -320,7 +320,8 @@ class ClickPesaService {
         // Remove any spaces, dashes, or parentheses
         formattedPhoneNumber = formattedPhoneNumber.replace(/[\s\-\(\)]/g, '');
         
-        // Ensure it starts with +255 or 255
+        // Handle different phone number formats for Tanzania
+        // Support both 06XX and 07XX formats
         if (formattedPhoneNumber.startsWith('0')) {
           formattedPhoneNumber = '+255' + formattedPhoneNumber.substring(1);
         } else if (formattedPhoneNumber.startsWith('255')) {
@@ -330,6 +331,7 @@ class ClickPesaService {
         }
         
         // Validate the formatted phone number for Tanzanian mobile networks
+        // Updated to support both 06XX (Airtel) and 07XX (Vodacom/Tigo) numbers
         const phoneRegex = /^\+255[67][0-9]{8}$/;
         if (!phoneRegex.test(formattedPhoneNumber)) {
           throw new Error('Invalid phone number format. Please use format: +255 7XX XXX XXX or +255 6XX XXX XXX');

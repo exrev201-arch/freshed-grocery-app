@@ -14,8 +14,8 @@ export default function OrderConfirmationPage() {
     const { user } = useAuthStore();
     const { t } = useLanguage();
 
-    const [order, setOrder] = useState<Order | null>(null);
-    const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+    const [order, setOrder] = useState<any | null>(null);
+    const [orderItems, setOrderItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -197,12 +197,23 @@ export default function OrderConfirmationPage() {
                             <div>
                                 <div className="font-medium">{t('dateAndTime')}</div>
                                 <div className="text-sm text-gray-600">
-                                    {new Date(order.delivery_date).toLocaleDateString('sw-TZ', {
+                                  {/* Fix date display to handle potential undefined values */}
+                                  {order.deliveryDate && order.deliveryDate !== 'Invalid Date' 
+                                    ? new Date(order.deliveryDate).toLocaleDateString('sw-TZ', {
                                         weekday: 'long',
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric'
-                                    })} - {order.delivery_time}
+                                      }) 
+                                    : (order.delivery_date && order.delivery_date !== 'Invalid Date'
+                                      ? new Date(order.delivery_date).toLocaleDateString('sw-TZ', {
+                                          weekday: 'long',
+                                          year: 'numeric',
+                                          month: 'long',
+                                          day: 'numeric'
+                                        })
+                                      : t('dateNotSet'))}
+                                  {(order.deliveryTimeSlot || order.delivery_time) && ` - ${order.deliveryTimeSlot || order.delivery_time}`}
                                 </div>
                             </div>
                         </div>
@@ -241,19 +252,21 @@ export default function OrderConfirmationPage() {
                         <Separator className="my-4" />
 
                         <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span>{t('productTotal')}</span>
-                                <span>TZS {((order.total_amount || 0) - 5000).toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>{t('deliveryFee')}</span>
-                                <span>TZS 5,000</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between font-bold text-lg">
-                                <span>{t('total')}</span>
-                                <span className="text-emerald-600">TZS {(order.total_amount || 0).toLocaleString()}</span>
-                            </div>
+                          <div className="flex justify-between">
+                            <span>{t('productTotal')}</span>
+                            {/* Fix calculation: total_amount - delivery fee */}
+                            <span>TZS {((order.totalAmount || order.total_amount || 0) >= 5000 ? (order.totalAmount || order.total_amount || 0) - 5000 : (order.totalAmount || order.total_amount || 0)).toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>{t('deliveryFee')}</span>
+                            {/* Fix delivery fee display based on order total */}
+                            <span>TZS {(order.totalAmount || order.total_amount || 0) >= 5000 ? '0' : '5,000'}</span>
+                          </div>
+                          <Separator />
+                          <div className="flex justify-between font-bold text-lg">
+                            <span>{t('total')}</span>
+                            <span className="text-emerald-600">TZS {(order.totalAmount || order.total_amount || 0).toLocaleString()}</span>
+                          </div>
                         </div>
                     </CardContent>
                 </Card>
