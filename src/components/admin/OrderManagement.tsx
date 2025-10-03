@@ -101,13 +101,13 @@ const OrderManagement: React.FC = () => {
 
     const loadOrderItems = async (orderId: string) => {
         try {
-            // Get all order items and filter by order_id
+            // Fix: Query order items by order_id field instead of filtering all items
             const result = await table.getItems('order_items', {
+                query: { order_id: orderId }, // This should match the field name in your database
                 limit: 100
             });
-            const allItems = result.items as unknown as AdminOrderItem[] || [];
-            const orderItems = allItems.filter(item => item.order_id === orderId);
-            setOrderItems(orderItems);
+            const items = result.items as unknown as AdminOrderItem[] || [];
+            setOrderItems(items);
         } catch (error) {
             console.error('Error loading order items:', error);
         }
@@ -313,17 +313,23 @@ const OrderManagement: React.FC = () => {
                                                                 <div>
                                                                     <Label>{t('orderItems')}</Label>
                                                                     <div className="border rounded-lg divide-y">
-                                                                        {orderItems.map((item) => (
-                                                                            <div key={item._id} className="p-3 flex justify-between">
-                                                                                <div>
-                                                                                    <p className="font-medium">{item.product_name}</p>
-                                                                                    <p className="text-sm text-muted-foreground">
-                                                                                        {t('qty')}: {item.quantity} × TZS {item.product_price.toLocaleString()}
-                                                                                    </p>
+                                                                        {orderItems.length > 0 ? (
+                                                                            orderItems.map((item) => (
+                                                                                <div key={item._id} className="p-3 flex justify-between">
+                                                                                    <div>
+                                                                                        <p className="font-medium">{item.product_name}</p>
+                                                                                        <p className="text-sm text-muted-foreground">
+                                                                                            {t('qty')}: {item.quantity} × TZS {(item.product_price || 0).toLocaleString()}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                    <p className="font-semibold">TZS {(item.subtotal || 0).toLocaleString()}</p>
                                                                                 </div>
-                                                                                <p className="font-semibold">TZS {item.subtotal.toLocaleString()}</p>
+                                                                            ))
+                                                                        ) : (
+                                                                            <div className="p-4 text-center text-muted-foreground">
+                                                                                {t('noOrderItems')}
                                                                             </div>
-                                                                        ))}
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>

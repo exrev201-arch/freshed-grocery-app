@@ -199,14 +199,20 @@ const EnhancedOrderManagement: React.FC = () => {
 
     const loadOrderItems = async (orderId: string) => {
         try {
+            // Fix: Query order items by order_id field instead of filtering all items
             const result = await table.getItems('order_items', {
+                query: { order_id: orderId }, // This should match the field name in your database
                 limit: 100
             });
-            const allItems = result.items as unknown as AdminOrderItem[] || [];
-            const filteredOrderItems = allItems.filter(item => item.order_id === orderId);
-            setOrderItems(filteredOrderItems);
+            const items = result.items as unknown as AdminOrderItem[] || [];
+            setOrderItems(items);
         } catch (error) {
             console.error('Error loading order items:', error);
+            toast({
+                title: "Error",
+                description: "Failed to load order items",
+                variant: "destructive"
+            });
         }
     };
 
@@ -625,9 +631,6 @@ const EnhancedOrderManagement: React.FC = () => {
                     <DialogHeader>
                         <div className="flex justify-between items-center">
                             <DialogTitle>Order Details - #{selectedOrder?._id?.slice(-8)}</DialogTitle>
-                            <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(null)}>
-                                <X className="h-4 w-4" />
-                            </Button>
                         </div>
                     </DialogHeader>
                     
@@ -711,14 +714,13 @@ const EnhancedOrderManagement: React.FC = () => {
                                                 <div key={item._id} className="flex justify-between items-center py-2 border-b">
                                                     <div>
                                                         <p className="font-medium">{item.product_name}</p>
-                                                        <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                        <p className="text-sm text-gray-600">
+                                                            Qty: {item.quantity} × TZS {(item.product_price || 0).toLocaleString()}
+                                                        </p>
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="font-medium">
-                                                            TZS {(item.product_price || 0).toLocaleString()}
-                                                        </p>
-                                                        <p className="text-sm text-gray-600">
-                                                            Total: TZS {(item.subtotal || 0).toLocaleString()}
+                                                            TZS {(item.subtotal || 0).toLocaleString()}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -773,6 +775,7 @@ const EnhancedOrderManagement: React.FC = () => {
                         </div>
                     )}
                     
+                    {/* Keep only one close button in the footer */}
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setSelectedOrder(null)}>
                             Close
